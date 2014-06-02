@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.RectF;
 import android.graphics.Paint.Align;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -252,14 +253,17 @@ public class DiffRangeSurfaceView extends SurfaceView implements Runnable {
 		Paint p = new Paint();
 		//Set Blue Color
 		p.setColor(Color.WHITE);
-		
-		c.drawBitmap(underlay,0, 0, p);
+		RectF fullCanvas = new RectF(0, 0, c.getWidth(), c.getHeight());
+		c.drawBitmap(underlay,null, fullCanvas, p);
 		
 
 		
 		c.drawARGB(230, 35, 20, 21);
 		//speedometer background
-		c.drawBitmap(speedometer,0, c.getHeight()-bottommargin-12, new Paint());
+		RectF xLabel = new RectF(fullCanvas);
+		Log.d("CANVAS", xLabel.top + " "+xLabel.bottom);
+		xLabel.top = xLabel.bottom-75.0f;
+		c.drawBitmap(speedometer,null, xLabel, new Paint());
 		
 		c.drawBitmap(battery,30, 31, new Paint());
 		
@@ -405,7 +409,7 @@ public class DiffRangeSurfaceView extends SurfaceView implements Runnable {
 		
 		//String.format("%.0f", speed);
 		//Overlay
-		c.drawBitmap(overlay, 0, 0, new Paint());
+		c.drawBitmap(overlay, null, fullCanvas, new Paint());
 		
 		//Take it easy a bit
 		try {
