@@ -1,4 +1,0 @@
-INDEX VERSION 1.126+/home/marothon/workspace/sommarjobb2014/.metadata/.plugins/org.eclipse.jdt.core
-1856896125.index
-1377251446.index
-2187965242.index
