@@ -39,10 +39,10 @@ public class DiffRangeSurfaceView extends SurfaceView implements Runnable {
 	float speed10SecMeanTmp = (float) 0.0;
 	
 	float currentClimateConsumption = (float)3.0;
-	
+
 	float topGraphMargin = (float)85.0;
 	float bottommargin = (float)65.0;
-	
+						
 	int fan = 112;
 	int climate = 7;
 	
