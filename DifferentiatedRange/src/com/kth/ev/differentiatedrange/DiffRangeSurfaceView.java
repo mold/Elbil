@@ -253,10 +253,10 @@ public class DiffRangeSurfaceView extends SurfaceView implements Runnable {
 		Paint p = new Paint();
 		//Set Blue Color
 		p.setColor(Color.WHITE);
+		
+		//Touchscreen boundaries.
 		RectF fullCanvas = new RectF(0, 0, c.getWidth(), c.getHeight());
 		c.drawBitmap(underlay,null, fullCanvas, p);
-		
-
 		
 		c.drawARGB(230, 35, 20, 21);
 		//speedometer background
@@ -341,19 +341,17 @@ public class DiffRangeSurfaceView extends SurfaceView implements Runnable {
 			p.setTextAlign(Align.RIGHT);
 			p.setTypeface(font); 
 			p.setTypeface(Typeface.DEFAULT_BOLD);
-			if(i%10==0)
-			{
+			
+			if(i%10==0) {
 				p.setARGB(255, 200, 180, 120);
 				if(i!=0)
 					c.drawText(Integer.toString(i*(int)mPerLine/1000) + "km", c.getWidth()-20, h+20, p);
-			}
-			else if(i%5==0)
-			{
+			} else if(i%5==0) {
 				p.setARGB(255, 100, 180, 90);
 				c.drawText(Integer.toString(i*(int)mPerLine/1000) + "km", c.getWidth()-20, h+20, p);
-			}
-			else
+			} else
 				p.setARGB(100, 100, 180, 90);
+			
 			p.setStyle(Paint.Style.FILL);
 			c.drawRect(rg, p);
 			
@@ -415,7 +413,6 @@ public class DiffRangeSurfaceView extends SurfaceView implements Runnable {
 		try {
 			Thread.sleep(50);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
