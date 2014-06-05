@@ -6,8 +6,6 @@ package com.kth.ev.differentiatedrange;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URI;
-import java.util.Observable;
-import java.util.Observer;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -56,8 +54,10 @@ public class CarDataFetcher {
 				carData.calculate();
 				carData.notifyObservers();
 			} catch (NumberFormatException e) {
-				// Got null values or something - do nothing
+				// Got null values or something
 				Log.i("fetch", "Got null from server for some parameter");
+				// Calculate and notify (because we probably got SOME data)
+				carData.calculate();
 				carData.notifyObservers();
 			} catch (HttpHostConnectException e) {
 				Log.e("fetch", "Could not connect to server");

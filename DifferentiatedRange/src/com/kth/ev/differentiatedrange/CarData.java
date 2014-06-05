@@ -5,6 +5,20 @@ import java.util.Observable;
 import android.util.Log;
 
 /**
+ * A data container/generator for data coming from the electric car (soc, speed
+ * etc). <br>
+ * <br>
+ * Recieves soc, speed, fan and climate values and calculates average speeds,
+ * climate consumption and more.
+ * 
+ * (Based on GetData and DiffRangeSurfaceView)
+ * 
+ * Important! For this to work properly, call all (relevant) set methods first:
+ * setSoc, setSpeed, setFan, setClimate. Then call calculate(), and THEN
+ * notifyObservers(). This because calculate() uses the other parameters.
+ * 
+ * Or, use the shorter setDataAndNotify(soc, speed, fan, climate).
+ * 
  * @author dkd
  * 
  */
@@ -20,9 +34,21 @@ public class CarData extends Observable {
 
 	private long lastUpdateTime = System.currentTimeMillis();
 
+	/**
+	 * Create a CarData with the default EVEnergy.
+	 */
 	public CarData() {
 		evEnergy = new EVEnergy((float) 1521, (float) 0.012, (float) 0.29, (float) 2.7435);
 		evEnergy.efficiency = (float) 0.88;
+	}
+
+	/**
+	 * Creates a CarData with a custom EVEnergy.
+	 * 
+	 * @param ev
+	 */
+	public CarData(EVEnergy ev) {
+		this.evEnergy = ev;
 	}
 
 	public EVEnergy getEvEnergy() {
@@ -33,6 +59,19 @@ public class CarData extends Observable {
 		this.evEnergy = evEnergy;
 	}
 
+	/**
+	 * Calculates (from speed, soc etc.): <br>
+	 * <br>
+	 * 
+	 * speed10SecMean<br>
+	 * speedOneMinMean<br>
+	 * speedFiveMinMean<br>
+	 * currentClimateConsumption<br>
+	 * <br>
+	 * 
+	 * Average speeds are calculated using an internal timer (breaking MVC
+	 * perhaps, oops sorry). All code has been copied from GetData/SurfaceView.
+	 */
 	public void calculate() {
 		/** Calculate average speeds **/
 		long timeSinceLast = System.currentTimeMillis() - lastUpdateTime;
@@ -133,6 +172,9 @@ public class CarData extends Observable {
 		setChanged();
 	}
 
+	/**
+	 * Updates climateConsumption based on fan and climate values.
+	 */
 	private void calculateClimatePower() {
 		// heater1=112 -> fan off -> no power
 		// 113-120 fan on levels 120 maximum
@@ -239,5 +281,25 @@ public class CarData extends Observable {
 
 	public double getSpeed10SecMean() {
 		return speed10SecMean;
+	}
+
+	/**
+	 * Shortcut for setting all input parameters, calculate the rest and then
+	 * notify all observers that the data has been updated.
+	 * 
+	 * @param soc
+	 * @param speed
+	 * @param fan
+	 * @param climate
+	 */
+	public void setDataAndNotify(double soc, double speed, double fan, double climate) {
+		setSoc(soc);
+		setSpeed(speed);
+		setFan(fan);
+		setClimate(climate);
+
+		calculate();
+		
+		notifyObservers();
 	}
 }
