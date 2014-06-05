@@ -1,11 +1,6 @@
 /**
  * 
- * @author Peter Brinkmann (peter.brinkmann@gmail.com)
- * 
- * For information on usage and redistribution, and for a DISCLAIMER OF ALL
- * WARRANTIES, see the file, "LICENSE.txt," in this distribution.
- *
- * simple test case for {@link PdService}
+ * @author John Brynte Turesson
  * 
  */
 
@@ -14,10 +9,7 @@ package com.example.audiobahn;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
 
 import org.puredata.android.io.AudioParameters;
 import org.puredata.android.service.PdPreferences;
@@ -27,7 +19,6 @@ import org.puredata.core.PdReceiver;
 import org.puredata.core.utils.IoUtils;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -37,39 +28,42 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
-import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
-import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
-public class AudioBahnActivity extends Activity implements OnClickListener, OnEditorActionListener, SharedPreferences.OnSharedPreferenceChangeListener {
+public class AudioBahnActivity extends Activity implements OnClickListener,
+		OnSeekBarChangeListener,
+		SharedPreferences.OnSharedPreferenceChangeListener {
 
 	private static final String TAG = "pd";
 
 	private Button play;
-	private CheckBox left, right, mic;
-	private EditText msg;
-	private Button prefs;
 	private TextView logs;
+	private SeekBar frequencySlider;
+	private TextView frequencyText;
+	private Button togglePatchButton;
+	private TextView patchText;
 
 	private PdService pdService = null;
 
 	private Toast toast = null;
-	
+
+	private int patchHandle;
+	private int currentPatch = 0;
+	private int[] patches = { R.raw.sine, R.raw.test };
+
 	private void toast(final String msg) {
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
 				if (toast == null) {
-					toast = Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT);
+					toast = Toast.makeText(getApplicationContext(), "",
+							Toast.LENGTH_SHORT);
 				}
 				toast.setText(TAG + ": " + msg);
 				toast.show();
@@ -90,6 +84,7 @@ public class AudioBahnActivity extends Activity implements OnClickListener, OnEd
 
 		private void pdPost(String msg) {
 			toast("Pure Data says, \"" + msg + "\"");
+			Log.v(TAG, "Pure Data says, \"" + msg + "\"");
 		}
 
 		@Override
@@ -123,11 +118,13 @@ public class AudioBahnActivity extends Activity implements OnClickListener, OnEd
 		}
 	};
 
+	/**
+	 * ServiceConnection to Pd.
+	 */
 	private final ServiceConnection pdConnection = new ServiceConnection() {
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
-			pdService = ((PdService.PdBinder)service).getService();
-			Log.v(TAG, "pdService initialized");
+			pdService = ((PdService.PdBinder) service).getService();
 			initPd();
 		}
 
@@ -142,8 +139,10 @@ public class AudioBahnActivity extends Activity implements OnClickListener, OnEd
 		super.onCreate(savedInstanceState);
 		AudioParameters.init(this);
 		PdPreferences.initPreferences(getApplicationContext());
-		PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).registerOnSharedPreferenceChangeListener(this);
+		PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
+				.registerOnSharedPreferenceChangeListener(this);
 		initGui();
+		// Create a connection between this activity and Pd 
 		bindService(new Intent(this, PdService.class), pdConnection, BIND_AUTO_CREATE);
 	};
 
@@ -162,54 +161,84 @@ public class AudioBahnActivity extends Activity implements OnClickListener, OnEd
 
 	private void initGui() {
 		setContentView(R.layout.activity_audiobahn);
+		frequencySlider = (SeekBar) findViewById(R.id.frequency_slider);
+		frequencySlider.setOnSeekBarChangeListener(this);
+		frequencyText = (TextView) findViewById(R.id.frequency_text);
 		play = (Button) findViewById(R.id.play_button);
 		play.setOnClickListener(this);
-		left = (CheckBox) findViewById(R.id.left_box);
-		left.setOnClickListener(this);
-		right = (CheckBox) findViewById(R.id.right_box);
-		right.setOnClickListener(this);
-		mic = (CheckBox) findViewById(R.id.mic_box);
-		mic.setOnClickListener(this);
-		msg = (EditText) findViewById(R.id.msg_box);
-		msg.setOnEditorActionListener(this);
-		prefs = (Button) findViewById(R.id.pref_button);
-		prefs.setOnClickListener(this);
+		togglePatchButton = (Button) findViewById(R.id.toggle_patch_button);
+		togglePatchButton.setOnClickListener(this);
+		patchText = (TextView) findViewById(R.id.loaded_patch_text);
 		logs = (TextView) findViewById(R.id.log_box);
 		logs.setMovementMethod(new ScrollingMovementMethod());
 	}
 
+	/**
+	 * Initialize Pd. Called after successful ServiceConnection to Pd. 
+	 */
 	private void initPd() {
-		Resources res = getResources();
-		File patchFile = null;
+		PdBase.setReceiver(receiver);
+		PdBase.subscribe("android");
+		
+		openPatch(patches[currentPatch]);
+	}
+
+	/**
+	 * Open a cached patch.
+	 * @param patch Reference to resource id (R.raw.patch_name).
+	 */
+	private void openPatch(int patch) {
+		File file = null;
 		try {
-			PdBase.setReceiver(receiver);
-			PdBase.subscribe("android");
-			InputStream in = res.openRawResource(R.raw.test);
-			patchFile = IoUtils.extractResource(in, "test.pd", getCacheDir());
-			PdBase.openPatch(patchFile);
-			Log.v(TAG, "initialized pd");
+			Resources res = getResources();
+			InputStream in;
+			String name;
+			// Load the Pd patch to cache
+			in = res.openRawResource(patch);
+			name = res.getResourceEntryName(patch) + ".pd";
+			file = IoUtils.extractResource(in, name, getCacheDir());
+			Log.v(TAG, "Loaded " + name + " (" + file + ")");
+			// Open the patch
+			closeCurrentPatch();
+			patchHandle = PdBase.openPatch(file);
+			patchText.setText("Patch: " + file);
 		} catch (IOException e) {
 			Log.e(TAG, e.toString());
 			finish();
 		} finally {
-			if (patchFile != null) patchFile.delete();
+			if (file != null) {
+				file.delete();
+			}
 		}
 	}
+	
+	/**
+	 * Close the current loaded patch.
+	 */
+	private void closeCurrentPatch() {
+		PdBase.closePatch(patchHandle);
+	}
 
+	/**
+	 * Start playing sound.
+	 */
 	private void startAudio() {
-		String name = getResources().getString(R.string.app_name);
 		try {
-			pdService.initAudio(-1, -1, -1, -1);   // negative values will be replaced with defaults/preferences
-			pdService.startAudio(new Intent(this, AudioBahnActivity.class), R.drawable.icon, name, "Return to " + name + ".");
+			// negative values will be replaced with defaults/preferences
+			pdService.initAudio(-1, -1, -1, -1);
+			pdService.startAudio();
 		} catch (IOException e) {
 			toast(e.toString());
 		}
 	}
 
+	/**
+	 * Stop playing sound.
+	 */
 	private void stopAudio() {
 		pdService.stopAudio();
 	}
-	
+
 	private void cleanup() {
 		try {
 			unbindService(pdConnection);
@@ -217,30 +246,6 @@ public class AudioBahnActivity extends Activity implements OnClickListener, OnEd
 			// already unbound
 			pdService = null;
 		}
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.pd_test_menu, menu);
-		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case R.id.about_item:
-			AlertDialog.Builder ad = new AlertDialog.Builder(this);
-			ad.setTitle(R.string.about_title);
-			ad.setMessage(R.string.about_msg);
-			ad.setNeutralButton(android.R.string.ok, null);
-			ad.setCancelable(true);
-			ad.show();
-			break;
-		default:
-			break;
-		}
-		return true;
 	}
 
 	@Override
@@ -252,17 +257,13 @@ public class AudioBahnActivity extends Activity implements OnClickListener, OnEd
 			} else {
 				startAudio();
 			}
-		case R.id.left_box:
-			PdBase.sendFloat("left", left.isChecked() ? 1 : 0);
 			break;
-		case R.id.right_box:
-			PdBase.sendFloat("right", right.isChecked() ? 1 : 0);
-			break;
-		case R.id.mic_box:
-			PdBase.sendFloat("mic", mic.isChecked() ? 1 : 0);
-			break;
-		case R.id.pref_button:
-			startActivity(new Intent(this, PdPreferences.class));
+		case R.id.toggle_patch_button:
+			currentPatch++;
+			if (currentPatch >= patches.length) {
+				currentPatch = 0;
+			}
+			openPatch(patches[currentPatch]);
 			break;
 		default:
 			break;
@@ -270,55 +271,21 @@ public class AudioBahnActivity extends Activity implements OnClickListener, OnEd
 	}
 
 	@Override
-	public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-		evaluateMessage(msg.getText().toString());
-		return true;
+	public void onProgressChanged(SeekBar seekBar, int progress,
+			boolean fromUser) {
+		frequencyText.setText(progress + " hz");
+		PdBase.sendFloat("frequency", (float) progress);
 	}
 
-	private void evaluateMessage(String s) {
-		String dest = "test", symbol = null;
-		boolean isAny = s.length() > 0 && s.charAt(0) == ';';
-		Scanner sc = new Scanner(isAny ? s.substring(1) : s);
-		if (isAny) {
-			if (sc.hasNext()) dest = sc.next();
-			else {
-				toast("Message not sent (empty recipient)");
-				return;
-			}
-			if (sc.hasNext()) symbol = sc.next();
-			else {
-				toast("Message not sent (empty symbol)");
-			}
-		}
-		List<Object> list = new ArrayList<Object>();
-		while (sc.hasNext()) {
-			if (sc.hasNextInt()) {
-				list.add(Float.valueOf(sc.nextInt()));
-			} else if (sc.hasNextFloat()) {
-				list.add(sc.nextFloat());
-			} else {
-				list.add(sc.next());
-			}
-		}
-		if (isAny) {
-			PdBase.sendMessage(dest, symbol, list.toArray());
-		} else {
-			switch (list.size()) {
-			case 0:
-				PdBase.sendBang(dest);
-				break;
-			case 1:
-				Object x = list.get(0);
-				if (x instanceof String) {
-					PdBase.sendSymbol(dest, (String) x);
-				} else {
-					PdBase.sendFloat(dest, (Float) x);
-				}
-				break;
-			default:
-				PdBase.sendList(dest, list.toArray());
-				break;
-			}
-		}
+	@Override
+	public void onStartTrackingTouch(SeekBar seekBar) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onStopTrackingTouch(SeekBar seekBar) {
+		// TODO Auto-generated method stub
+
 	}
 }

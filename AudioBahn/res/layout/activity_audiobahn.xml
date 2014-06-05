@@ -3,23 +3,32 @@
 	android:orientation="vertical" android:layout_width="fill_parent"
 	android:layout_height="fill_parent">
 
-   	<Button android:id="@+id/play_button" android:layout_width="fill_parent"
-		android:layout_height="wrap_content" android:text="@string/play_button_text" />
-	<CheckBox android:id="@+id/left_box" android:layout_width="fill_parent"
-		android:layout_height="wrap_content" android:checked="true"
-		android:text="@string/left_label" />
-	<CheckBox android:id="@+id/right_box" android:layout_width="fill_parent"
-		android:layout_height="wrap_content" android:checked="true"
-		android:text="@string/right_label" />
-	<CheckBox android:id="@+id/mic_box" android:layout_width="fill_parent"
-		android:layout_height="wrap_content" android:checked="true"
-		android:text="@string/mic_label" />
-	<EditText android:id="@+id/msg_box" android:layout_width="fill_parent"
-		android:layout_height="wrap_content" android:lines="1"
-		android:inputType="text" android:text="@string/default_msg" />
-	<Button android:id="@+id/pref_button" android:layout_width="fill_parent"
-		android:layout_height="wrap_content" android:text="@string/pref_button_text" />
-	<TextView android:id="@+id/log_box" android:layout_width="fill_parent"
-		android:layout_height="fill_parent" android:gravity="bottom"
-		android:scrollbars="vertical" android:text="" />
+   	<Button android:id="@+id/play_button"
+   	    android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:text="@string/play_button_text" />
+   	<TextView android:id="@+id/frequency_text"
+   	    android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:text="" />
+   	<SeekBar
+   	    android:id="@+id/frequency_slider"
+   	    android:max="1000"
+   	    android:layout_width="match_parent"
+   	    android:layout_height="wrap_content"
+   	    android:layout_marginTop="26dp" />
+   	<TextView android:id="@+id/loaded_patch_text"
+   	    android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:text="" />
+   	<Button android:id="@+id/toggle_patch_button"
+   	    android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:text="@string/toggle_patch_button_text" />
+	<TextView android:id="@+id/log_box"
+	    android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:gravity="bottom"
+		android:scrollbars="vertical"
+		android:text="" />
 </LinearLayout>
