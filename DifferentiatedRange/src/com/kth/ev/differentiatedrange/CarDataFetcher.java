@@ -45,7 +45,6 @@ public class CarDataFetcher {
 	 * Fetches data from system (car or server) and send to CarData
 	 */
 	public void fetchData() {
-		// TODO: Implement
 		if (fromCar) { // Get data from car, not from server
 			// TODO: Implement
 		} else { // Get data from server
@@ -63,7 +62,7 @@ public class CarDataFetcher {
 			} catch (HttpHostConnectException e) {
 				Log.e("fetch", "Could not connect to server");
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
