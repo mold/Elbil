@@ -25,6 +25,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <service
+            android:name="org.puredata.android.service.PdService" />
+        <activity
+		    android:label="Pure Data Preferences"
+			android:name="org.puredata.android.service.PdPreferences"
+			android:screenOrientation="landscape" />
     </application>
 
 </manifest>
