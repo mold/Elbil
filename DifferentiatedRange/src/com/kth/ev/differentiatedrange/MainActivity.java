@@ -4,16 +4,22 @@ import com.kth.ev.differentiatedrange.puredata.Patch;
 import com.kth.ev.differentiatedrange.puredata.PureDataHandler;
 
 import android.os.Bundle;
+import android.os.Environment;
 import android.app.Activity;
+import android.content.Context;
 import android.util.Log;
 import android.view.Menu;
 import android.view.Window;
 import android.view.WindowManager;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements Runnable {
+	
+	final int THREAD_SLEEP = 500;
+	
 	DiffRangeSurfaceView v;
 	GetData gd;
 	PureDataHandler pd;
+	CarDataFetcher cdfetch;
 		
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,14 +34,18 @@ public class MainActivity extends Activity {
         
         gd = new GetData(v);
         gd.resume();
+        cdfetch = new CarDataFetcher(false);
         
         pd = new PureDataHandler(this);
         pd.addReadyListener(new PureDataHandler.ReadyListener() {
 			@Override
 			public void ready() {
-				// TODO: PD is ready
+				initPd();
 			}
 		});
+        
+        Thread t = new Thread(this);
+        t.start();
         
         //String s = GetData.connect("http://localhost:8080/soc");
         //Log.d("TAG", "MSG");
@@ -63,11 +73,28 @@ public class MainActivity extends Activity {
 //		}
     }
 
-
+    private void initPd() {
+    	// TODO: make some music
+    }
+    
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        //getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
+
+	@Override
+	public void run() {
+		while(true) {
+			cdfetch.fetchData();
+			
+			try {
+				Thread.sleep(THREAD_SLEEP);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
 }

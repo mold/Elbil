@@ -18,14 +18,12 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.SharedPreferences;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 public class PureDataHandler {
 	
-	private final String TAG = "pd";
+	private final String TAG = "puredata";
 	
 	private Context context;
 	
@@ -53,38 +51,38 @@ public class PureDataHandler {
 	 */
 	private PdReceiver receiver = new PdReceiver() {
 
-		private void pdPost(String msg) {
-			Log.v(TAG, "Pure Data says, \"" + msg + "\"");
+		private void pdPost(String source, String symbol, String message) {
+			Log.v(TAG, "[PD] source: " + source + "; symbol: " + symbol + "; message: " + message);
 		}
 
 		@Override
 		public void print(String s) {
-			pdPost(s);
+			pdPost("", "", s);
 		}
 
 		@Override
 		public void receiveBang(String source) {
-			pdPost("bang");
+			pdPost(source, "", "bang");
 		}
 
 		@Override
 		public void receiveFloat(String source, float x) {
-			pdPost("float: " + x);
+			pdPost(source, "", "float: " + x);
 		}
 
 		@Override
 		public void receiveList(String source, Object... args) {
-			pdPost("list: " + Arrays.toString(args));
+			pdPost(source, "", "list: " + Arrays.toString(args));
 		}
 
 		@Override
 		public void receiveMessage(String source, String symbol, Object... args) {
-			pdPost("message: " + Arrays.toString(args));
+			pdPost(source, symbol, "message: " + Arrays.toString(args));
 		}
 
 		@Override
 		public void receiveSymbol(String source, String symbol) {
-			pdPost("symbol: " + symbol);
+			pdPost(source, "symbol: " + symbol, "");
 		}
 	};
 	
@@ -158,10 +156,15 @@ public class PureDataHandler {
 		pdService.stopAudio();
 	}
 	
+	/**
+	 * Create a patch from a resource id
+	 * @param resource Resource id
+	 * @return New Patch
+	 */
 	public Patch createPatch(int resource) {
 		return new Patch(context, resource);
 	}
-	
+
 	/**
 	 * Close the connection to Pd.
 	 */
