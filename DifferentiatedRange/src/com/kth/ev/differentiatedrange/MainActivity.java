@@ -3,14 +3,9 @@ package com.kth.ev.differentiatedrange;
 import com.kth.ev.differentiatedrange.puredata.Patch;
 import com.kth.ev.differentiatedrange.puredata.PureDataHandler;
 
-import org.puredata.core.PdBase;
-
 import android.os.Bundle;
 import android.app.Activity;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.util.Log;
-//import android.util.Log;
 import android.view.Menu;
 import android.view.Window;
 import android.view.WindowManager;
@@ -24,18 +19,6 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        pd = new PureDataHandler(this);
-        pd.addReadyListener(new PureDataHandler.ReadyListener() {
-			@Override
-			public void ready() {
-				Log.v("pdh", "ready");
-				Patch patch = pd.createPatch(R.raw.sine);
-				patch.open();
-	        	Log.v("pdh", "startAudio");
-	        	pd.startAudio();
-			}
-		});
-        
         v = new DiffRangeSurfaceView(this);
         
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -45,6 +28,14 @@ public class MainActivity extends Activity {
         
         gd = new GetData(v);
         gd.resume();
+        
+        pd = new PureDataHandler(this);
+        pd.addReadyListener(new PureDataHandler.ReadyListener() {
+			@Override
+			public void ready() {
+				// TODO: PD is ready
+			}
+		});
         
         //String s = GetData.connect("http://localhost:8080/soc");
         //Log.d("TAG", "MSG");

@@ -23,9 +23,9 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-public class PureDataHandler implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class PureDataHandler {
 	
-	private final String TAG = "pdh";
+	private final String TAG = "pd";
 	
 	private Context context;
 	
@@ -44,12 +44,8 @@ public class PureDataHandler implements SharedPreferences.OnSharedPreferenceChan
 		
 		AudioParameters.init(context);
 		PdPreferences.initPreferences(context.getApplicationContext());
-		PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext())
-				.registerOnSharedPreferenceChangeListener(this);
 		// Create a connection to Pd
-		
 		context.bindService(new Intent(context, PdService.class), pdConnection, Context.BIND_AUTO_CREATE);
-		Log.v(TAG, "creating connection...");
 	}
 	
 	/**
@@ -175,13 +171,6 @@ public class PureDataHandler implements SharedPreferences.OnSharedPreferenceChan
 		} catch (IllegalArgumentException e) {
 			// already unbound
 			pdService = null;
-		}
-	}
-
-	@Override
-	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-		if (pdService.isRunning()) {
-			startAudio();
 		}
 	}
 	
