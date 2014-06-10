@@ -28,8 +28,8 @@ public class CarDataFetcher {
 	private String baseUrl = "http://localhost:8080/";
 	private BufferedReader in;
 
-	public CarDataFetcher(boolean fromCar) {
-		this.carData = new CarData();
+	public CarDataFetcher(CarData carData, boolean fromCar) {
+		this.carData = carData;
 		this.fromCar = fromCar;
 
 		if (fromCar) { // Gonna get data from car, not from server
@@ -64,6 +64,7 @@ public class CarDataFetcher {
 			} catch (Exception e) {
 				// Auto-generated catch block
 				e.printStackTrace();
+				Log.e("fetch", e.toString());
 			}
 		}
 	}

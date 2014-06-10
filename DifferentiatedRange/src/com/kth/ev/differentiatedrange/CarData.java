@@ -5,8 +5,8 @@ import java.util.Observable;
 import android.util.Log;
 
 /**
- * A data container/generator for data coming from the electric car (soc, speed
- * etc). <br>
+ * A data container/generator/fetcher for data coming from the electric car
+ * (soc, speed etc). <br>
  * <br>
  * Recieves soc, speed, fan and climate values and calculates average speeds,
  * climate consumption and more.<br>
@@ -28,7 +28,7 @@ import android.util.Log;
  * @author dkd
  * 
  */
-public class CarData extends Observable {
+public class CarData extends Observable implements Runnable {
 	private double soc, speed, fan, climate;
 
 	private EVEnergy evEnergy;
@@ -40,13 +40,28 @@ public class CarData extends Observable {
 
 	private long lastUpdateTime = System.currentTimeMillis();
 
+	private CarDataFetcher cdf;
+	private int sleepTime;
+	private long timeSinceLast;
+
+	private Thread t;
+	private boolean fetching = true;
+
 	/**
 	 * Create a CarData with the default EVEnergy.
+	 * 
+	 * @param fromCar
+	 *            If true, get data from car. Otherwise the server.
+	 * @param sleep
+	 *            How many milliseconds to sleep between fetching data
 	 */
-	public CarData() {
-		evEnergy = new EVEnergy((float) 1521, (float) 0.012, (float) 0.29,
-				(float) 2.7435);
+	public CarData(boolean fromCar, int sleep) {
+		evEnergy = new EVEnergy((float) 1521, (float) 0.012, (float) 0.29, (float) 2.7435);
 		evEnergy.efficiency = (float) 0.88;
+
+		cdf = new CarDataFetcher(this, fromCar);
+		t = new Thread(this);
+		t.start();
 	}
 
 	/**
@@ -81,7 +96,7 @@ public class CarData extends Observable {
 	 */
 	public void calculate() {
 		/** Calculate average speeds **/
-		long timeSinceLast = System.currentTimeMillis() - lastUpdateTime;
+		timeSinceLast = System.currentTimeMillis() - lastUpdateTime;
 		lastUpdateTime = System.currentTimeMillis();
 		double updatesPerSecond = 1000.0 / timeSinceLast;
 
@@ -324,5 +339,20 @@ public class CarData extends Observable {
 		calculate();
 
 		notifyObservers();
+	}
+
+	@Override
+	public void run() {
+		while (fetching) {
+			cdf.fetchData();
+
+			try {
+				Thread.sleep(sleepTime);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
 	}
 }
