@@ -23,18 +23,18 @@ import android.widget.TextView;
 
 public class MainActivity extends Activity implements OnClickListener, Observer {
 	
-	final int THREAD_SLEEP = 1000;
+	final int THREAD_SLEEP = 200;
 	
 	DiffRangeSurfaceView v;
 	GetData gd;
-	PureDataHandler pd;
-	CarData cd;
+	PureDataHandler pdHandler;
+	CarData carData;
 	
 	// View
 	TextView dataText = null;
 	
 	// PureData
-	Patch test;
+	Patch testPatch;
 		
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,10 +43,10 @@ public class MainActivity extends Activity implements OnClickListener, Observer 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         
-        cd = new CarData(false, THREAD_SLEEP);
+        carData = new CarData(false, THREAD_SLEEP);
         
-        pd = new PureDataHandler(this);
-        pd.addReadyListener(new PureDataHandler.ReadyListener() {
+        pdHandler = new PureDataHandler(this);
+        pdHandler.addReadyListener(new PureDataHandler.ReadyListener() {
 			@Override
 			public void ready() {
 				initPd();
@@ -67,12 +67,12 @@ public class MainActivity extends Activity implements OnClickListener, Observer 
     
     private void initPd() {
     	// Observe data
-    	cd.addObserver(pd);
+    	carData.addObserver(pdHandler);
     	// Open a test patch
-    	test = new Patch("test.pd");
-    	test.open();
+    	testPatch = new Patch("test.pd");
+    	testPatch.open();
     	// Start playing
-    	pd.startAudio();
+    	pdHandler.startAudio();
     }
     
     @Override
@@ -86,8 +86,8 @@ public class MainActivity extends Activity implements OnClickListener, Observer 
 	public void onClick(View v) {
 		switch(v.getId()) {
 		case R.id.reload_patch:
-			test.close();
-			test.open();
+			testPatch.close();
+			testPatch.open();
 			break;
 		}
 	}
