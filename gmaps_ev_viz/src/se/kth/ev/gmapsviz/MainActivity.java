@@ -84,10 +84,6 @@ public class MainActivity extends Activity implements Observer {
 			Log.d("resultsC", "encoded: "+encoded);
 			Log.d("resultsD", "sampled: "+sampled);
 			Log.d("resultsE", "sampled_encoded: "+sampled_encoded);
-			//for (LatLng l : points) {
-			//	Log.d("po", l.toString());
-			//}
-			// Log.d("encodedPoints", encodedPoints);
 
 		} catch (Exception e) {
 			e.printStackTrace();
