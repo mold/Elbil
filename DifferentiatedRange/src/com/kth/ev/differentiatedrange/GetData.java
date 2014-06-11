@@ -11,10 +11,11 @@ public class GetData implements Runnable, Observer {
 	boolean running = false;
 	EVEnergy evEnergy;
 	float batterySize = (float) 15.0; // kwh
-	int threadSleep = 500;
+	int threadSleep = 13;
+	long time;
 	int timesPerMin, timesPer5Min, timesPer10Sec;
 	float currentClimateConsumption = (float) 3.0;
-	CarData cd = new CarData(false, 500);
+	CarData cd = new CarData(false, 700);
 
 	public GetData(DiffRangeSurfaceView surfaceView) {
 		v = surfaceView;
@@ -38,25 +39,31 @@ public class GetData implements Runnable, Observer {
 	@Override
 	public void run() {
 		while (running) {
-//			cdfetch.fetchData();
-//
-//			double speed = Math.random() * 20;
-//			CarData cd = cdfetch.getCarData();
-//			cd.setSpeed(speed);
-//			cd.setSoc(51);
-//
-//			cd.calculate();
-//			v.speed = (float) (speed);
-//			v.speed10SecMean = (float) ((v.speed10SecMean * (timesPer10Sec - 1) + speed) / timesPer10Sec);
-//			v.speedOneMinMean = (float) ((v.speedOneMinMean * (timesPerMin - 1) + speed) / timesPerMin);
-//			v.speedFiveMinMean = (float) ((v.speedFiveMinMean * (timesPer5Min - 1) + speed) / timesPer5Min);
-//
-//			Log.i("update0 v",
-//					Math.round(v.speed) + " " + Math.round(v.speed10SecMean) + " " + Math.round(v.speedOneMinMean)
-//							+ " " + Math.round(v.speedFiveMinMean));
-//			Log.i("update0 cd",
-//					Math.round(speed) + " " + Math.round(cd.getSpeed10SecMean()) + " "
-//							+ Math.round(cd.getSpeedOneMinMean()) + " " + Math.round(cd.getSpeedFiveMinMean()));
+			// cdfetch.fetchData();
+			//
+			// double speed = Math.random() * 20;
+			// CarData cd = cdfetch.getCarData();
+			// cd.setSpeed(speed);
+			// cd.setSoc(51);
+			//
+			// cd.calculate();
+			// v.speed = (float) (speed);
+			// v.speed10SecMean = (float) ((v.speed10SecMean * (timesPer10Sec -
+			// 1) + speed) / timesPer10Sec);
+			// v.speedOneMinMean = (float) ((v.speedOneMinMean * (timesPerMin -
+			// 1) + speed) / timesPerMin);
+			// v.speedFiveMinMean = (float) ((v.speedFiveMinMean * (timesPer5Min
+			// - 1) + speed) / timesPer5Min);
+			//
+			// Log.i("update0 v",
+			// Math.round(v.speed) + " " + Math.round(v.speed10SecMean) + " " +
+			// Math.round(v.speedOneMinMean)
+			// + " " + Math.round(v.speedFiveMinMean));
+			// Log.i("update0 cd",
+			// Math.round(speed) + " " + Math.round(cd.getSpeed10SecMean()) +
+			// " "
+			// + Math.round(cd.getSpeedOneMinMean()) + " " +
+			// Math.round(cd.getSpeedFiveMinMean()));
 
 			// try {
 			// soc = test.getInternetData("http://localhost:8080/soc").trim();
@@ -171,6 +178,8 @@ public class GetData implements Runnable, Observer {
 			// // TODO Auto-generated catch block
 			// e.printStackTrace();
 			// }
+			double speed = cd.getSpeed(true);
+			Log.i("intspeed", ""+speed);
 
 			try {
 				Thread.sleep(threadSleep);
@@ -203,10 +212,10 @@ public class GetData implements Runnable, Observer {
 
 	@Override
 	public void update(Observable observable, Object data) {
-		double soc = cd.getSoc();
+		double soc = cd.getSoc(false);
 		v.soc = (float) (soc / 100 > 0 ? soc / 100 : 0);
 
-		double speed = cd.getSpeed();
+		double speed = cd.getSpeed(true);
 		if (speed == 255.0)
 			speed = 0;
 		v.speed = (float) (speed);
@@ -220,10 +229,10 @@ public class GetData implements Runnable, Observer {
 				soc + " " + speed + " " + cd.getSpeed10SecMean() + " " + cd.getSpeedOneMinMean() + " "
 						+ cd.getSpeedFiveMinMean());
 
-		double fan = cd.getFan();
+		double fan = cd.getFan(false);
 		v.fan = (int) Math.round(fan);
 
-		double climate = cd.getClimate();
+		double climate = cd.getClimate(false);
 		v.climate = (int) Math.round(climate);
 
 	}

@@ -24,13 +24,14 @@ import android.util.Log;
  */
 public class CarData extends Observable implements Runnable {
 	private double soc, speed, fan, climate;
+	private double socPrev, speedPrev, fanPrev, climatePrev;
 
 	private EVEnergy evEnergy;
 	private double[] rangeArray = new double[17]; // 0 is current
 	private double[] rangeMaxArray = new double[16]; // 0 is current
 	private double speedOneMinMean, speedFiveMinMean, speed10SecMean;
 
-	private double currentClimateConsumption = 3.0;
+	private double currentClimateConsumption = 3.0, currentClimateConsumptionPrev;
 
 	private long lastUpdateTime = System.currentTimeMillis();
 
@@ -52,6 +53,8 @@ public class CarData extends Observable implements Runnable {
 	public CarData(boolean fromCar, int sleep) {
 		evEnergy = new EVEnergy((float) 1521, (float) 0.012, (float) 0.29, (float) 2.7435);
 		evEnergy.efficiency = (float) 0.88;
+
+		this.sleepTime = sleep;
 
 		cdf = new CarDataFetcher(this, fromCar);
 		t = new Thread(this);
@@ -75,6 +78,13 @@ public class CarData extends Observable implements Runnable {
 		this.evEnergy = evEnergy;
 	}
 
+	public double getCurrentClimateConsumption(boolean interpolate) {
+		if (interpolate) {
+			return lerp(currentClimateConsumptionPrev, currentClimateConsumption);
+		}
+		return currentClimateConsumption;
+	}
+
 	/**
 	 * Calculates (from speed, soc etc.): <br>
 	 * <br>
@@ -90,8 +100,10 @@ public class CarData extends Observable implements Runnable {
 	 */
 	public void calculate() {
 		/** Calculate average speeds **/
-		timeSinceLast = System.currentTimeMillis() - lastUpdateTime;
-		lastUpdateTime = System.currentTimeMillis();
+		long time = System.currentTimeMillis();
+		timeSinceLast = time - lastUpdateTime;
+		Log.i("calc", timeSinceLast + " " + lastUpdateTime);
+		lastUpdateTime = time;
 		double updatesPerSecond = 1.0 / (timeSinceLast / 1000.0);
 		double timesPer10Sec = updatesPerSecond * 10;
 		double timesPerMin = updatesPerSecond * 60;
@@ -144,7 +156,10 @@ public class CarData extends Observable implements Runnable {
 	 * 
 	 * @return soc (0-100)
 	 */
-	public double getSoc() {
+	public double getSoc(boolean interpolate) {
+		if (interpolate) {
+			return lerp(socPrev, soc);
+		}
 		return soc;
 	}
 
@@ -155,35 +170,49 @@ public class CarData extends Observable implements Runnable {
 	 *            State of charge (0-100)
 	 */
 	public void setSoc(double soc) {
+		this.socPrev = this.soc;
 		this.soc = soc;
 		setChanged();
 	}
 
-	public double getSpeed() {
+	public double getSpeed(boolean interpolate) {
+		if (interpolate) {
+			return lerp(speedPrev, speed);
+		}
 		return speed;
 	}
 
 	public void setSpeed(double speed) {
+		this.speedPrev = this.speed;
+
 		if (speed >= 255)
 			speed = 0;
 		this.speed = speed;
 		setChanged();
 	}
 
-	public double getFan() {
+	public double getFan(boolean interpolate) {
+		if (interpolate) {
+			return lerp(fanPrev, fan);
+		}
 		return fan;
 	}
 
 	public void setFan(double fan) {
+		this.fanPrev = this.fan;
 		this.fan = fan;
 		setChanged();
 	}
 
-	public double getClimate() {
+	public double getClimate(boolean interpolate) {
+		if (interpolate) {
+			return lerp(climatePrev, climate);
+		}
 		return climate;
 	}
 
 	public void setClimate(double climate) {
+		this.climatePrev = this.climate;
 		this.climate = climate;
 		setChanged();
 	}
@@ -333,4 +362,13 @@ public class CarData extends Observable implements Runnable {
 		}
 
 	}
+
+	private double lerp(double a, double b) {
+		long time = System.currentTimeMillis();
+		double f = (time - lastUpdateTime) / (double) timeSinceLast;
+		Log.i("time", "" + time + " " + lastUpdateTime + " " + (time - lastUpdateTime) + " " + timeSinceLast + " " + f);
+		Log.i("lerp", a + " " + b + " " + (a + f * (b - a)) + " " + f);
+		return a + f * (b - a);
+	}
+
 }
