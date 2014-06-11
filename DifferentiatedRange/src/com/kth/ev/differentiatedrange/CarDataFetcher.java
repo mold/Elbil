@@ -6,8 +6,6 @@ package com.kth.ev.differentiatedrange;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URI;
-import java.util.Observable;
-import java.util.Observer;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -30,8 +28,8 @@ public class CarDataFetcher {
 	private String baseUrl = "http://localhost:8080/";
 	private BufferedReader in;
 
-	public CarDataFetcher(boolean fromCar) {
-		this.carData = new CarData();
+	public CarDataFetcher(CarData carData, boolean fromCar) {
+		this.carData = carData;
 		this.fromCar = fromCar;
 
 		if (fromCar) { // Gonna get data from car, not from server
@@ -45,7 +43,6 @@ public class CarDataFetcher {
 	 * Fetches data from system (car or server) and send to CarData
 	 */
 	public void fetchData() {
-		// TODO: Implement
 		if (fromCar) { // Get data from car, not from server
 			// TODO: Implement
 		} else { // Get data from server
@@ -57,14 +54,17 @@ public class CarDataFetcher {
 				carData.calculate();
 				carData.notifyObservers();
 			} catch (NumberFormatException e) {
-				// Got null values or something - do nothing
+				// Got null values or something
 				Log.i("fetch", "Got null from server for some parameter");
+				// Calculate and notify (because we probably got SOME data)
+				carData.calculate();
 				carData.notifyObservers();
 			} catch (HttpHostConnectException e) {
 				Log.e("fetch", "Could not connect to server");
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				e.printStackTrace();
+				Log.e("fetch", e.toString());
 			}
 		}
 	}

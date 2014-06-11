@@ -2,3 +2,4 @@
 *.class
 */bin/
 */gen/*
+*/android-support-v7-appcompat.jar
