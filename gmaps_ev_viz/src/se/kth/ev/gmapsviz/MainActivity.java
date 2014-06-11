@@ -1,11 +1,14 @@
 package se.kth.ev.gmapsviz;
 
 import java.util.List;
+
 import se.kth.ev.gmapsviz.APIDataTypes.DirectionsResult;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.api.client.json.JsonParser;
@@ -21,16 +24,18 @@ import android.view.MenuItem;
 public class MainActivity extends Activity {
 	GoogleMap gmap;
 
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		String key = getString(R.string.google_browser_api_key);
 		GoogleAPIQueries.setKey(key);
+	
 
 		try {
-			String api_data = GoogleAPIQueries.requestDirections("Chicago,IL",
-					"Los Angeles,CA").get();
+			String api_data = GoogleAPIQueries.requestDirections("KTH, Sweden",
+					"Sundbyberg, Sweden").get();
 
 			JsonParser fact = APIRequest.JSON_FACTORY
 					.createJsonParser(api_data);
@@ -47,6 +52,25 @@ public class MainActivity extends Activity {
 			line.width(4);
 			line.color(Color.BLUE);
 			gmap.addPolyline(line);
+			CircleOptions circleOptionsA = new CircleOptions()
+			.center(new LatLng(59.347488, 18.073494))
+			.radius(1000)
+			.fillColor(Color.BLUE);
+			gmap.addCircle(circleOptionsA);
+			CircleOptions circleOptionsB = new CircleOptions()
+			.center(new LatLng(59.36898, 17.966210))
+			.radius(1000)
+			.fillColor(Color.GREEN);
+			gmap.addCircle(circleOptionsB);
+			PolylineOptions borderOptions = new PolylineOptions()
+					.add(new LatLng(59.4107, 17.8367))
+					.add(new LatLng(59.444, 17.940))
+					.add(new LatLng(59.4077, 18.019))
+					.add(new LatLng(59.455, 18.13))
+					.color(Color.RED);
+		   gmap.addPolyline(borderOptions);
+					
+			
 			gmap.moveCamera(CameraUpdateFactory.newLatLngZoom(points.get(0), 10.0f));
 			
 			//for (LatLng l : points) {
