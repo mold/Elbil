@@ -1113,13 +1113,13 @@ containing a value of this type.
         public static final int action_menu_divider=0x7f0a0016;
         public static final int action_menu_presenter=0x7f0a0017;
         public static final int action_mode_close_button=0x7f0a0024;
-        public static final int action_settings=0x7f0a003d;
+        public static final int action_settings=0x7f0a003e;
         public static final int activity_chooser_view_content=0x7f0a0025;
         public static final int always=0x7f0a000b;
         public static final int beginning=0x7f0a0011;
         public static final int checkbox=0x7f0a002d;
         public static final int collapseActionView=0x7f0a000d;
-        public static final int container=0x7f0a003c;
+        public static final int data_text=0x7f0a003d;
         public static final int default_activity_button=0x7f0a0028;
         public static final int dialog=0x7f0a000e;
         public static final int disableHome=0x7f0a0008;
@@ -1142,6 +1142,7 @@ containing a value of this type.
         public static final int progress_circular=0x7f0a0018;
         public static final int progress_horizontal=0x7f0a0019;
         public static final int radio=0x7f0a002f;
+        public static final int reload_patch=0x7f0a003c;
         public static final int search_badge=0x7f0a0032;
         public static final int search_bar=0x7f0a0031;
         public static final int search_button=0x7f0a0033;
@@ -1225,6 +1226,7 @@ containing a value of this type.
         public static final int extra_abs=0x7f060000;
         public static final int silence=0x7f060001;
         public static final int sine=0x7f060002;
+        public static final int template=0x7f060003;
     }
     public static final class string {
         /**  Content description for the action bar "home" affordance. [CHAR LIMIT=NONE] 
@@ -1281,6 +1283,7 @@ containing a value of this type.
         public static final int pref_title_inchannels=0x7f080006;
         public static final int pref_title_outchannels=0x7f080009;
         public static final int pref_title_srate=0x7f080003;
+        public static final int reload_patch=0x7f08001b;
     }
     public static final class style {
         /** 

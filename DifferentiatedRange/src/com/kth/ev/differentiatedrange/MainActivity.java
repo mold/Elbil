@@ -1,5 +1,10 @@
 package com.kth.ev.differentiatedrange;
 
+import java.util.Observable;
+import java.util.Observer;
+
+import org.puredata.core.PdBase;
+
 import com.kth.ev.differentiatedrange.puredata.Patch;
 import com.kth.ev.differentiatedrange.puredata.PureDataHandler;
 
@@ -9,32 +14,36 @@ import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 import android.view.Menu;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.TextView;
 
-public class MainActivity extends Activity implements Runnable {
+public class MainActivity extends Activity implements OnClickListener, Observer {
 	
-	final int THREAD_SLEEP = 500;
+	final int THREAD_SLEEP = 1000;
 	
 	DiffRangeSurfaceView v;
 	GetData gd;
 	PureDataHandler pd;
-	CarDataFetcher cdfetch;
+	CarData cd;
+	
+	// View
+	TextView dataText;
+	
+	// PureData
+	Patch test;
 		
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        v = new DiffRangeSurfaceView(this);
-        
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setContentView(v);
-        v.resume();
         
-        gd = new GetData(v);
-        gd.resume();
-        cdfetch = new CarDataFetcher(false);
+        cd = new CarData(false, THREAD_SLEEP);
         
         pd = new PureDataHandler(this);
         pd.addReadyListener(new PureDataHandler.ReadyListener() {
@@ -44,37 +53,30 @@ public class MainActivity extends Activity implements Runnable {
 			}
 		});
         
-        Thread t = new Thread(this);
-        t.start();
+        //initView();
         
-        //String s = GetData.connect("http://localhost:8080/soc");
-        //Log.d("TAG", "MSG");
-        //float s = Float.parseFloat(GetData.connect("http://localhost:8080/soc"));
-//		GetDataMethod test = new GetDataMethod();
-//		String soc, speed;
-//		try {
-//			soc = test.getInternetData("http://localhost:8080/soc").trim();
-//			Log.i("SOC", soc);
-//			if( soc != "null")
-//			{
-//				v.soc = Float.parseFloat(soc)/100;
-//			}
-//
-//			speed = test.getInternetData("http://localhost:8080/speed").trim();
-//			Log.i("SPEED", speed);
-//			if( speed != "null")
-//			{
-//				v.speed = Integer.parseInt(speed);
-//			}
-//		  
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+        //cd.addObserver(this);
     }
 
+    private void initView() {
+    	setContentView(R.layout.activity_main);
+    	Button reloadPatch = (Button) findViewById(R.id.reload_patch);
+    	reloadPatch.setOnClickListener(this);
+    	dataText = (TextView) findViewById(R.id.data_text);
+    }
+    
     private void initPd() {
-    	// TODO: make some music
+    	// Observe data
+    	cd.addObserver(pd);
+    	// Open a test patch
+    	test = new Patch("test.pd");
+    	test.open();
+    	// Start playing
+    	pd.startAudio();
+    }
+    
+    private void updateText(double soc, double speed, double fan, double climate) {
+    	dataText.setText("soc: " + soc + "\nspeed: "+ speed + "\nfan: " + fan + "\nclimate: " + climate);
     }
     
     @Override
@@ -85,16 +87,21 @@ public class MainActivity extends Activity implements Runnable {
     }
 
 	@Override
-	public void run() {
-		while(true) {
-			cdfetch.fetchData();
-			
-			try {
-				Thread.sleep(THREAD_SLEEP);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+	public void onClick(View v) {
+		switch(v.getId()) {
+		case R.id.reload_patch:
+			test.close();
+			test.open();
+			break;
 		}
 	}
+
+	@Override
+	public void update(Observable observable, Object data) {
+		if (observable instanceof CarData) {
+			CarData cd = (CarData) observable;
+			updateText(cd.getSoc(), cd.getSpeed(), cd.getFan(), cd.getClimate());
+		}
+	}
+    
 }

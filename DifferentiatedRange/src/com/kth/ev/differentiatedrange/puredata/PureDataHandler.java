@@ -7,12 +7,16 @@ package com.kth.ev.differentiatedrange.puredata;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Observable;
+import java.util.Observer;
 
 import org.puredata.android.io.AudioParameters;
 import org.puredata.android.service.PdPreferences;
 import org.puredata.android.service.PdService;
 import org.puredata.core.PdBase;
 import org.puredata.core.PdReceiver;
+
+import com.kth.ev.differentiatedrange.CarData;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -21,7 +25,7 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.util.Log;
 
-public class PureDataHandler {
+public class PureDataHandler implements Observer {
 	
 	private final String TAG = "puredata";
 	
@@ -109,7 +113,8 @@ public class PureDataHandler {
 	 */
 	private void initPd() {
 		PdBase.setReceiver(receiver);
-		PdBase.subscribe("android");
+		// Use this to send data from pd ([s source] block in pd)
+		//PdBase.subscribe("source");
 		
 		Log.v(TAG, "pd initialized");
 		
@@ -174,6 +179,17 @@ public class PureDataHandler {
 		} catch (IllegalArgumentException e) {
 			// already unbound
 			pdService = null;
+		}
+	}
+
+	@Override
+	public void update(Observable observable, Object data) {
+		if (observable instanceof CarData) {
+			CarData cd = (CarData) observable;
+			PdBase.sendFloat("soc", (float) cd.getSoc());
+			PdBase.sendFloat("speed", (float) cd.getSpeed());
+			PdBase.sendFloat("fan", (float) cd.getFan());
+			PdBase.sendFloat("climate", (float) cd.getClimate());
 		}
 	}
 	
