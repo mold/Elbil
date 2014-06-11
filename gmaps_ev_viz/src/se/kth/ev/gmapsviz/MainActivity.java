@@ -1,6 +1,9 @@
 package se.kth.ev.gmapsviz;
 
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
+
 import se.kth.ev.gmapsviz.APIDataTypes.DirectionsResult;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -10,6 +13,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.api.client.json.JsonParser;
 import com.google.maps.android.PolyUtil;
+import com.kth.ev.differentiatedrange.CarData;
+import com.kth.ev.differentiatedrange.CarDataFetcher;
 
 import android.app.Activity;
 import android.graphics.Color;
@@ -18,8 +23,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements Observer {
 	GoogleMap gmap;
+	CarData cd;
+	CarDataFetcher cdf;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +34,17 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 		String key = getString(R.string.google_browser_api_key);
 		GoogleAPIQueries.setKey(key);
-
+		
+		//Create CarData container
+		cd = new CarData();
+		
+		//Makes this activity listen for change in the activity
+		cd.addObserver(this);
+		
+		//Starts a separate thread for fetching the data
+		cdf = new CarDataFetcher(cd, false);
+		new Thread(cdf).start();
+		
 		try {
 			String api_data = GoogleAPIQueries.requestDirections("Chicago,IL",
 					"Los Angeles,CA").get();
@@ -91,6 +108,19 @@ public class MainActivity extends Activity {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	/**
+	 * Simply prints the current car battery level every time
+	 * there is a change in the CarData object.
+	 */
+	@Override
+	public void update(Observable observable, Object data) {
+		if(observable instanceof CarData){
+			CarData cd = (CarData) observable;
+			String battery = String.valueOf(cd.getSoc(true));
+			Log.d("Energy", battery);
+		}
 	}
 
 	/**
