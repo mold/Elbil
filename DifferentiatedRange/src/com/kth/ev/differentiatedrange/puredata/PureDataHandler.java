@@ -186,10 +186,10 @@ public class PureDataHandler implements Observer {
 	public void update(Observable observable, Object data) {
 		if (observable instanceof CarData) {
 			CarData cd = (CarData) observable;
-			PdBase.sendFloat("soc", (float) cd.getSoc());
-			PdBase.sendFloat("speed", (float) cd.getSpeed());
-			PdBase.sendFloat("fan", (float) cd.getFan());
-			PdBase.sendFloat("climate", (float) cd.getClimate());
+			PdBase.sendFloat("soc", (float) cd.getSoc(false));
+			PdBase.sendFloat("speed", (float) cd.getSpeed(false));
+			PdBase.sendFloat("fan", (float) cd.getFan(false));
+			PdBase.sendFloat("climate", (float) cd.getClimate(false));
 		}
 	}
 	

@@ -100,7 +100,7 @@ public class MainActivity extends Activity implements OnClickListener, Observer 
 	public void update(Observable observable, Object data) {
 		if (observable instanceof CarData) {
 			CarData cd = (CarData) observable;
-			updateText(cd.getSoc(), cd.getSpeed(), cd.getFan(), cd.getClimate());
+			updateText(cd.getSoc(false), cd.getSpeed(false), cd.getFan(false), cd.getClimate(false));
 		}
 	}
     
