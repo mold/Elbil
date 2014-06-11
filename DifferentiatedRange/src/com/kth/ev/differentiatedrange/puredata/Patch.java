@@ -27,6 +27,7 @@ public class Patch {
 	private File patchFile = null;
 	private int patchId = -1;
 	private int patchHandle;
+	private boolean patchOpen = false;
 	
 	/**
 	 * Load a patch from the resource folder
@@ -75,6 +76,7 @@ public class Patch {
 			//	file.delete();
 			//}
 		}
+		patchOpen = true;
 	}
 	
 	/**
@@ -82,6 +84,15 @@ public class Patch {
 	 */
 	public void close() {
 		PdBase.closePatch(patchHandle);
+		patchOpen = false;
+	}
+	
+	/**
+	 * Returns true if the patch is open
+	 * @return true if the patch is open
+	 */
+	public boolean isOpen() {
+		return patchOpen;
 	}
 	
 }

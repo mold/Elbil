@@ -25,11 +25,14 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.util.Log;
 
-public class PureDataHandler implements Observer {
+public class PureDataHandler implements Runnable {
 	
 	private final String TAG = "puredata";
+	private final int THREAD_SLEEP = 50;
 	
+	private Thread thread;
 	private Context context;
+	private CarData carData;
 	
 	private PdService pdService = null;
 
@@ -40,8 +43,9 @@ public class PureDataHandler implements Observer {
 	private ArrayList<ReadyListener> readyListeners;
 	private boolean ready = false;
 	
-	public PureDataHandler(Context context) {
+	public PureDataHandler(Context context, CarData carData) {
 		this.context = context;
+		this.carData = carData;
 		readyListeners = new ArrayList<PureDataHandler.ReadyListener>();
 		
 		AudioParameters.init(context);
@@ -122,6 +126,9 @@ public class PureDataHandler implements Observer {
 		for (ReadyListener rl : readyListeners) {
 			rl.ready();
 		}
+		
+		thread = new Thread(this);
+		thread.start();
 	}
 	
 	public void addReadyListener(ReadyListener listener) {
@@ -183,13 +190,18 @@ public class PureDataHandler implements Observer {
 	}
 
 	@Override
-	public void update(Observable observable, Object data) {
-		if (observable instanceof CarData) {
-			CarData cd = (CarData) observable;
-			PdBase.sendFloat("soc", (float) cd.getSoc(false));
-			PdBase.sendFloat("speed", (float) cd.getSpeed(false));
-			PdBase.sendFloat("fan", (float) cd.getFan(false));
-			PdBase.sendFloat("climate", (float) cd.getClimate(false));
+	public void run() {
+		while(true) {
+			PdBase.sendFloat("soc", (float) carData.getSoc(true));
+			PdBase.sendFloat("speed", (float) carData.getSpeed(true));
+			PdBase.sendFloat("fan", (float) carData.getFan(true));
+			PdBase.sendFloat("climate", (float) carData.getClimate(true));
+			
+			try {
+				Thread.sleep(THREAD_SLEEP);
+			} catch (InterruptedException e) {
+				Log.e(TAG, e.getMessage());
+			}
 		}
 	}
 	

@@ -18,6 +18,10 @@ public final class R {
     }
     public static final class attr {
     }
+    public static final class color {
+        public static final int black=0x7f090001;
+        public static final int white=0x7f090000;
+    }
     public static final class dimen {
         /**  Default screen margins, per the Android Design guidelines. 
 
@@ -26,8 +30,8 @@ public final class R {
          would include 7" and 10" devices in landscape (~960dp and ~1280dp respectively).
     
          */
-        public static final int activity_horizontal_margin=0x7f090000;
-        public static final int activity_vertical_margin=0x7f090001;
+        public static final int activity_horizontal_margin=0x7f0a0000;
+        public static final int activity_vertical_margin=0x7f0a0001;
     }
     public static final class drawable {
         public static final int battery=0x7f020000;
@@ -47,15 +51,16 @@ public final class R {
         public static final int texturewhitedirt=0x7f02000e;
     }
     public static final class id {
-        public static final int action_settings=0x7f0b0002;
-        public static final int data_text=0x7f0b0001;
-        public static final int reload_patch=0x7f0b0000;
+        public static final int action_settings=0x7f0c0003;
+        public static final int data_text=0x7f0c0002;
+        public static final int patch_list=0x7f0c0001;
+        public static final int toggle_sound=0x7f0c0000;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
     }
     public static final class menu {
-        public static final int main=0x7f0a0000;
+        public static final int main=0x7f0b0000;
     }
     public static final class raw {
         public static final int extra_abs=0x7f050000;
@@ -79,13 +84,12 @@ public final class R {
         public static final int pref_title_outchannels=0x7f070009;
         public static final int pref_title_srate=0x7f070003;
         public static final int reload_patch=0x7f07000e;
+        public static final int start_sound=0x7f07000f;
+        public static final int stop_sound=0x7f070010;
     }
     public static final class style {
-        /**  Application theme. 
- All customizations that are NOT specific to a particular API-level can go here. 
-         */
-        public static final int AppTheme=0x7f080001;
         public static final int DisableSoundEffects=0x7f080000;
+        public static final int ListItem=0x7f080001;
     }
     public static final class xml {
         public static final int preferences=0x7f040000;
