@@ -31,7 +31,7 @@ public class MainActivity extends Activity implements OnClickListener, Observer 
 	CarData cd;
 	
 	// View
-	TextView dataText;
+	TextView dataText = null;
 	
 	// PureData
 	Patch test;
@@ -53,7 +53,7 @@ public class MainActivity extends Activity implements OnClickListener, Observer 
 			}
 		});
         
-        //initView();
+        initView();
         
         //cd.addObserver(this);
     }
@@ -73,10 +73,6 @@ public class MainActivity extends Activity implements OnClickListener, Observer 
     	test.open();
     	// Start playing
     	pd.startAudio();
-    }
-    
-    private void updateText(double soc, double speed, double fan, double climate) {
-    	dataText.setText("soc: " + soc + "\nspeed: "+ speed + "\nfan: " + fan + "\nclimate: " + climate);
     }
     
     @Override
@@ -100,7 +96,8 @@ public class MainActivity extends Activity implements OnClickListener, Observer 
 	public void update(Observable observable, Object data) {
 		if (observable instanceof CarData) {
 			CarData cd = (CarData) observable;
-			updateText(cd.getSoc(false), cd.getSpeed(false), cd.getFan(false), cd.getClimate(false));
+			if (dataText != null)
+				dataText.setText("soc: " + cd.getSoc(false) + "\nspeed: "+ cd.getSpeed(false) + "\nfan: " + cd.getFan(false) + "\nclimate: " + cd.getClimate(false));
 		}
 	}
     
