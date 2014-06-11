@@ -9,6 +9,7 @@ import se.kth.ev.gmapsviz.APIDataTypes.DirectionsResult;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.api.client.json.JsonParser;
@@ -46,8 +47,8 @@ public class MainActivity extends Activity implements Observer {
 		new Thread(cdf).start();
 		
 		try {
-			String api_data = GoogleAPIQueries.requestDirections("Chicago,IL",
-					"Los Angeles,CA").get();
+			String api_data = GoogleAPIQueries.requestDirections("KTH, Sweden",
+					"Sundbyberg, Sweden").get();
 
 			//Parsing example
 			JsonParser parser = APIRequest.JSON_FACTORY
@@ -65,6 +66,23 @@ public class MainActivity extends Activity implements Observer {
 			line.width(4);
 			line.color(Color.BLUE);
 			gmap.addPolyline(line);
+			CircleOptions circleOptionsA = new CircleOptions()
+			.center(new LatLng(59.347488, 18.073494))
+			.radius(1000)
+			.fillColor(Color.BLUE);
+			gmap.addCircle(circleOptionsA);
+			CircleOptions circleOptionsB = new CircleOptions()
+			.center(new LatLng(59.36898, 17.966210))
+			.radius(1000)
+			.fillColor(Color.GREEN);
+			gmap.addCircle(circleOptionsB);
+			PolylineOptions borderOptions = new PolylineOptions()
+					.add(new LatLng(59.4107, 17.8367))
+					.add(new LatLng(59.444, 17.940))
+					.add(new LatLng(59.4077, 18.019))
+					.add(new LatLng(59.455, 18.13))
+					.color(Color.RED);
+		   gmap.addPolyline(borderOptions);
 			gmap.moveCamera(CameraUpdateFactory.newLatLngZoom(points.get(0), 10.0f));
 			
 			APIRequest a = GoogleAPIQueries.requestElevation(points.get(0));

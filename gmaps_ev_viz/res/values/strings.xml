@@ -3,7 +3,7 @@
     <string name="app_name">gmaps_testing</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-	<string name="google_api_key">AIzaSyBbc9r-_3a82SpRewJkbkQK5vrqQZmpbZ4</string>
+	<string name="google_api_key">AIzaSyC_1JqEGY7NeytgEa_71egZkcCMzEsqEZ0</string>
 	<string name="google_browser_api_key">AIzaSyCIbD8tbedBaRRVxuEgwK-rg6pxbqOILbg</string>
 	
 </resources>
