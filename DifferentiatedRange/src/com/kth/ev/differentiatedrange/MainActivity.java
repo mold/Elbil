@@ -37,8 +37,8 @@ public class MainActivity extends Activity implements OnClickListener, Runnable 
 	
 	DiffRangeSurfaceView v;
 	GetData gd;
-	PureDataHandler pd;
-	CarData cd;
+	PureDataHandler pdHandler;
+	CarData carData;
 	
 	// View
 	Button soundToggle;
@@ -62,7 +62,7 @@ public class MainActivity extends Activity implements OnClickListener, Runnable 
         
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        
+
         cd = new CarData(false, DATA_SLEEP);
         
         pd = new PureDataHandler(this, cd);
