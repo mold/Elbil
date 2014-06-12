@@ -24,6 +24,7 @@ public class Patch {
 
 	private Context context;
 	
+	private String fileName = null;
 	private File patchFile = null;
 	private int patchId = -1;
 	private int patchHandle;
@@ -37,15 +38,26 @@ public class Patch {
 	public Patch(Context context, int patchId) {
 		this.context = context;
 		this.patchId = patchId;
+		fileName = context.getResources().getResourceEntryName(patchId) + ".pd";
 	}
 	
 	/**
 	 * Use a patch from the "puredata" folder on the file system
 	 * (usually "storage/emulated/0/puredata/")
-	 * @param patchPath The name of the patch. 
+	 * @param patchName The name of the patch. 
 	 */
 	public Patch(String patchName) {
 		patchFile = new File(patchPath + patchName);
+		fileName = patchFile.getName();
+	}
+	
+	/**
+	 * Use a file pointer
+	 * @param patchFile The patch file. 
+	 */
+	public Patch(File patchFile) {
+		this.patchFile = patchFile;
+		fileName = patchFile.getName();
 	}
 	
 	/**
@@ -61,7 +73,6 @@ public class Patch {
 				Resources res = context.getResources();
 				InputStream in;
 				File patchDir = context.getCacheDir();
-				String fileName = res.getResourceEntryName(patchId) + ".pd";
 				// load the patch to cache
 				in = res.openRawResource(patchId);
 				file = IoUtils.extractResource(in, fileName, patchDir);			
@@ -77,6 +88,10 @@ public class Patch {
 			//}
 		}
 		patchOpen = true;
+	}
+	
+	public String getFileName() {
+		return fileName;
 	}
 	
 	/**
