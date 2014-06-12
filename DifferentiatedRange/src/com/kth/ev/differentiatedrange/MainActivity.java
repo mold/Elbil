@@ -83,7 +83,7 @@ public class MainActivity extends Activity implements OnClickListener, Runnable 
     	LinearLayout list = (LinearLayout) findViewById(R.id.patch_list);
     	for(int i = 0; i < loadedPatches.length; i++) {
     		item = new TextView(this);
-    		item.setTag(i);
+    		item.setTag(loadedPatches[i]);
     		item.setText(loadedPatches[i].getFileName());
     		item.setOnClickListener(this);
     		// TODO: add this to a style
@@ -116,17 +116,18 @@ public class MainActivity extends Activity implements OnClickListener, Runnable 
 	public void onClick(View v) {
 		// check for patch list clicks
 		if(v instanceof TextView) {
-			TextView text = (TextView) v;
-			if (v.getTag() != null) {
-		        int i = (Integer) v.getTag();
-				if (loadedPatches[i].isOpen()) {
-					text.setText(loadedPatches[i].getFileName());
+			Object tag = v.getTag();
+			if (tag != null && tag instanceof Patch) {
+				TextView text = (TextView) v;
+		        Patch patch = (Patch) tag;
+				if (patch.isOpen()) {
+					text.setText(patch.getFileName());
 					text.setBackgroundColor(getResources().getColor(R.color.white));
-					loadedPatches[i].close();
+					patch.close();
 				} else {
-					text.setText("[open] " + loadedPatches[i].getFileName());
+					text.setText("[open] " + patch.getFileName());
 					text.setBackgroundColor(getResources().getColor(R.color.green));
-					loadedPatches[i].open();
+					patch.open();
 				}
 			}
 	    }
