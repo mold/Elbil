@@ -9,15 +9,21 @@ import android.util.Log;
  * (soc, speed etc). <br>
  * <br>
  * Recieves soc, speed, fan and climate values and calculates average speeds,
- * climate consumption and more.
- * 
- * (Based on GetData and DiffRangeSurfaceView)
+ * climate consumption and more.<br>
+ * <br>
  * 
  * Important! For this to work properly, call all (relevant) set methods first:
  * setSoc, setSpeed, setFan, setClimate. Then call calculate(), and THEN
- * notifyObservers(). This because calculate() uses the other parameters.
+ * notifyObservers(). This because calculate() uses the other parameters.<br>
+ * <br>
  * 
- * Or, use the shorter setDataAndNotify(soc, speed, fan, climate).
+ * Or, use the shorter setDataAndNotify(soc, speed, fan, climate).<br>
+ * <br>
+ * 
+ * 
+ * (Based on GetData and DiffRangeSurfaceView)<br>
+ * <br>
+ * 
  * 
  * @author dkd
  * 
@@ -108,14 +114,19 @@ public class CarData extends Observable implements Runnable {
 		double timesPer10Sec = updatesPerSecond * 10;
 		double timesPerMin = updatesPerSecond * 60;
 		double timesPer5Min = updatesPerSecond * 300;
-		speed10SecMean = (speed10SecMean * (timesPer10Sec - 1) + speed) / timesPer10Sec;
-		speedOneMinMean = (speedOneMinMean * (timesPerMin - 1) + speed) / timesPerMin;
-		speedFiveMinMean = (speedFiveMinMean * (timesPer5Min - 1) + speed) / timesPer5Min;
+
+		speed10SecMean = (speed10SecMean * (timesPer10Sec - 1) + speed)
+				/ timesPer10Sec;
+		speedOneMinMean = (speedOneMinMean * (timesPerMin - 1) + speed)
+				/ timesPerMin;
+		speedFiveMinMean = (speedFiveMinMean * (timesPer5Min - 1) + speed)
+				/ timesPer5Min;
 
 		/** Calculate distances **/
 		if (speed >= 0.1) {
 			double tmp = speed >= 0.1 ? speed : 0.1;
-			rangeArray[0] = evEnergy.EstimatedDistance((tmp * 1000.0 / 3600.0), 0.0, 0.0, (soc * evEnergy.batterySize),
+			rangeArray[0] = evEnergy.EstimatedDistance((tmp * 1000.0 / 3600.0),
+					0.0, 0.0, (soc * evEnergy.batterySize),
 					0.7 + currentClimateConsumption);
 		} else {
 			rangeArray[0] = 0.0;
@@ -125,24 +136,29 @@ public class CarData extends Observable implements Runnable {
 			rangeArray[15] = 0.0;
 			rangeArray[16] = 0.0;
 		} else {
-			rangeArray[15] = evEnergy
-					.EstimatedDistance((30.0 * 1000.0 / 3600.0), 0.0, 0.0, (evEnergy.batterySize), 0.7);
-			rangeArray[16] = evEnergy.EstimatedDistance((30.0 * 1000.0 / 3600.0), 0.0, 0.0,
+			rangeArray[15] = evEnergy.EstimatedDistance(
+					(30.0 * 1000.0 / 3600.0), 0.0, 0.0, (evEnergy.batterySize),
+					0.7);
+			rangeArray[16] = evEnergy.EstimatedDistance(
+					(30.0 * 1000.0 / 3600.0), 0.0, 0.0,
 					(soc * evEnergy.batterySize), 0.7);
 		}
 		for (int i = 1; i < 15; i++) {
 			if (soc <= 0)
 				rangeArray[i] = 0.0;
 			else
-				rangeArray[i] = evEnergy.EstimatedDistance((10.0 * i * 1000.0 / 3600.0), 0.0, 0.0,
-						(soc * evEnergy.batterySize), 0.7 + currentClimateConsumption);
+				rangeArray[i] = evEnergy.EstimatedDistance(
+						(10.0 * i * 1000.0 / 3600.0), 0.0, 0.0,
+						(soc * evEnergy.batterySize),
+						0.7 + currentClimateConsumption);
 		}
 
 		for (int i = 1; i < 15; i++) {
 			if (soc <= 0)
 				rangeMaxArray[i] = 0.0;
 			else
-				rangeMaxArray[i] = evEnergy.EstimatedDistance((10.0 * i * 1000.0 / 3600.0), 0.0, 0.0,
+				rangeMaxArray[i] = evEnergy.EstimatedDistance(
+						(10.0 * i * 1000.0 / 3600.0), 0.0, 0.0,
 						(soc * evEnergy.batterySize), 0.7);
 		}
 
@@ -253,7 +269,8 @@ public class CarData extends Observable implements Runnable {
 				}
 				if (climate >= 8 && climate <= 13) {
 					Log.i("CLIMATEhe",
-							Float.toString((float) (((float) climate - (float) 7.0) / (float) 6.0) * (float) 3.0));
+							Float.toString((float) (((float) climate - (float) 7.0) / (float) 6.0)
+									* (float) 3.0));
 					currentClimateConsumption = (float) ((((float) climate - (float) 7.0) / (float) 6.0) * (float) 3.0)
 							+ fanImpact;
 					return;
@@ -262,7 +279,8 @@ public class CarData extends Observable implements Runnable {
 
 				if (climate >= 72 && climate <= 77) {
 					Log.i("CLIMATEhe",
-							Float.toString((float) (((float) climate - (float) 72.0) / (float) 6.0) * (float) 3.0));
+							Float.toString((float) (((float) climate - (float) 72.0) / (float) 6.0)
+									* (float) 3.0));
 					currentClimateConsumption = (float) ((((float) climate - (float) 72.0) / (float) 6.0) * (float) 3.0)
 							+ fanImpact;
 					return;
@@ -271,7 +289,8 @@ public class CarData extends Observable implements Runnable {
 
 				if (climate >= 136 && climate <= 141) {
 					Log.i("CLIMATEhe",
-							Float.toString((float) (((float) climate - (float) 136.0) / (float) 6.0) * (float) 3.0));
+							Float.toString((float) (((float) climate - (float) 136.0) / (float) 6.0)
+									* (float) 3.0));
 					currentClimateConsumption = (float) ((((float) climate - (float) 136.0) / (float) 6.0) * (float) 3.0)
 							+ fanImpact;
 					return;
@@ -287,7 +306,8 @@ public class CarData extends Observable implements Runnable {
 				}
 
 				// 2-6 coolAC off
-				if ((climate >= 2 && climate <= 7) || climate == 135 || climate == 199) {
+				if ((climate >= 2 && climate <= 7) || climate == 135
+						|| climate == 199) {
 					currentClimateConsumption = fanImpact;
 					return;
 				}
@@ -337,7 +357,8 @@ public class CarData extends Observable implements Runnable {
 	 * @param fan
 	 * @param climate
 	 */
-	public void setDataAndNotify(double soc, double speed, double fan, double climate) {
+	public void setDataAndNotify(double soc, double speed, double fan,
+			double climate) {
 		setSoc(soc);
 		setSpeed(speed);
 		setFan(fan);
