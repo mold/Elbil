@@ -4,11 +4,15 @@
 
 package com.kth.ev.differentiatedrange.puredata;
 
+import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.puredata.android.io.AudioParameters;
 import org.puredata.android.service.PdPreferences;
@@ -22,6 +26,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -175,6 +180,22 @@ public class PureDataHandler implements Runnable {
 	 */
 	public Patch createPatch(int resource) {
 		return new Patch(context, resource);
+	}
+	
+	public Patch[] loadPatchesFromDirectory(String dir) {
+		File[] files = new File(dir).listFiles(new FilenameFilter() {
+			@Override
+			public boolean accept(File dir, String filename) {
+				Pattern pattern = Pattern.compile(".*\\.(pd|PD)$");
+				Matcher matcher = pattern.matcher(filename);
+				return matcher.matches();
+			}
+		});
+		Patch[] patches = new Patch[files.length];
+		for (int i = 0; i < files.length; i++) {
+			patches[i] = new Patch(files[i]);
+		}
+		return patches;
 	}
 
 	/**

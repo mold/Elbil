@@ -20,6 +20,7 @@ public final class R {
     }
     public static final class color {
         public static final int black=0x7f090001;
+        public static final int green=0x7f090002;
         public static final int white=0x7f090000;
     }
     public static final class dimen {
@@ -67,6 +68,7 @@ public final class R {
         public static final int silence=0x7f050001;
         public static final int sine=0x7f050002;
         public static final int template=0x7f050003;
+        public static final int test1=0x7f050004;
     }
     public static final class string {
         public static final int action_settings=0x7f07000d;

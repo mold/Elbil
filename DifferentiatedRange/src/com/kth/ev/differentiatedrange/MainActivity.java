@@ -46,13 +46,12 @@ public class MainActivity extends Activity implements OnClickListener, Runnable 
 	
 	// PureData
 	Patch test;
-	String[] patches = {"sine.pd", "test.pd"};
 	Patch[] loadedPatches;
 	
 	Runnable viewUpdater = new Runnable() {
 		@Override
 		public void run() {
-			dataText.setText("soc: " + cd.getSoc(true) + "\nspeed: "+ cd.getSpeed(true) + "\nfan: " + cd.getFan(true) + "\nclimate: " + cd.getClimate(true));
+			dataText.setText("soc: " + carData.getSoc(true) + "\nspeed: "+ carData.getSpeed(true) + "\nfan: " + carData.getFan(true) + "\nclimate: " + carData.getClimate(true));
 		}
 	};
 		
@@ -63,20 +62,15 @@ public class MainActivity extends Activity implements OnClickListener, Runnable 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        cd = new CarData(false, DATA_SLEEP);
+        carData = new CarData(false, DATA_SLEEP);
         
-        pd = new PureDataHandler(this, cd);
-        pd.addReadyListener(new PureDataHandler.ReadyListener() {
+        pdHandler = new PureDataHandler(this, carData);
+        pdHandler.addReadyListener(new PureDataHandler.ReadyListener() {
 			@Override
 			public void ready() {
-				initPd();
+				init();
 			}
 		});
-        
-        initView();
-        
-        Thread t = new Thread(this);
-        t.start();
     }
 
     private void initView() {
@@ -87,10 +81,10 @@ public class MainActivity extends Activity implements OnClickListener, Runnable 
     	// init the patch list
     	TextView item;
     	LinearLayout list = (LinearLayout) findViewById(R.id.patch_list);
-    	for(int i = 0; i < patches.length; i++) {
+    	for(int i = 0; i < loadedPatches.length; i++) {
     		item = new TextView(this);
-    		item.setText(patches[i]);
-    		item.setTag(patches[i]);
+    		item.setTag(i);
+    		item.setText(loadedPatches[i].getFileName());
     		item.setOnClickListener(this);
     		// TODO: add this to a style
     		item.setBackgroundColor(getResources().getColor(R.color.white));
@@ -101,11 +95,14 @@ public class MainActivity extends Activity implements OnClickListener, Runnable 
     	}
     }
     
-    private void initPd() {
-    	loadedPatches = new Patch[patches.length];
-    	for(int i = 0; i < patches.length; i++) {
-    		loadedPatches[i] = new Patch(patches[i]);
-    	}
+    private void init() {
+    	loadedPatches = pdHandler.loadPatchesFromDirectory(Environment.getExternalStorageDirectory() + "/puredata/");
+    	Log.v("puredata", "patches: " + loadedPatches.length);
+
+    	initView();
+    	
+    	Thread t = new Thread(this);
+        t.start();
     }
     
     @Override
@@ -120,32 +117,25 @@ public class MainActivity extends Activity implements OnClickListener, Runnable 
 		// check for patch list clicks
 		if(v instanceof TextView) {
 			TextView text = (TextView) v;
-	        String info = (String) v.getTag();
-	        int i = 0;
-	        if (info != null) {
-		        while(i < patches.length) {
-					if (info.equals(patches[i])) {
-						if (loadedPatches[i].isOpen()) {
-							text.setText(patches[i]);
-							loadedPatches[i].close();
-						} else {
-							text.setText("[open] " + patches[i]);
-							loadedPatches[i].open();
-						}
-						break;
-					}
-					i++;
-				}
-	        }
+	        int i = (Integer) v.getTag();
+			if (loadedPatches[i].isOpen()) {
+				text.setText(loadedPatches[i].getFileName());
+				text.setBackgroundColor(getResources().getColor(R.color.white));
+				loadedPatches[i].close();
+			} else {
+				text.setText("[open] " + loadedPatches[i].getFileName());
+				text.setBackgroundColor(getResources().getColor(R.color.green));
+				loadedPatches[i].open();
+			}
 	    }
 		
 		switch(v.getId()) {
 		case R.id.toggle_sound:
-			if (pd.isPlaying()) {
-				pd.stopAudio();
+			if (pdHandler.isPlaying()) {
+				pdHandler.stopAudio();
 				soundToggle.setText(R.string.start_sound);
 			} else {
-				pd.startAudio();
+				pdHandler.startAudio();
 				soundToggle.setText(R.string.stop_sound);
 			}
 			break;
