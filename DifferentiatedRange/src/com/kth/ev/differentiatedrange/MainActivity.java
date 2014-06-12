@@ -117,15 +117,17 @@ public class MainActivity extends Activity implements OnClickListener, Runnable 
 		// check for patch list clicks
 		if(v instanceof TextView) {
 			TextView text = (TextView) v;
-	        int i = (Integer) v.getTag();
-			if (loadedPatches[i].isOpen()) {
-				text.setText(loadedPatches[i].getFileName());
-				text.setBackgroundColor(getResources().getColor(R.color.white));
-				loadedPatches[i].close();
-			} else {
-				text.setText("[open] " + loadedPatches[i].getFileName());
-				text.setBackgroundColor(getResources().getColor(R.color.green));
-				loadedPatches[i].open();
+			if (v.getTag() != null) {
+		        int i = (Integer) v.getTag();
+				if (loadedPatches[i].isOpen()) {
+					text.setText(loadedPatches[i].getFileName());
+					text.setBackgroundColor(getResources().getColor(R.color.white));
+					loadedPatches[i].close();
+				} else {
+					text.setText("[open] " + loadedPatches[i].getFileName());
+					text.setBackgroundColor(getResources().getColor(R.color.green));
+					loadedPatches[i].open();
+				}
 			}
 	    }
 		
