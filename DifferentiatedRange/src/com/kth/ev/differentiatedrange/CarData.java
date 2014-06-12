@@ -29,8 +29,8 @@ import android.util.Log;
  * 
  */
 public class CarData extends Observable implements Runnable {
-	private double soc, speed, fan, climate;
-	private double socPrev, speedPrev, fanPrev, climatePrev;
+	private double soc, speed, fan, climate, amp;
+	private double socPrev, speedPrev, fanPrev, climatePrev, ampPrev;
 
 	private EVEnergy evEnergy;
 	private double[] rangeArray = new double[17]; // 0 is current
@@ -219,6 +219,20 @@ public class CarData extends Observable implements Runnable {
 		this.fan = fan;
 		setChanged();
 	}
+
+	public double getAmp(boolean interpolate) {
+		if (interpolate) {
+			return lerp(ampPrev, amp);
+		}
+		return amp;
+	}
+
+	public void setAmp(double amp) {
+		this.ampPrev = this.amp;
+		this.amp = amp;
+		setChanged();
+	}
+
 
 	public double getClimate(boolean interpolate) {
 		if (interpolate) {

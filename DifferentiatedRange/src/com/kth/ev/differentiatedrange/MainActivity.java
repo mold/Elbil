@@ -51,7 +51,7 @@ public class MainActivity extends Activity implements OnClickListener, Runnable 
 	Runnable viewUpdater = new Runnable() {
 		@Override
 		public void run() {
-			dataText.setText("soc: " + carData.getSoc(true) + "\nspeed: "+ carData.getSpeed(true) + "\nfan: " + carData.getFan(true) + "\nclimate: " + carData.getClimate(true));
+			dataText.setText("soc: " + carData.getSoc(true) + "\nspeed: "+ carData.getSpeed(true) + "\nfan: " + carData.getFan(true) + "\nclimate: " + carData.getClimate(true)+"\namp: "+carData.getAmp(true));
 		}
 	};
 		
