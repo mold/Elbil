@@ -33,7 +33,7 @@ import android.widget.TextView;
 public class MainActivity extends Activity implements OnClickListener, Runnable {
 	
 	final int THREAD_SLEEP = 50;
-	final int DATA_SLEEP = 500;
+	final int DATA_SLEEP = 100; // update data 10 times per second
 	
 	DiffRangeSurfaceView v;
 	GetData gd;

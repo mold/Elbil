@@ -64,11 +64,14 @@ public final class R {
         public static final int main=0x7f0b0000;
     }
     public static final class raw {
-        public static final int extra_abs=0x7f050000;
-        public static final int silence=0x7f050001;
-        public static final int sine=0x7f050002;
-        public static final int template=0x7f050003;
-        public static final int test1=0x7f050004;
+        public static final int amp_test=0x7f050000;
+        public static final int extra_abs=0x7f050001;
+        public static final int scale=0x7f050002;
+        public static final int silence=0x7f050003;
+        public static final int sine=0x7f050004;
+        public static final int template=0x7f050005;
+        public static final int test=0x7f050006;
+        public static final int test_bkup=0x7f050007;
     }
     public static final class string {
         public static final int action_settings=0x7f07000d;

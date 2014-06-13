@@ -401,8 +401,8 @@ public class CarData extends Observable implements Runnable {
 	private double lerp(double a, double b) {
 		long time = System.currentTimeMillis();
 		double f = (time - lastUpdateTime) / (double) timeSinceLast;
-		Log.i("time", "" + time + " " + lastUpdateTime + " " + (time - lastUpdateTime) + " " + timeSinceLast + " " + f);
-		Log.i("lerp", a + " " + b + " " + (a + f * (b - a)) + " " + f);
+		//Log.i("time", "" + time + " " + lastUpdateTime + " " + (time - lastUpdateTime) + " " + timeSinceLast + " " + f);
+		//Log.i("lerp", a + " " + b + " " + (a + f * (b - a)) + " " + f);
 		return a + f * (b - a);
 	}
 
