@@ -57,18 +57,19 @@ public class ElvizSurface extends SurfaceView implements
 
 			// Perform update to UI
 			Canvas c = null;
+			if(getHolder() == null || !getHolder().getSurface().isValid())
+				return;
 			try {
 				//synchronized (this) {
 					c = getHolder().getSurface().lockCanvas(null);
-					float r = (float) cd.getSoc(true) / 100.0f;
+					float r = (float) cd.getSpeed(true) / 50.0f;
 					//Log.d("RADIUS", r + ", "+cd.getFan(true)+", "+cd.getSpeed(true));
 					pc.setRadius(r);
 					//pc.addSlice("FAN", (float) cd.getFan(true), Color.RED);
 					//pc.addSlice("CLIMATE", (float) cd.getClimate(true),
 					//		Color.RED);
 					pc.addSlice("WOOP", (float) 0.50f, Color.GREEN);
-
-					pc.addSlice("SPEED", (float) cd.getSpeed(true), Color.GREEN);
+					//pc.addSlice("SPEED", (float) cd.getSpeed(true), Color.GREEN);
 					pc.drawChart(c);
 				//}
 			}catch(OutOfResourcesException e){

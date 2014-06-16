@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 public class MainActivity extends FragmentActivity implements Observer {
 	CarData cd;
 	CarDataFetcher cdf;
+	EnergyEstimator ee;
 	ViewPager vp;
 	MyAdapter mp;
 	Audiobahn ab;
@@ -47,8 +48,9 @@ public class MainActivity extends FragmentActivity implements Observer {
         
 		String key = getString(R.string.google_browser_api_key);
 		GoogleAPIQueries.setKey(key);
-
-		
+		ee = new EnergyEstimator();
+		ee.addObserver(this);
+		new Thread(ee).start();
 		//Starts a separate thread for fetching the data
 		cdf = new CarDataFetcher(cd, false);
 		new Thread(cdf).start();
@@ -81,6 +83,11 @@ public class MainActivity extends FragmentActivity implements Observer {
 			CarData cd = (CarData) observable;
 			String battery = String.valueOf(cd.getSoc(true));
 			Log.d("Energy", battery);
+		}else if(observable instanceof EnergyEstimator){
+			EnergyEstimator ee = (EnergyEstimator) observable;
+			double[] consumption = cd.determineConsumption(ee.data);
+			for(int i=0; i<consumption.length; i++)
+			Log.d("consump", consumption[i]+"");
 		}
 	}
 	

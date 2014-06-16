@@ -1,6 +1,11 @@
 package com.kth.ev.differentiatedrange;
 
+import java.util.List;
 import java.util.Observable;
+
+import se.kth.ev.gmapsviz.APIDataTypes.Step;
+
+import com.google.android.gms.internal.kw;
 
 import android.util.Log;
 
@@ -22,21 +27,21 @@ import android.util.Log;
  * @author dkd
  * 
  */
-public class CarData extends Observable{
+public class CarData extends Observable {
 	private double soc, speed, fan, climate;
 	private double socPrev, speedPrev, fanPrev, climatePrev;
-
+	private double kmpKWh;
 	private EVEnergy evEnergy;
 	private double[] rangeArray = new double[17]; // 0 is current
 	private double[] rangeMaxArray = new double[16]; // 0 is current
 	private double speedOneMinMean, speedFiveMinMean, speed10SecMean;
 
-	private double currentClimateConsumption = 3.0, currentClimateConsumptionPrev;
+	private double currentClimateConsumption = 3.0,
+			currentClimateConsumptionPrev;
 
 	private long lastUpdateTime = System.currentTimeMillis();
 
 	private long timeSinceLast;
-
 
 	/**
 	 * Create a CarData with the default EVEnergy.
@@ -47,7 +52,8 @@ public class CarData extends Observable{
 	 *            How many milliseconds to sleep between fetching data
 	 */
 	public CarData() {
-		evEnergy = new EVEnergy((float) 1521, (float) 0.012, (float) 0.29, (float) 2.7435);
+		evEnergy = new EVEnergy((float) 1521, (float) 0.012, (float) 0.29,
+				(float) 2.7435);
 		evEnergy.efficiency = (float) 0.88;
 	}
 
@@ -70,7 +76,8 @@ public class CarData extends Observable{
 
 	public double getCurrentClimateConsumption(boolean interpolate) {
 		if (interpolate) {
-			return lerp(currentClimateConsumptionPrev, currentClimateConsumption);
+			return lerp(currentClimateConsumptionPrev,
+					currentClimateConsumption);
 		}
 		return currentClimateConsumption;
 	}
@@ -98,14 +105,18 @@ public class CarData extends Observable{
 		double timesPer10Sec = updatesPerSecond * 10;
 		double timesPerMin = updatesPerSecond * 60;
 		double timesPer5Min = updatesPerSecond * 300;
-		speed10SecMean = (speed10SecMean * (timesPer10Sec - 1) + speed) / timesPer10Sec;
-		speedOneMinMean = (speedOneMinMean * (timesPerMin - 1) + speed) / timesPerMin;
-		speedFiveMinMean = (speedFiveMinMean * (timesPer5Min - 1) + speed) / timesPer5Min;
+		speed10SecMean = (speed10SecMean * (timesPer10Sec - 1) + speed)
+				/ timesPer10Sec;
+		speedOneMinMean = (speedOneMinMean * (timesPerMin - 1) + speed)
+				/ timesPerMin;
+		speedFiveMinMean = (speedFiveMinMean * (timesPer5Min - 1) + speed)
+				/ timesPer5Min;
 
 		/** Calculate distances **/
 		if (speed >= 0.1) {
 			double tmp = speed >= 0.1 ? speed : 0.1;
-			rangeArray[0] = evEnergy.EstimatedDistance((tmp * 1000.0 / 3600.0), 0.0, 0.0, (soc * evEnergy.batterySize),
+			rangeArray[0] = evEnergy.EstimatedDistance((tmp * 1000.0 / 3600.0),
+					0.0, 0.0, (soc * evEnergy.batterySize),
 					0.7 + currentClimateConsumption);
 		} else {
 			rangeArray[0] = 0.0;
@@ -115,29 +126,33 @@ public class CarData extends Observable{
 			rangeArray[15] = 0.0;
 			rangeArray[16] = 0.0;
 		} else {
-			rangeArray[15] = evEnergy
-					.EstimatedDistance((30.0 * 1000.0 / 3600.0), 0.0, 0.0, (evEnergy.batterySize), 0.7);
-			rangeArray[16] = evEnergy.EstimatedDistance((30.0 * 1000.0 / 3600.0), 0.0, 0.0,
+			rangeArray[15] = evEnergy.EstimatedDistance(
+					(30.0 * 1000.0 / 3600.0), 0.0, 0.0, (evEnergy.batterySize),
+					0.7);
+			rangeArray[16] = evEnergy.EstimatedDistance(
+					(30.0 * 1000.0 / 3600.0), 0.0, 0.0,
 					(soc * evEnergy.batterySize), 0.7);
 		}
 		for (int i = 1; i < 15; i++) {
 			if (soc <= 0)
 				rangeArray[i] = 0.0;
 			else
-				rangeArray[i] = evEnergy.EstimatedDistance((10.0 * i * 1000.0 / 3600.0), 0.0, 0.0,
-						(soc * evEnergy.batterySize), 0.7 + currentClimateConsumption);
+				rangeArray[i] = evEnergy.EstimatedDistance(
+						(10.0 * i * 1000.0 / 3600.0), 0.0, 0.0,
+						(soc * evEnergy.batterySize),
+						0.7 + currentClimateConsumption);
 		}
 
 		for (int i = 1; i < 15; i++) {
 			if (soc <= 0)
 				rangeMaxArray[i] = 0.0;
 			else
-				rangeMaxArray[i] = evEnergy.EstimatedDistance((10.0 * i * 1000.0 / 3600.0), 0.0, 0.0,
+				rangeMaxArray[i] = evEnergy.EstimatedDistance(
+						(10.0 * i * 1000.0 / 3600.0), 0.0, 0.0,
 						(soc * evEnergy.batterySize), 0.7);
 		}
 
 		calculateClimatePower();
-
 		setChanged();
 	}
 
@@ -243,7 +258,8 @@ public class CarData extends Observable{
 				}
 				if (climate >= 8 && climate <= 13) {
 					Log.i("CLIMATEhe",
-							Float.toString((float) (((float) climate - (float) 7.0) / (float) 6.0) * (float) 3.0));
+							Float.toString((float) (((float) climate - (float) 7.0) / (float) 6.0)
+									* (float) 3.0));
 					currentClimateConsumption = (float) ((((float) climate - (float) 7.0) / (float) 6.0) * (float) 3.0)
 							+ fanImpact;
 					return;
@@ -252,7 +268,8 @@ public class CarData extends Observable{
 
 				if (climate >= 72 && climate <= 77) {
 					Log.i("CLIMATEhe",
-							Float.toString((float) (((float) climate - (float) 72.0) / (float) 6.0) * (float) 3.0));
+							Float.toString((float) (((float) climate - (float) 72.0) / (float) 6.0)
+									* (float) 3.0));
 					currentClimateConsumption = (float) ((((float) climate - (float) 72.0) / (float) 6.0) * (float) 3.0)
 							+ fanImpact;
 					return;
@@ -261,7 +278,8 @@ public class CarData extends Observable{
 
 				if (climate >= 136 && climate <= 141) {
 					Log.i("CLIMATEhe",
-							Float.toString((float) (((float) climate - (float) 136.0) / (float) 6.0) * (float) 3.0));
+							Float.toString((float) (((float) climate - (float) 136.0) / (float) 6.0)
+									* (float) 3.0));
 					currentClimateConsumption = (float) ((((float) climate - (float) 136.0) / (float) 6.0) * (float) 3.0)
 							+ fanImpact;
 					return;
@@ -277,7 +295,8 @@ public class CarData extends Observable{
 				}
 
 				// 2-6 coolAC off
-				if ((climate >= 2 && climate <= 7) || climate == 135 || climate == 199) {
+				if ((climate >= 2 && climate <= 7) || climate == 135
+						|| climate == 199) {
 					currentClimateConsumption = fanImpact;
 					return;
 				}
@@ -327,22 +346,71 @@ public class CarData extends Observable{
 	 * @param fan
 	 * @param climate
 	 */
-	public void setDataAndNotify(double soc, double speed, double fan, double climate) {
-		setSoc(soc);
-		setSpeed(speed);
-		setFan(fan);
-		setClimate(climate);
+	public void setDataAndNotify(double soc, double speed, double fan,
+			double climate) {
+		synchronized (this) {
+			setSoc(soc);
+			setSpeed(speed);
+			setFan(fan);
+			setClimate(climate);
 
-		calculate();
+			calculate();
+		}
 
 		notifyObservers();
 	}
 
+	/**
+	 * Calculates the consumption rate of the battery using the current values
+	 * of speed and climate.
+	 * 
+	 * 
+	 * @param distance
+	 *            Distance in m
+	 * @param slope
+	 *            Relationship between height and distance
+	 * @param dt
+	 *            Time duration in seconds
+	 */
+	public double determineConsumption(double distance, double slope, double dt) {
+		synchronized (this) {
+			kmpKWh = evEnergy.kWhPerKm(distance, speed, 0, slope,
+					0.7+currentClimateConsumption, dt);
+		}
+		return kmpKWh;
+	}
+
+	/**
+	 * Calculates the consumption rate of the battery using the current values
+	 * of speed and climate.
+	 * 
+	 * 
+	 * @param steps
+	 *            A list of Step
+	 * @return An array of doubles which contains the energy consumption for
+	 *         every step.
+	 */
+	public double[] determineConsumption(List<Step> steps) {
+		double[] ret = new double[steps.size()];
+		int i = 0;
+		synchronized (this) {
+			for (Step s : steps) {
+				ret[i] = evEnergy.kWhPerKm(s.distance.value, s.distance.value/s.duration.value, 0, s.slope,
+						0, s.duration.value);
+				i++;
+			}
+		}
+		return ret;
+	}
+
+	// public double update
+
 	private double lerp(double a, double b) {
 		long time = System.currentTimeMillis();
 		double f = (time - lastUpdateTime) / (double) timeSinceLast;
-		//Log.i("time", "" + time + " " + lastUpdateTime + " " + (time - lastUpdateTime) + " " + timeSinceLast + " " + f);
-		//Log.i("lerp", a + " " + b + " " + (a + f * (b - a)) + " " + f);
+		// Log.i("time", "" + time + " " + lastUpdateTime + " " + (time -
+		// lastUpdateTime) + " " + timeSinceLast + " " + f);
+		// Log.i("lerp", a + " " + b + " " + (a + f * (b - a)) + " " + f);
 		return a + f * (b - a);
 	}
 
