@@ -4,10 +4,10 @@ public class EVEnergy {
 
 	// speed = undefined,
 	// time = undefined,
-	// distance = undefined,
+	public double distance = undefined,
 	// soc = undefined,
 	// acceleration = 0, // acceleration
-	// slope = 0, // slope
+	public double slope = 0, // slope
 	public double mass = 1521; // vehicle mass
 	public double cr = 0.012; // vehicle roll resistance coefficient
 	public double cd = 0.29; // vehicle drag coefficient
@@ -59,5 +59,13 @@ public class EVEnergy {
 		return total; // kg m/s^2
 
 	}
+	
+	public double kmPerKWh() {
+			return distance / 1000 / energy;
+		}
+		
+	public double kWhPerKm() {
+			return evenergy.energy() / evenergy.distance() * 1000;
+		}
 
 }
