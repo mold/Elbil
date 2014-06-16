@@ -53,9 +53,9 @@ public final class R {
     }
     public static final class id {
         public static final int action_settings=0x7f0c0003;
-        public static final int data_text=0x7f0c0002;
-        public static final int patch_list=0x7f0c0001;
-        public static final int toggle_sound=0x7f0c0000;
+        public static final int container=0x7f0c0000;
+        public static final int patch_list=0x7f0c0002;
+        public static final int toggle_sound=0x7f0c0001;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;

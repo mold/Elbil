@@ -30,9 +30,8 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class MainActivity extends Activity implements OnClickListener, Runnable {
+public class MainActivity extends Activity implements OnClickListener {
 	
-	final int THREAD_SLEEP = 50;
 	final int DATA_SLEEP = 100; // update data 10 times per second
 	
 	DiffRangeSurfaceView v;
@@ -42,18 +41,10 @@ public class MainActivity extends Activity implements OnClickListener, Runnable 
 	
 	// View
 	Button soundToggle;
-	TextView dataText;
 	
 	// PureData
 	Patch test;
 	Patch[] loadedPatches;
-	
-	Runnable viewUpdater = new Runnable() {
-		@Override
-		public void run() {
-			dataText.setText("soc: " + carData.getSoc(true) + "\nspeed: "+ carData.getSpeed(true) + "\nfan: " + carData.getFan(true) + "\nclimate: " + carData.getClimate(true)+"\namp: "+carData.getAmp(true));
-		}
-	};
 		
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,9 +66,9 @@ public class MainActivity extends Activity implements OnClickListener, Runnable 
 
     private void initView() {
     	setContentView(R.layout.activity_main);
+    	LinearLayout container = (LinearLayout) findViewById(R.id.container);
     	soundToggle = (Button) findViewById(R.id.toggle_sound);
     	soundToggle.setOnClickListener(this);
-    	dataText = (TextView) findViewById(R.id.data_text);
     	// init the patch list
     	TextView item;
     	LinearLayout list = (LinearLayout) findViewById(R.id.patch_list);
@@ -93,6 +84,14 @@ public class MainActivity extends Activity implements OnClickListener, Runnable 
     		item.setPadding(10, 10, 10, 10);
     		list.addView(item);
     	}
+    	// add some data graphs
+    	DataGraph graph;
+    	graph = new DataGraph(this, carData, DataGraph.DATA.SPEED);
+    	container.addView(graph);
+    	graph = new DataGraph(this, carData, DataGraph.DATA.AMP);
+    	container.addView(graph);
+    	graph = new DataGraph(this, carData, DataGraph.DATA.SOC);
+    	container.addView(graph);
     }
     
     private void init() {
@@ -100,9 +99,6 @@ public class MainActivity extends Activity implements OnClickListener, Runnable 
     	Log.v("puredata", "patches: " + loadedPatches.length);
 
     	initView();
-    	
-    	Thread t = new Thread(this);
-        t.start();
     }
     
     @Override
@@ -142,20 +138,6 @@ public class MainActivity extends Activity implements OnClickListener, Runnable 
 				soundToggle.setText(R.string.stop_sound);
 			}
 			break;
-		}
-	}
-	
-	@Override
-	public void run() {
-		while(true) {
-			Handler refresh = new Handler(Looper.getMainLooper());
-			refresh.post(viewUpdater);
-			
-			try {
-				Thread.sleep(THREAD_SLEEP);
-			} catch (InterruptedException e) {
-				
-			}
 		}
 	}
     
