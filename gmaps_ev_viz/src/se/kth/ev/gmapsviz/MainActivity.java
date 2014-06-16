@@ -103,7 +103,9 @@ public class MainActivity extends FragmentActivity implements Observer {
         public Fragment getItem(int position) {
         	switch(position){
         	case 0:
-        		return new MyMap();
+        		ElvizFragment e = new ElvizFragment();
+        		cd.addObserver(e);
+        		return e;
         	case 1:
         		Audiobahn ab = new Audiobahn();
         		ab.initSelf(cd, c);
@@ -115,9 +117,6 @@ public class MainActivity extends FragmentActivity implements Observer {
         }
     }
 
-    /** Fragment for loading our google map */
-    	
-    /** A simple fragment that displays a TextView. */
     public static class TextFragment extends Fragment {
       @Override
       public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle bundle) {
