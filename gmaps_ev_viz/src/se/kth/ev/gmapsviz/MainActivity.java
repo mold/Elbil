@@ -96,7 +96,7 @@ public class MainActivity extends FragmentActivity implements Observer {
 
         @Override
         public int getCount() {
-            return 3;
+            return 2;
         }
 
         @Override
@@ -108,7 +108,6 @@ public class MainActivity extends FragmentActivity implements Observer {
         		Audiobahn ab = new Audiobahn();
         		ab.initSelf(cd, c);
         		return ab;
-        	case 2:
         	default:
         		return new TextFragment();
         	}

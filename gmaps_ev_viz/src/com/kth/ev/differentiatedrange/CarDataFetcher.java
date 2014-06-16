@@ -55,16 +55,16 @@ public class CarDataFetcher implements Runnable{
 				carData.notifyObservers();
 			} catch (NumberFormatException e) {
 				// Got null values or something
-				Log.i("fetch", "Got null from server for some parameter");
+				//Log.i("fetch", "Got null from server for some parameter");
 				// Calculate and notify (because we probably got SOME data)
 				carData.calculate();
 				carData.notifyObservers();
 			} catch (HttpHostConnectException e) {
-				Log.e("fetch", "Could not connect to server");
+				//Log.e("fetch", "Could not connect to server");
 			} catch (Exception e) {
 				// Auto-generated catch block
 				e.printStackTrace();
-				Log.e("fetch", e.toString());
+				//Log.e("fetch", e.toString());
 			}
 		}
 	}
