@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.PorterDuff.Mode;
 import android.graphics.Rect;
 import android.util.DisplayMetrics;
@@ -29,29 +30,34 @@ public class DataGraph extends SurfaceView implements SurfaceHolder.Callback, Ob
 	DATA data;
 	Paint paint;
 	Paint textPaint;
+	Paint white;
+	Path path;
 	
+	int lineSegments = 200;
+	int dataPoints = lineSegments;
 	int width;
 	int height;
 	int textSize = 40;
-	double prevDataPoint = 0;
-	double lastDataPoint = 0;
-	int dataPoints = 0;
+	float dataPoint;
 	String typeString;
 	int textWidth;
 	float min;
 	float max;
-	double[] dataValues = new double[200];
 	
 	public DataGraph(Context context, CarData cd, DATA data) {
 		super(context);
 		
 		DisplayMetrics metrics = context.getResources().getDisplayMetrics();
-		ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(metrics.widthPixels, 200);
+		width = metrics.widthPixels;
+		height = 200;
+		ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(width, height);
 		setLayoutParams(params);
 		setPadding(0, 0, 0, 10);
 		
 		holder = getHolder();
 		holder.addCallback(this);
+		
+		path = new Path();
 		
 		this.data = data;
 		switch(this.data) {
@@ -90,6 +96,8 @@ public class DataGraph extends SurfaceView implements SurfaceHolder.Callback, Ob
 		textPaint.setStyle(Paint.Style.FILL);
 		textPaint.setTextSize(textSize);
 		textPaint.setColor(paint.getColor());
+		white = new Paint();
+		white.setColor(Color.WHITE);
 		
 		Rect bounds = new Rect();
 		textPaint.getTextBounds(typeString, 0, typeString.length(), bounds);
@@ -124,11 +132,12 @@ public class DataGraph extends SurfaceView implements SurfaceHolder.Callback, Ob
 			value = cd.getClimate(false);
 			break;
 		}
-		if (dataPoints >= dataValues.length) {
-			dataPoints = 0;
-		}
-		dataValues[dataPoints] = value;
 		dataPoints++;
+		if (dataPoints >= lineSegments) {
+			dataPoints = 0;
+			path = new Path();
+		}
+		dataPoint = (float) value;
 		
 		try {
             c = holder.lockCanvas();
@@ -149,21 +158,21 @@ public class DataGraph extends SurfaceView implements SurfaceHolder.Callback, Ob
 		// clear canvas
 		c.drawColor(Color.BLACK);
 		
-		float dx = (float)width/dataValues.length;
+		float dx = (float)width/lineSegments;
 		float yScale = (height - 30)/(max - min);
-		Paint white = new Paint();
-		white.setColor(Color.WHITE);
-		white.setTextSize(40);
+		float x = dataPoints*dx;
+		float y = height - textSize/2 - (dataPoint - min)*yScale;
 		c.drawLine(0, height - textSize/2 + min*yScale, width, height - textSize/2 + min*yScale, white);
 		c.drawText(""+max, 0, textSize, textPaint);
 		c.drawText(""+min, 0, height-5, textPaint);
 		c.drawText(typeString, width-textWidth-5, textSize, textPaint);
-		c.drawText(""+dataValues[dataPoints-1], (dataPoints-1)*dx, (float)(height - textSize/2 - (dataValues[dataPoints-1] - min)*yScale), textPaint);
-		for (int i = 0; i < dataPoints-1; i++) {
-			c.drawLine(i*dx, (float)(height - textSize/2 - (dataValues[i] - min)*yScale),
-					(i+1)*dx, (float)(height - textSize/2 - (dataValues[i+1] - min)*yScale),
-					paint);
+		c.drawText(""+dataPoint, dataPoints*dx, y, textPaint);
+		if (dataPoints > 0) {
+			path.lineTo(x, y);
+		} else {
+			path.moveTo(x, y);
 		}
+		c.drawPath(path, paint);
 	}
 
 	@Override

@@ -55,6 +55,8 @@ public class MainActivity extends Activity implements OnClickListener {
 
         carData = new CarData(false, DATA_SLEEP);
         
+        SensorDataFetcher sensorDataFetcher = new SensorDataFetcher(this);
+        
         pdHandler = new PureDataHandler(this, carData);
         pdHandler.addReadyListener(new PureDataHandler.ReadyListener() {
 			@Override
