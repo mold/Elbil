@@ -25,7 +25,6 @@ public class MainActivity extends FragmentActivity implements Observer {
 	EnergyEstimator ee;
 	ViewPager vp;
 	MyAdapter mp;
-	Audiobahn ab;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -37,8 +36,6 @@ public class MainActivity extends FragmentActivity implements Observer {
 		
 		//Makes this activity listen for change in the activity
 		cd.addObserver(this);
-		Audiobahn ab = new Audiobahn();
-		ab.initSelf(cd, this);
         mp = new MyAdapter(getSupportFragmentManager(), cd, this);
 
         vp = (ViewPager)findViewById(R.id.pager);
@@ -48,8 +45,9 @@ public class MainActivity extends FragmentActivity implements Observer {
         
 		String key = getString(R.string.google_browser_api_key);
 		GoogleAPIQueries.setKey(key);
-		ee = new EnergyEstimator();
-		ee.addObserver(this);
+		//ee = new EnergyEstimator();
+		//ee.addObserver(this);
+		
 		new Thread(ee).start();
 		//Starts a separate thread for fetching the data
 		cdf = new CarDataFetcher(cd, false);
@@ -84,10 +82,12 @@ public class MainActivity extends FragmentActivity implements Observer {
 			String battery = String.valueOf(cd.getSoc(true));
 			Log.d("Energy", battery);
 		}else if(observable instanceof EnergyEstimator){
+			/*
 			EnergyEstimator ee = (EnergyEstimator) observable;
 			double[] consumption = cd.determineConsumption(ee.data);
 			for(int i=0; i<consumption.length; i++)
 			Log.d("consump", consumption[i]+"");
+			*/
 		}
 	}
 	
@@ -103,24 +103,23 @@ public class MainActivity extends FragmentActivity implements Observer {
 
         @Override
         public int getCount() {
-            return 2;
+            return 3;
         }
 
         @Override
         public Fragment getItem(int position) {
         	switch(position){
         	case 0:
-        		ElvizFragment e = new ElvizFragment();
-        		cd.addObserver(e);
-        		return e;
+        		//ElvizFragment e = new ElvizFragment();
+        		//cd.addObserver(e);
+        		return new EVGraph();
         	case 1:
         		Audiobahn ab = new Audiobahn();
-        		ab.initSelf(cd, c);
         		return ab;
-        	default:
-        		return new TextFragment();
-        	}
         	
+        	default:
+        		return new EVGraph();
+        	}
         }
     }
 

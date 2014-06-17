@@ -93,6 +93,5 @@ public class EnergyEstimator extends Observable implements Runnable {
 		}
 		setChanged();
 		notifyObservers();
-		Log.d("IM DONE!","WOOP");
 	}
 }

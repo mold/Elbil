@@ -51,7 +51,7 @@ public class PureDataHandler implements Runnable {
 		readyListeners = new ArrayList<PureDataHandler.ReadyListener>();
 		
 		AudioParameters.init(context);
-		PdPreferences.initPreferences(context.getApplicationContext());
+		PdPreferences.initPreferences(context);
 		// Create a connection to Pd
 		context.bindService(new Intent(context, PdService.class), pdConnection, Context.BIND_AUTO_CREATE);
 	}

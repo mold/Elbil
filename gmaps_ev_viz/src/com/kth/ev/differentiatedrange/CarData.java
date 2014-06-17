@@ -395,8 +395,12 @@ public class CarData extends Observable {
 		int i = 0;
 		synchronized (this) {
 			for (Step s : steps) {
+				//ret[i] = evEnergy.kWhPerKm(s.distance.value, s.distance.value/s.duration.value, 0, s.slope,
+				//		0.7+currentClimateConsumption, s.duration.value);
+				
 				ret[i] = evEnergy.kWhPerKm(s.distance.value, s.distance.value/s.duration.value, 0, s.slope,
 						0, s.duration.value);
+				
 				i++;
 			}
 		}

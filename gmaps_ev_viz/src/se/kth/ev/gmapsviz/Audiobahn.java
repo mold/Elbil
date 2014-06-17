@@ -6,6 +6,7 @@ import com.kth.ev.differentiatedrange.puredata.PureDataHandler;
 
 import android.os.Bundle;
 import android.os.Environment;
+import android.app.Activity;
 import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -18,13 +19,9 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class Audiobahn extends Fragment implements OnClickListener{
-
-	Context c;
-	PureDataHandler pdHandler;
-	CarData carData;
-	View self;
-	
+public class Audiobahn extends Fragment implements OnClickListener {
+	private static PureDataHandler pdHandler;
+	private static CarData carData;
 	// View
 	Button soundToggle;
 	TextView dataText;
@@ -32,36 +29,46 @@ public class Audiobahn extends Fragment implements OnClickListener{
 	// PureData
 	Patch test;
 	Patch[] loadedPatches;
-	
-	public void initSelf(CarData cd, Context c){
-		this.carData = cd;
-		this.c = c;
-		pdHandler = new PureDataHandler(c, carData);
-	}
-	
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle bundle) {
-		self = inflater
-				.inflate(R.layout.fragment_audiobahn, container, false);
-		pdHandler.addReadyListener(new PureDataHandler.ReadyListener() {
-			@Override
-			public void ready() {
-				init();
-			}
-		});
-		return self;
+		return inflater.inflate(R.layout.fragment_audiobahn, container, false);
+	}
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		if (carData == null)
+			if (getActivity() instanceof MainActivity)
+				carData = ((MainActivity) getActivity()).cd;
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		if (pdHandler == null) {
+			pdHandler = new PureDataHandler(getActivity(), carData);
+			pdHandler.addReadyListener(new PureDataHandler.ReadyListener() {
+				@Override
+				public void ready() {
+					init();
+				}
+			});
+		} else {
+			init();
+		}
 	}
 
 	private void initView() {
-		soundToggle = (Button) self.findViewById(R.id.toggle_sound);
+		soundToggle = (Button) getView().findViewById(R.id.toggle_sound);
 		soundToggle.setOnClickListener(this);
-		dataText = (TextView) self.findViewById(R.id.data_text);
+		dataText = (TextView) getView().findViewById(R.id.data_text);
 		// init the patch list
 		TextView item;
-		LinearLayout list = (LinearLayout) self.findViewById(R.id.patch_list);
+		LinearLayout list = (LinearLayout) getView().findViewById(
+				R.id.patch_list);
 		for (int i = 0; i < loadedPatches.length; i++) {
-			item = new TextView(c);
+			item = new TextView(getActivity());
 			item.setTag(i);
 			item.setText(loadedPatches[i].getFileName());
 			item.setOnClickListener(this);
@@ -80,7 +87,7 @@ public class Audiobahn extends Fragment implements OnClickListener{
 		Log.v("puredata", "patches: " + loadedPatches.length);
 		initView();
 	}
-	
+
 	@Override
 	public void onClick(View v) {
 		// check for patch list clicks

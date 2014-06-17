@@ -1,6 +1,5 @@
 package se.kth.ev.gmapsviz;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Random;
@@ -9,7 +8,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
-import android.util.Log;
+
 
 public class PieChart {
 	private RectF bounds;
