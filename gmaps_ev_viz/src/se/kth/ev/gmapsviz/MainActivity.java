@@ -22,7 +22,7 @@ import android.view.ViewGroup;
 public class MainActivity extends FragmentActivity implements Observer {
 	CarData cd;
 	CarDataFetcher cdf;
-	EnergyEstimator ee;
+	RouteDataFetcher ee;
 	ViewPager vp;
 	MyAdapter mp;
 	
@@ -81,7 +81,7 @@ public class MainActivity extends FragmentActivity implements Observer {
 			CarData cd = (CarData) observable;
 			String battery = String.valueOf(cd.getSoc(true));
 			Log.d("Energy", battery);
-		}else if(observable instanceof EnergyEstimator){
+		}else if(observable instanceof RouteDataFetcher){
 			/*
 			EnergyEstimator ee = (EnergyEstimator) observable;
 			double[] consumption = cd.determineConsumption(ee.data);
@@ -110,15 +110,15 @@ public class MainActivity extends FragmentActivity implements Observer {
         public Fragment getItem(int position) {
         	switch(position){
         	case 0:
-        		//ElvizFragment e = new ElvizFragment();
-        		//cd.addObserver(e);
-        		return new EVGraph();
+        		ElvizFragment e = new ElvizFragment();
+        		cd.addObserver(e);
+        		return e;
         	case 1:
         		Audiobahn ab = new Audiobahn();
         		return ab;
         	
         	default:
-        		return new EVGraph();
+        		return new TextFragment();
         	}
         }
     }
