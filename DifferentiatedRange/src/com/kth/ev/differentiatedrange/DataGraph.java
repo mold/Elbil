@@ -44,8 +44,12 @@ public class DataGraph extends SurfaceView implements SurfaceHolder.Callback, Ob
 	float min;
 	float max;
 	
-	public DataGraph(Context context, CarData cd, DATA data) {
+	public DataGraph(Context context, String typeString, float min, float max) {
 		super(context);
+		
+		this.typeString = typeString;
+		this.min = min;
+		this.max = max;
 		
 		DisplayMetrics metrics = context.getResources().getDisplayMetrics();
 		width = metrics.widthPixels;
@@ -55,9 +59,29 @@ public class DataGraph extends SurfaceView implements SurfaceHolder.Callback, Ob
 		setPadding(0, 0, 0, 10);
 		
 		holder = getHolder();
-		holder.addCallback(this);
+		holder.addCallback(this);		
 		
 		path = new Path();
+		
+		paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+		paint.setStrokeWidth(4);
+		paint.setStyle(Paint.Style.STROKE);
+		Random r = new Random();
+		paint.setARGB(255, 100+r.nextInt(155), 100+r.nextInt(155), 100+r.nextInt(155));
+		textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+		textPaint.setStyle(Paint.Style.FILL);
+		textPaint.setTextSize(textSize);
+		textPaint.setColor(paint.getColor());
+		white = new Paint();
+		white.setColor(Color.WHITE);
+		
+		Rect bounds = new Rect();
+		textPaint.getTextBounds(typeString, 0, typeString.length(), bounds);
+		textWidth = bounds.width();
+	}
+	
+	public DataGraph(Context context, CarData cd, DATA data) {
+		this(context, "", 0, 0);
 		
 		this.data = data;
 		switch(this.data) {
@@ -87,17 +111,6 @@ public class DataGraph extends SurfaceView implements SurfaceHolder.Callback, Ob
 			typeString = "climate";
 			break;
 		}
-		paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		paint.setStrokeWidth(4);
-		paint.setStyle(Paint.Style.STROKE);
-		Random r = new Random();
-		paint.setARGB(255, 100+r.nextInt(155), 100+r.nextInt(155), 100+r.nextInt(155));
-		textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		textPaint.setStyle(Paint.Style.FILL);
-		textPaint.setTextSize(textSize);
-		textPaint.setColor(paint.getColor());
-		white = new Paint();
-		white.setColor(Color.WHITE);
 		
 		Rect bounds = new Rect();
 		textPaint.getTextBounds(typeString, 0, typeString.length(), bounds);
@@ -105,13 +118,36 @@ public class DataGraph extends SurfaceView implements SurfaceHolder.Callback, Ob
 		
 		cd.addObserver(this);
 	}
-
-	@Override
-	public void update(Observable observable, Object data) {
+	
+	public void addDataPoint(float value) {
+		dataPoints++;
+		if (dataPoints >= lineSegments) {
+			dataPoints = 0;
+			path = new Path();
+		}
+		dataPoint = value;
+		
 		if (holder == null || !holder.getSurface().isValid()){
 			return;
 		}
 		Canvas c = null;
+		
+		try {
+            c = holder.lockCanvas();
+            synchronized (holder) {
+            	if (c != null) {
+            		draw(c);
+            	}
+            }                                   
+        } finally {
+        	if (c != null) {
+                holder.unlockCanvasAndPost(c);
+        	}
+        }
+	}
+
+	@Override
+	public void update(Observable observable, Object data) {
 		CarData cd = (CarData) observable;
 		
 		double value = 0;
@@ -131,26 +167,11 @@ public class DataGraph extends SurfaceView implements SurfaceHolder.Callback, Ob
 		case CLIMATE:
 			value = cd.getClimate(false);
 			break;
+		default:
+			return;
 		}
-		dataPoints++;
-		if (dataPoints >= lineSegments) {
-			dataPoints = 0;
-			path = new Path();
-		}
-		dataPoint = (float) value;
 		
-		try {
-            c = holder.lockCanvas();
-            synchronized (holder) {
-            	if (c != null) {
-            		draw(c);
-            	}
-            }                                   
-        } finally {
-        	if (c != null) {
-                holder.unlockCanvasAndPost(c);
-        	}
-        }
+		this.addDataPoint((float) value);
 	}
 	
 	@Override

@@ -6,6 +6,7 @@ import java.util.Observer;
 
 import org.puredata.core.PdBase;
 
+import com.kth.ev.differentiatedrange.gamification.AudioGame;
 import com.kth.ev.differentiatedrange.puredata.Patch;
 import com.kth.ev.differentiatedrange.puredata.PureDataHandler;
 
@@ -38,6 +39,7 @@ public class MainActivity extends Activity implements OnClickListener {
 	GetData gd;
 	PureDataHandler pdHandler;
 	CarData carData;
+	AudioGame game;
 	
 	// View
 	Button soundToggle;
@@ -55,7 +57,9 @@ public class MainActivity extends Activity implements OnClickListener {
 
         carData = new CarData(false, DATA_SLEEP);
         
-        SensorDataFetcher sensorDataFetcher = new SensorDataFetcher(this);
+        //SensorDataFetcher sensorDataFetcher = new SensorDataFetcher(this);
+        game = new AudioGame(this);
+        carData.addObserver(game);
         
         pdHandler = new PureDataHandler(this, carData);
         pdHandler.addReadyListener(new PureDataHandler.ReadyListener() {
@@ -88,12 +92,15 @@ public class MainActivity extends Activity implements OnClickListener {
     	}
     	// add some data graphs
     	DataGraph graph;
+    	container.addView(game.getSpeedGraph());
     	graph = new DataGraph(this, carData, DataGraph.DATA.SPEED);
     	container.addView(graph);
+    	container.addView(game.getAmpStateGraph());
+    	container.addView(game.getAmpGraph());
     	graph = new DataGraph(this, carData, DataGraph.DATA.AMP);
     	container.addView(graph);
-    	graph = new DataGraph(this, carData, DataGraph.DATA.SOC);
-    	container.addView(graph);
+    	//graph = new DataGraph(this, carData, DataGraph.DATA.SOC);
+    	//container.addView(graph);
     }
     
     private void init() {
