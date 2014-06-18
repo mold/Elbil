@@ -109,11 +109,10 @@ public class ElvizpActivity extends FragmentActivity implements Observer {
         		cd.addObserver(e);
         		return e;
         	case 1:
-        		AudiobahnFragment ab = new AudiobahnFragment();
-        		return ab;
-        	
-        	default:
         		return new TextFragment();
+        	default:
+           		AudiobahnFragment ab = new AudiobahnFragment();
+        		return ab;
         	}
         }
     }

@@ -6,7 +6,10 @@ import java.util.Observer;
 import org.puredata.core.PdBase;
 
 import android.content.Context;
+import android.text.Layout;
 import android.util.Log;
+import android.view.View;
+import android.widget.LinearLayout;
 
 import com.kth.ev.differentiatedrange.CarData;
 import com.kth.ev.graphviz.DataGraph;
@@ -28,6 +31,12 @@ public class AudioGame implements Observer {
 		speedGraph = new DataGraph(context, "speed average", 0, 255);
 		ampGraph = new DataGraph(context, "amp average", -100, 100);
 		ampStateGraph = new DataGraph(context, "amp state of change", -1, 1);
+	}
+	
+	public void addToView(LinearLayout v){
+		v.addView(speedGraph);
+		v.addView(ampGraph);
+		v.addView(ampStateGraph);
 	}
 	
 	public DataGraph getSpeedGraph() {
