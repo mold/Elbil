@@ -1,8 +1,9 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
     tools:context="com.kth.ev.differentiatedrange.MainActivity" >
 
@@ -12,22 +13,11 @@
         android:layout_height="wrap_content"
         android:text="@string/start_sound" />
     
-    <ScrollView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
-        <LinearLayout
-        	android:id="@+id/patch_list"
-        	android:layout_width="match_parent"
-    		android:layout_height="wrap_content"
-    		android:orientation="vertical" >
-        </LinearLayout>
-    </ScrollView>
-
-    <TextView
-        android:id="@+id/data_text"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:padding="10sp"
-        android:textSize="20sp" />
+    <LinearLayout
+      	android:id="@+id/patch_list"
+       	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:orientation="vertical" >
+    </LinearLayout>
     
 </LinearLayout>

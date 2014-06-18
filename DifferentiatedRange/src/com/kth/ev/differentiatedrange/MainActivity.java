@@ -6,6 +6,7 @@ import java.util.Observer;
 
 import org.puredata.core.PdBase;
 
+import com.kth.ev.differentiatedrange.gamification.AudioGame;
 import com.kth.ev.differentiatedrange.puredata.Patch;
 import com.kth.ev.differentiatedrange.puredata.PureDataHandler;
 
@@ -30,30 +31,22 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class MainActivity extends Activity implements OnClickListener, Runnable {
+public class MainActivity extends Activity implements OnClickListener {
 	
-	final int THREAD_SLEEP = 50;
-	final int DATA_SLEEP = 500;
+	final int DATA_SLEEP = 100; // update data 10 times per second
 	
 	DiffRangeSurfaceView v;
 	GetData gd;
 	PureDataHandler pdHandler;
 	CarData carData;
+	AudioGame game;
 	
 	// View
 	Button soundToggle;
-	TextView dataText;
 	
 	// PureData
 	Patch test;
 	Patch[] loadedPatches;
-	
-	Runnable viewUpdater = new Runnable() {
-		@Override
-		public void run() {
-			dataText.setText("soc: " + carData.getSoc(true) + "\nspeed: "+ carData.getSpeed(true) + "\nfan: " + carData.getFan(true) + "\nclimate: " + carData.getClimate(true));
-		}
-	};
 		
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +56,10 @@ public class MainActivity extends Activity implements OnClickListener, Runnable 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         carData = new CarData(false, DATA_SLEEP);
+        
+        //SensorDataFetcher sensorDataFetcher = new SensorDataFetcher(this);
+        game = new AudioGame(this);
+        carData.addObserver(game);
         
         pdHandler = new PureDataHandler(this, carData);
         pdHandler.addReadyListener(new PureDataHandler.ReadyListener() {
@@ -75,15 +72,15 @@ public class MainActivity extends Activity implements OnClickListener, Runnable 
 
     private void initView() {
     	setContentView(R.layout.activity_main);
+    	LinearLayout container = (LinearLayout) findViewById(R.id.container);
     	soundToggle = (Button) findViewById(R.id.toggle_sound);
     	soundToggle.setOnClickListener(this);
-    	dataText = (TextView) findViewById(R.id.data_text);
     	// init the patch list
     	TextView item;
     	LinearLayout list = (LinearLayout) findViewById(R.id.patch_list);
     	for(int i = 0; i < loadedPatches.length; i++) {
     		item = new TextView(this);
-    		item.setTag(i);
+    		item.setTag(loadedPatches[i]);
     		item.setText(loadedPatches[i].getFileName());
     		item.setOnClickListener(this);
     		// TODO: add this to a style
@@ -93,6 +90,17 @@ public class MainActivity extends Activity implements OnClickListener, Runnable 
     		item.setPadding(10, 10, 10, 10);
     		list.addView(item);
     	}
+    	// add some data graphs
+    	DataGraph graph;
+    	container.addView(game.getSpeedGraph());
+    	graph = new DataGraph(this, carData, DataGraph.DATA.SPEED);
+    	container.addView(graph);
+    	container.addView(game.getAmpStateGraph());
+    	container.addView(game.getAmpGraph());
+    	graph = new DataGraph(this, carData, DataGraph.DATA.AMP);
+    	container.addView(graph);
+    	//graph = new DataGraph(this, carData, DataGraph.DATA.SOC);
+    	//container.addView(graph);
     }
     
     private void init() {
@@ -100,9 +108,6 @@ public class MainActivity extends Activity implements OnClickListener, Runnable 
     	Log.v("puredata", "patches: " + loadedPatches.length);
 
     	initView();
-    	
-    	Thread t = new Thread(this);
-        t.start();
     }
     
     @Override
@@ -116,17 +121,18 @@ public class MainActivity extends Activity implements OnClickListener, Runnable 
 	public void onClick(View v) {
 		// check for patch list clicks
 		if(v instanceof TextView) {
-			TextView text = (TextView) v;
-			if (v.getTag() != null) {
-		        int i = (Integer) v.getTag();
-				if (loadedPatches[i].isOpen()) {
-					text.setText(loadedPatches[i].getFileName());
+			Object tag = v.getTag();
+			if (tag != null && tag instanceof Patch) {
+				TextView text = (TextView) v;
+		        Patch patch = (Patch) tag;
+				if (patch.isOpen()) {
+					text.setText(patch.getFileName());
 					text.setBackgroundColor(getResources().getColor(R.color.white));
-					loadedPatches[i].close();
+					patch.close();
 				} else {
-					text.setText("[open] " + loadedPatches[i].getFileName());
+					text.setText("[open] " + patch.getFileName());
 					text.setBackgroundColor(getResources().getColor(R.color.green));
-					loadedPatches[i].open();
+					patch.open();
 				}
 			}
 	    }
@@ -141,20 +147,6 @@ public class MainActivity extends Activity implements OnClickListener, Runnable 
 				soundToggle.setText(R.string.stop_sound);
 			}
 			break;
-		}
-	}
-	
-	@Override
-	public void run() {
-		while(true) {
-			Handler refresh = new Handler(Looper.getMainLooper());
-			refresh.post(viewUpdater);
-			
-			try {
-				Thread.sleep(THREAD_SLEEP);
-			} catch (InterruptedException e) {
-				
-			}
 		}
 	}
     

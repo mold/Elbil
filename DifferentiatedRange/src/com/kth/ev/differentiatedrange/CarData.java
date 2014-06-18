@@ -29,8 +29,8 @@ import android.util.Log;
  * 
  */
 public class CarData extends Observable implements Runnable {
-	private double soc, speed, fan, climate;
-	private double socPrev, speedPrev, fanPrev, climatePrev;
+	private double soc, speed, fan, climate, amp;
+	private double socPrev, speedPrev, fanPrev, climatePrev, ampPrev;
 
 	private EVEnergy evEnergy;
 	private double[] rangeArray = new double[17]; // 0 is current
@@ -220,6 +220,20 @@ public class CarData extends Observable implements Runnable {
 		setChanged();
 	}
 
+	public double getAmp(boolean interpolate) {
+		if (interpolate) {
+			return lerp(ampPrev, amp);
+		}
+		return amp;
+	}
+
+	public void setAmp(double amp) {
+		this.ampPrev = this.amp;
+		this.amp = amp;
+		setChanged();
+	}
+
+
 	public double getClimate(boolean interpolate) {
 		if (interpolate) {
 			return lerp(climatePrev, climate);
@@ -387,8 +401,8 @@ public class CarData extends Observable implements Runnable {
 	private double lerp(double a, double b) {
 		long time = System.currentTimeMillis();
 		double f = (time - lastUpdateTime) / (double) timeSinceLast;
-		Log.i("time", "" + time + " " + lastUpdateTime + " " + (time - lastUpdateTime) + " " + timeSinceLast + " " + f);
-		Log.i("lerp", a + " " + b + " " + (a + f * (b - a)) + " " + f);
+		//Log.i("time", "" + time + " " + lastUpdateTime + " " + (time - lastUpdateTime) + " " + timeSinceLast + " " + f);
+		//Log.i("lerp", a + " " + b + " " + (a + f * (b - a)) + " " + f);
 		return a + f * (b - a);
 	}
 

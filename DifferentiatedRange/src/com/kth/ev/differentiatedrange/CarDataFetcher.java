@@ -49,8 +49,10 @@ public class CarDataFetcher {
 			try {
 				carData.setSpeed(Double.parseDouble(getServerData("speed")));
 				carData.setSoc(Double.parseDouble(getServerData("soc")));
+				carData.setAmp(Double.parseDouble(getServerData("amp")));
 				carData.setClimate(Double.parseDouble(getServerData("heating0")));
 				carData.setFan(Double.parseDouble(getServerData("heating1")));
+			
 				carData.calculate();
 				carData.notifyObservers();
 			} catch (NumberFormatException e) {

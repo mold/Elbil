@@ -217,6 +217,7 @@ public class PureDataHandler implements Runnable {
 			PdBase.sendFloat("speed", (float) carData.getSpeed(true));
 			PdBase.sendFloat("fan", (float) carData.getFan(true));
 			PdBase.sendFloat("climate", (float) carData.getClimate(true));
+			PdBase.sendFloat("amp", (float) carData.getAmp(true));
 			
 			try {
 				Thread.sleep(THREAD_SLEEP);
