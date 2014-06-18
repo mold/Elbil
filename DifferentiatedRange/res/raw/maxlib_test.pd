@@ -1,0 +1,13 @@
+#N canvas 962 251 450 300 10;
+#X obj 116 -13 r fan;
+#X obj 54 -13 r speed;
+#X obj 7 -13 r soc;
+#X obj 165 -13 r climate;
+#X obj 241 -12 r amp;
+#X obj 54 60 maxlib/scale 0 255 0 100 0;
+#X obj 54 107 osc~;
+#X obj 54 148 dac~;
+#X connect 1 0 5 0;
+#X connect 5 0 6 0;
+#X connect 6 0 7 0;
+#X connect 6 0 7 1;
