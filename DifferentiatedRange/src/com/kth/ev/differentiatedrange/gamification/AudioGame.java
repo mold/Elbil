@@ -59,7 +59,7 @@ public class AudioGame implements Observer {
 				PdBase.sendBang("amp_high");
 			}
 			if (change < 0 && prevAmpChange >= 0) {
-				PdBase.sendBang("play_wav");
+				PdBase.sendBang("amp_low");
 			}
 			prevAmpChange = change;
 			ampStateGraph.addDataPoint(change);
