@@ -2,9 +2,6 @@ package com.kth.ev.differentiatedrange;
 
 import java.util.List;
 import java.util.Observable;
-
-
-import com.google.android.gms.internal.kw;
 import com.kth.ev.graphviz.APIDataTypes.Step;
 
 import android.util.Log;
