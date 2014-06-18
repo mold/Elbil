@@ -9,6 +9,8 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,6 +26,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -51,7 +54,7 @@ public class PureDataHandler implements Runnable {
 		readyListeners = new ArrayList<PureDataHandler.ReadyListener>();
 		
 		AudioParameters.init(context);
-		PdPreferences.initPreferences(context);
+		PdPreferences.initPreferences(context.getApplicationContext());
 		// Create a connection to Pd
 		context.bindService(new Intent(context, PdService.class), pdConnection, Context.BIND_AUTO_CREATE);
 	}
@@ -153,8 +156,6 @@ public class PureDataHandler implements Runnable {
 	 * Start playing sound.
 	 */
 	public void startAudio() {
-		if(!ready) 
-			return;
 		try {
 			// negative values will be replaced with defaults/preferences
 			pdService.initAudio(-1, -1, -1, -1);
@@ -169,7 +170,6 @@ public class PureDataHandler implements Runnable {
 	 * Stop playing sound.
 	 */
 	public void stopAudio() {
-		if(ready) 
 		pdService.stopAudio();
 	}
 	
@@ -177,11 +177,8 @@ public class PureDataHandler implements Runnable {
 	 * Create a patch from a resource id
 	 * @param resource Resource id
 	 * @return New Patch
-	 * @throws Exception Handling the case that PD has not been loaded before calling this method.
 	 */
-	public Patch createPatch(int resource) throws Exception {
-		if(!ready)
-			throw new Exception("PD has not yet loaded!");
+	public Patch createPatch(int resource) {
 		return new Patch(context, resource);
 	}
 	
@@ -220,6 +217,7 @@ public class PureDataHandler implements Runnable {
 			PdBase.sendFloat("speed", (float) carData.getSpeed(true));
 			PdBase.sendFloat("fan", (float) carData.getFan(true));
 			PdBase.sendFloat("climate", (float) carData.getClimate(true));
+			PdBase.sendFloat("amp", (float) carData.getAmp(true));
 			
 			try {
 				Thread.sleep(THREAD_SLEEP);

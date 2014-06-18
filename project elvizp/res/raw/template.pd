@@ -3,3 +3,4 @@
 #X obj 54 -13 r speed;
 #X obj 7 -13 r soc;
 #X obj 165 -13 r climate;
+#X obj 241 -12 r amp;

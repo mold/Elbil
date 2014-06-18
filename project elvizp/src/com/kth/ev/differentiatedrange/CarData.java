@@ -25,8 +25,9 @@ import android.util.Log;
  * 
  */
 public class CarData extends Observable {
-	private double soc, speed, fan, climate;
-	private double socPrev, speedPrev, fanPrev, climatePrev;
+	private double soc, speed, fan, climate, amp;
+	private double socPrev, speedPrev, fanPrev, climatePrev, ampPrev;
+
 	private double kmpKWh;
 	private EVEnergy evEnergy;
 	private double[] rangeArray = new double[17]; // 0 is current
@@ -219,6 +220,19 @@ public class CarData extends Observable {
 		setChanged();
 	}
 
+	public double getAmp(boolean interpolate) {
+		if (interpolate) {
+			return lerp(ampPrev, amp);
+		}
+		return amp;
+	}
+
+	public void setAmp(double amp) {
+		this.ampPrev = this.amp;
+		this.amp = amp;
+		setChanged();
+	}
+
 	/**
 	 * Updates climateConsumption based on fan and climate values.
 	 */
@@ -372,22 +386,23 @@ public class CarData extends Observable {
 	public double determineConsumption(double distance, double slope, double dt) {
 		synchronized (this) {
 			kmpKWh = evEnergy.kWhPerKm(distance, speed, 0, slope,
-					0.7+currentClimateConsumption, dt);
+					0.7 + currentClimateConsumption, dt);
 		}
 		return kmpKWh;
 	}
 
-	public static final int SPEED = 1, SLOPE = 2, CLIMATE = 4, ACCELERATION = 8, TIME = 16;
-	
+	public static final int SPEED = 1, SLOPE = 2, CLIMATE = 4,
+			ACCELERATION = 8, TIME = 16;
+
 	/**
-	 * Calculates the consumption rate of the given route, consisting of 
-	 * steps fetched from the Google API Directions & Elevation API
+	 * Calculates the consumption rate of the given route, consisting of steps
+	 * fetched from the Google API Directions & Elevation API
 	 * 
 	 * @param steps
 	 *            A list of Step
 	 * @param factors
-	 * 			  A list of which parameters to take into account, coded into
-	 * 			  an int.
+	 *            A list of which parameters to take into account, coded into an
+	 *            int.
 	 * @return An array of doubles which contains the energy consumption for
 	 *         every step.
 	 */
@@ -396,11 +411,20 @@ public class CarData extends Observable {
 		int i = 0;
 		synchronized (this) {
 			for (Step s : steps) {
-				//ret[i] = evEnergy.kWhPerKm(s.distance.value, s.distance.value/s.duration.value, 0, s.slope,
-				//		0.7+currentClimateConsumption, s.duration.value);
-				ret[i] = evEnergy.kWhPerKm(s.distance.value, (factors & SPEED) > 0 ? s.distance.value/s.duration.value : 0, 0, (factors & SLOPE) > 0 ? s.slope : 0,
-						(factors & CLIMATE) > 0? 0.7+currentClimateConsumption:0, (factors & TIME) > 0 ? s.duration.value : 1);
-				
+				// ret[i] = evEnergy.kWhPerKm(s.distance.value,
+				// s.distance.value/s.duration.value, 0, s.slope,
+				// 0.7+currentClimateConsumption, s.duration.value);
+				ret[i] = evEnergy
+						.kWhPerKm(
+								s.distance.value,
+								(factors & SPEED) > 0 ? s.distance.value
+										/ s.duration.value : 0,
+								0,
+								(factors & SLOPE) > 0 ? s.slope : 0,
+								(factors & CLIMATE) > 0 ? 0.7 + currentClimateConsumption
+										: 0,
+								(factors & TIME) > 0 ? s.duration.value : 1);
+
 				i++;
 			}
 		}

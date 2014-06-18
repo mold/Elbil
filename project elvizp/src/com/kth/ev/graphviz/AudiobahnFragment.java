@@ -3,6 +3,7 @@ package com.kth.ev.graphviz;
 import se.kth.ev.gmapsviz.R;
 
 import com.kth.ev.differentiatedrange.CarData;
+import com.kth.ev.differentiatedrange.gamification.AudioGame;
 import com.kth.ev.differentiatedrange.puredata.Patch;
 import com.kth.ev.differentiatedrange.puredata.PureDataHandler;
 
@@ -27,6 +28,9 @@ import android.widget.TextView;
 public class AudiobahnFragment extends Fragment implements OnClickListener {
 	private static PureDataHandler pdHandler;
 	private static CarData carData;
+	
+	AudioGame game;
+	
 	// View
 	Button soundToggle;
 	TextView dataText;
@@ -43,9 +47,14 @@ public class AudiobahnFragment extends Fragment implements OnClickListener {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		if (carData == null)
-			if (getActivity() instanceof ElvizpActivity)
+		if (carData == null){
+			if (getActivity() instanceof ElvizpActivity){
 				carData = ((ElvizpActivity) getActivity()).cd;
+		        game = new AudioGame(getActivity()	);
+		        carData.addObserver(game);
+			}
+			
+		}
 	}
 
 	@Override
@@ -64,27 +73,37 @@ public class AudiobahnFragment extends Fragment implements OnClickListener {
 		}
 	}
 
-	private void initView() {
-		soundToggle = (Button) getView().findViewById(R.id.toggle_sound);
-		soundToggle.setOnClickListener(this);
-		dataText = (TextView) getView().findViewById(R.id.data_text);
-		// init the patch list
-		TextView item;
-		LinearLayout list = (LinearLayout) getView().findViewById(
-				R.id.patch_list);
-		for (int i = 0; i < loadedPatches.length; i++) {
-			item = new TextView(getActivity());
-			item.setTag(i);
-			item.setText(loadedPatches[i].getFileName());
-			item.setOnClickListener(this);
-			// TODO: add this to a style
-			item.setBackgroundColor(getResources().getColor(R.color.white));
-			item.setTextColor(getResources().getColor(R.color.black));
-			item.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
-			item.setPadding(10, 10, 10, 10);
-			list.addView(item);
-		}
-	}
+    private void initView() {
+    	LinearLayout container = (LinearLayout) getView().findViewById(R.id.container);
+    	soundToggle = (Button) getView().findViewById(R.id.toggle_sound);
+    	soundToggle.setOnClickListener(this);
+    	// init the patch list
+    	TextView item;
+    	LinearLayout list = (LinearLayout) getView().findViewById(R.id.patch_list);
+    	for(int i = 0; i < loadedPatches.length; i++) {
+    		item = new TextView(getActivity());
+    		item.setTag(loadedPatches[i]);
+    		item.setText(loadedPatches[i].getFileName());
+    		item.setOnClickListener(this);
+    		// TODO: add this to a style
+    		item.setBackgroundColor(getResources().getColor(R.color.white));
+    		item.setTextColor(getResources().getColor(R.color.black));
+    		item.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+    		item.setPadding(10, 10, 10, 10);
+    		list.addView(item);
+    	}
+    	// add some data graphs
+    	DataGraph graph;
+    	container.addView(game.getSpeedGraph());
+    	graph = new DataGraph(getActivity(), carData, DataGraph.DATA.SPEED);
+    	container.addView(graph);
+    	container.addView(game.getAmpStateGraph());
+    	container.addView(game.getAmpGraph());
+    	graph = new DataGraph(getActivity(), carData, DataGraph.DATA.AMP);
+    	container.addView(graph);
+    	//graph = new DataGraph(this, carData, DataGraph.DATA.SOC);
+    	//container.addView(graph);
+    }
 
 	private void init() {
 		loadedPatches = pdHandler.loadPatchesFromDirectory(Environment
@@ -96,25 +115,24 @@ public class AudiobahnFragment extends Fragment implements OnClickListener {
 	@Override
 	public void onClick(View v) {
 		// check for patch list clicks
-		if (v instanceof TextView) {
-			TextView text = (TextView) v;
-			if (v.getTag() != null) {
-				int i = (Integer) v.getTag();
-				if (loadedPatches[i].isOpen()) {
-					text.setText(loadedPatches[i].getFileName());
-					text.setBackgroundColor(getResources().getColor(
-							R.color.white));
-					loadedPatches[i].close();
+		if(v instanceof TextView) {
+			Object tag = v.getTag();
+			if (tag != null && tag instanceof Patch) {
+				TextView text = (TextView) v;
+		        Patch patch = (Patch) tag;
+				if (patch.isOpen()) {
+					text.setText(patch.getFileName());
+					text.setBackgroundColor(getResources().getColor(R.color.white));
+					patch.close();
 				} else {
-					text.setText("[open] " + loadedPatches[i].getFileName());
-					text.setBackgroundColor(getResources().getColor(
-							R.color.green));
-					loadedPatches[i].open();
+					text.setText("[open] " + patch.getFileName());
+					text.setBackgroundColor(getResources().getColor(R.color.green));
+					patch.open();
 				}
 			}
-		}
-
-		switch (v.getId()) {
+	    }
+		
+		switch(v.getId()) {
 		case R.id.toggle_sound:
 			if (pdHandler.isPlaying()) {
 				pdHandler.stopAudio();
