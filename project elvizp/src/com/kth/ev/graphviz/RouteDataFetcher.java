@@ -33,6 +33,7 @@ public class RouteDataFetcher extends Observable implements Runnable {
 	public RouteDataFetcher() {
 		pointA = "KTH, Sweden";
 		pointB = "Sundbyberg, Sweden";
+		data = new ArrayList<Step>();
 	}
 
 	/**

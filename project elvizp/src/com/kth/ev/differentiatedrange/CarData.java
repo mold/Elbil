@@ -407,6 +407,9 @@ public class CarData extends Observable {
 	 *         every step.
 	 */
 	public double[] consumptionOnRoute(List<Step> steps, int factors) {
+		if (steps == null) {
+			return new double[0];
+		}
 		double[] ret = new double[steps.size()];
 		int i = 0;
 		synchronized (this) {

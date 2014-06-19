@@ -6,6 +6,7 @@ import java.util.Observer;
 import org.puredata.core.PdBase;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.text.Layout;
 import android.util.Log;
 import android.view.View;
@@ -18,6 +19,8 @@ public class AudioGame implements Observer {
 
 	final int DATA_SIZE = 10;
 	
+	Context context;
+	
 	DataAnalyzer speedData;
 	DataAnalyzer ampData;
 	DataGraph speedGraph;
@@ -26,28 +29,26 @@ public class AudioGame implements Observer {
 	int prevAmpChange = 0;
 	
 	public AudioGame(Context context) {
+		this.context = context;
 		speedData = new DataAnalyzer(DATA_SIZE, 0);
 		ampData = new DataAnalyzer(DATA_SIZE, 0.5);
-		speedGraph = new DataGraph(context, "speed average", 0, 255);
-		ampGraph = new DataGraph(context, "amp average", -100, 100);
-		ampStateGraph = new DataGraph(context, "amp state of change", -1, 1);
-	}
-	
-	public void addToView(LinearLayout v){
-		v.addView(speedGraph);
-		v.addView(ampGraph);
-		v.addView(ampStateGraph);
 	}
 	
 	public DataGraph getSpeedGraph() {
+		speedGraph = new DataGraph(context, "speed", 0, 255);
+		speedGraph.setColor(Color.GREEN);
 		return speedGraph;
 	}
 	
 	public DataGraph getAmpGraph() {
+		ampGraph = new DataGraph(context, "amp", -100, 100);
+		ampGraph.setColor(Color.CYAN);
 		return ampGraph;
 	}
 	
 	public DataGraph getAmpStateGraph() {
+		ampStateGraph = new DataGraph(context, "amp state of change", -1, 1);
+		ampStateGraph.setColor(Color.CYAN);
 		return ampStateGraph;
 	}
 
@@ -58,12 +59,18 @@ public class AudioGame implements Observer {
 			speedData.pushData(carData.getSpeed(false));
 			ampData.pushData(carData.getAmp(false));
 			
-			float average;
-			average = (float) speedData.getAverage();
-			//PdBase.sendFloat("speed_average", average);
-			speedGraph.addDataPoint(average);
-			ampGraph.addDataPoint((float) ampData.getAverage());
+			float average = (float) speedData.getAverage();
+			if (speedGraph != null) {
+				speedGraph.addDataPoint(average);
+			}
+			
 			int change = ampData.getStateOfChange();
+			if (ampGraph != null) {
+				ampGraph.addDataPoint((float) ampData.getAverage());
+			}
+			if (ampStateGraph != null) {
+				ampStateGraph.addDataPoint(change);
+			}
 			if (change > 0 && prevAmpChange <= 0) {
 				PdBase.sendBang("amp_high");
 			}
@@ -71,7 +78,6 @@ public class AudioGame implements Observer {
 				PdBase.sendBang("amp_low");
 			}
 			prevAmpChange = change;
-			ampStateGraph.addDataPoint(change);
 		}
 	}
 	

@@ -136,6 +136,10 @@ public class PureDataHandler implements Runnable {
 		thread.start();
 	}
 	
+	public boolean ready() {
+		return ready;
+	}
+	
 	public void addReadyListener(ReadyListener listener) {
 		if (ready) {
 			listener.ready();

@@ -98,7 +98,7 @@ public class ElvizpActivity extends FragmentActivity implements Observer {
 
         @Override
         public int getCount() {
-            return 3;
+            return 2;
         }
 
         @Override
@@ -108,10 +108,8 @@ public class ElvizpActivity extends FragmentActivity implements Observer {
         		EVVizFragment e = new EVVizFragment();
         		cd.addObserver(e);
         		return e;
-        	case 1:
-        		return new TextFragment();
         	default:
-           		AudiobahnFragment ab = new AudiobahnFragment();
+        		AudiobahnFragment ab = new AudiobahnFragment();
         		return ab;
         	}
         }

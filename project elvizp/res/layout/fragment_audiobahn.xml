@@ -5,8 +5,7 @@
     android:id="@+id/container"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    >
+    android:orientation="vertical" >
 
     <Button
         android:id="@+id/toggle_sound"
@@ -14,12 +13,16 @@
         android:layout_height="wrap_content"
         android:text="@string/start_sound" />
     
-    <LinearLayout
-      	android:id="@+id/patch_list"
-       	android:layout_width="fill_parent"
-    	android:layout_height="wrap_content"
-    	android:orientation="vertical" >
-    </LinearLayout>
-    
+    <ScrollView
+        android:layout_width="fill_parent"
+    	android:layout_height="200sp" >
+	    <LinearLayout
+	      	android:id="@+id/patch_list"
+	       	android:layout_width="fill_parent"
+	    	android:layout_height="wrap_content"
+	    	android:orientation="vertical" >
+	    </LinearLayout>
+    </ScrollView>
+	    
 </LinearLayout>
 
