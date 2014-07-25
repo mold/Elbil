@@ -28,6 +28,9 @@ public class AudioGame implements Observer {
 	DataGraph ampStateGraph;
 	int prevAmpChange = 0;
 	
+	long ampStartTime;
+	int ampState;
+	
 	public AudioGame(Context context) {
 		this.context = context;
 		speedData = new DataAnalyzer(DATA_SIZE, 0);
@@ -78,6 +81,20 @@ public class AudioGame implements Observer {
 				PdBase.sendBang("amp_low");
 			}
 			prevAmpChange = change;
+			
+			// entering a new state
+			if (ampState == 0 && change != 0) {
+				ampStartTime = System.currentTimeMillis();
+				ampState = change;
+			}
+			// leaving a state
+			if(ampState != 0 && change != ampState) {
+				if (ampState == 1) {
+					long time = System.currentTimeMillis() - ampStartTime;
+					PdBase.sendFloat("amp_gain_time", time);
+				}
+				ampState = 0;
+			}
 		}
 	}
 	
