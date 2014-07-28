@@ -3,6 +3,8 @@ package com.kth.ev.graphviz;
 import java.util.Observable;
 import java.util.Observer;
 
+import old.junk.EVVizFragment;
+
 import se.kth.ev.gmapsviz.R;
 
 import com.kth.ev.differentiatedrange.CarData;
@@ -30,7 +32,7 @@ import android.widget.Button;
  */
 public class ElvizpActivity extends FragmentActivity implements Observer {
 	protected static final String TAG = "ElvizpActivity";
-	CarData cd;
+	public CarData cd;
 	CarDataFetcher cdf;
 	RouteDataFetcher ee;
 	ViewPager vp;
@@ -109,13 +111,14 @@ public class ElvizpActivity extends FragmentActivity implements Observer {
         public Fragment getItem(int position) {
         	switch(position){
         	case 0:
-        		EVVizFragment e = new EVVizFragment();
-        		cd.addObserver(e);
+        		D3Fragment e = new D3Fragment();
+        		//EVVizFragment e = new EVVizFragment();
+        		//cd.addObserver(e);
         		return e;
         	case 1:
         		return new RoutePickFragment();
         	default:
-           		AudiobahnFragment ab = new AudiobahnFragment();
+        		AudiobahnFragment ab = new AudiobahnFragment();
         		return ab;
         	}
         }
@@ -143,7 +146,8 @@ public class ElvizpActivity extends FragmentActivity implements Observer {
      * @param frag_index Fragments index in the ViewPager.
      */
     public void relayObservable(Observable o, int frag_id){
-    	o.addObserver((EVVizFragment) getFragmentByPosition(frag_id));
+    	if(getFragmentByPosition(frag_id) instanceof Observer)
+    		o.addObserver((Observer) getFragmentByPosition(frag_id));
     }
     
     public Fragment getFragmentByPosition(int pos) {

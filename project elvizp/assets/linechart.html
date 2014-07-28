@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+body {
+  font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.x.axis path {
+  display: none;
+}
+
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+</style>
+<body>
+<script src="d3.v3.min.js"></script>
+<script>
+
+d3.select("body").append("p");
+
+var carData;
+
+var margin = {top: 20, right: 20, bottom: 30, left: 50},
+    width = window.innerWidth - 50 - margin.left - margin.right,
+    height = window.innerHeight - 50 - margin.top - margin.bottom;
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+var x = d3.scale.linear()
+    .range([0, width]);
+
+var y = d3.scale.linear()
+    .range([height, 0]);
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left");
+
+var energy_curve = d3.svg.line()
+    .x(function(d) { return x(d.distance/1000); })
+    .y(function(d) { return y(d.energy); })	
+    .interpolate("linear");
+
+//(function requestLoop(){
+// requestAnimationFrame(requestLoop);
+//  carData = JSON.parse(CarData.toJson());
+//  d3.select("body p").html(carData.speed +", "+carData.soc);
+//})();
+
+function updateSeries(name, values){
+  x.domain(d3.extent(values, function(d) { return d.distance/1000; }));
+  y.domain(d3.extent(values, function(d) { return d.energy; }));
+  
+  svg.selectAll("g").remove();
+  svg.select("path").remove();
+  
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis)
+    .append("text")
+      .attr("y", 6)
+      .attr("dx", "-4em")
+      .attr("dy", "1.71em")
+      .style("text-anchor", "start")
+      .text("Distance (km)");
+
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+    .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dx", "-4em")
+      .attr("dy", "-4.71em")
+      .style("text-anchor", "end")
+      .text("Energy consumption (kWh/km)");
+  
+  svg.append("path")
+      .datum(values)
+      .attr("class", "line")
+      .attr("d", energy_curve);
+}
+
+</script>

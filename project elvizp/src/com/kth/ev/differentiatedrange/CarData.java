@@ -2,7 +2,13 @@ package com.kth.ev.differentiatedrange;
 
 import java.util.List;
 import java.util.Observable;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.kth.ev.graphviz.APIDataTypes.Step;
+import android.webkit.JavascriptInterface;
 
 import android.util.Log;
 
@@ -393,6 +399,7 @@ public class CarData extends Observable {
 
 	public static final int SPEED = 1, SLOPE = 2, CLIMATE = 4,
 			ACCELERATION = 8, TIME = 16;
+	private static final String TAG = "CarData";
 
 	/**
 	 * Calculates the consumption rate of the given route, consisting of steps
@@ -407,6 +414,9 @@ public class CarData extends Observable {
 	 *         every step.
 	 */
 	public double[] consumptionOnRoute(List<Step> steps, int factors) {
+		if (steps == null) {
+			return new double[0];
+		}
 		double[] ret = new double[steps.size()];
 		int i = 0;
 		synchronized (this) {
@@ -440,6 +450,74 @@ public class CarData extends Observable {
 		// lastUpdateTime) + " " + timeSinceLast + " " + f);
 		// Log.i("lerp", a + " " + b + " " + (a + f * (b - a)) + " " + f);
 		return a + f * (b - a);
+	}
+	
+	/**
+	 * 
+	 * Returns the current data as a JSON string.
+	 * 
+	 * @return json-fied cardata.
+	 */
+    @JavascriptInterface
+    public String toJson() {
+    	Log.d(TAG, "JSON CALL!");
+    	JSONObject jo = new JSONObject();
+    	try {
+			jo.put("speed", speed+"");
+	    	jo.put("soc", soc+"");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+    	
+    	return jo.toString();
+    }
+    
+	/**
+	 * 
+	 * Same as consumptonOnRoute, only that the return value is a json encoded
+	 * string.
+	 * 
+	 * @param steps
+	 *            A list of Step
+	 * @param factors
+	 *            A list of which parameters to take into account, coded into an
+	 *            int.
+	 * @return A JSON Array of the consumption along the route.
+	 */
+	public String consumptionOnRouteJSON(List<Step> steps, int factors) {
+		JSONArray ja = new JSONArray();
+		if (steps == null) {
+			return ja.toString();
+		}
+		double totalDistance = 0;
+		synchronized (this) {
+			for (Step s : steps) {
+				JSONObject element = new JSONObject();
+				// ret[i] = evEnergy.kWhPerKm(s.distance.value,
+				// s.distance.value/s.duration.value, 0, s.slope,
+				// 0.7+currentClimateConsumption, s.duration.value);
+				double energy = evEnergy
+						.kWhPerKm(
+								s.distance.value,
+								(factors & SPEED) > 0 ? s.distance.value
+										/ s.duration.value : 0,
+								0,
+								(factors & SLOPE) > 0 ? s.slope : 0,
+								(factors & CLIMATE) > 0 ? 0.7 + currentClimateConsumption
+										: 0,
+								(factors & TIME) > 0 ? s.duration.value : 1);
+
+				totalDistance += s.distance.value;
+				try {
+					element.put("distance", totalDistance);
+					element.put("energy", energy);
+					ja.put(element);
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return ja.toString();
 	}
 
 }

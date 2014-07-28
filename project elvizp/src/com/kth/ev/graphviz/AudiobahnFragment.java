@@ -34,6 +34,7 @@ public class AudiobahnFragment extends Fragment implements OnClickListener {
 	AudioGame game;
 
 	// View
+	View audiobahnView;
 	Button soundToggle;
 	TextView dataText;
 
@@ -42,29 +43,47 @@ public class AudiobahnFragment extends Fragment implements OnClickListener {
 	Patch[] loadedPatches;
 
 	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		Log.v("audiobahn", "onCreate");
+		game = new AudioGame(getActivity());
+		if (getActivity() instanceof ElvizpActivity) {
+			carData = ((ElvizpActivity) getActivity()).cd;
+			carData.addObserver(game);
+			pdHandler = new PureDataHandler(getActivity(), carData);
+			pdHandler.addReadyListener(new PureDataHandler.ReadyListener() {
+				@Override
+				public void ready() {
+					Log.v("audiobahn", "pd initialized");
+					// TODO: check if the directory exists
+					// load patches from the local puredata directory
+					loadedPatches = pdHandler
+							.loadPatchesFromDirectory(Environment
+									.getExternalStorageDirectory()
+									+ "/puredata/");
+					if (audiobahnView != null) {
+						initView();
+					}
+				}
+			});
+		}
+	}
+
+	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle bundle) {
-		return inflater.inflate(R.layout.fragment_audiobahn, container, false);
+		Log.v("audiobahn", "onCreateView");
+		audiobahnView = inflater.inflate(R.layout.fragment_audiobahn,
+				container, false);
+		return audiobahnView;
 	}
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		if (carData == null) {
-			if (getActivity() instanceof ElvizpActivity) {
-				carData = ((ElvizpActivity) getActivity()).cd;
-			}
-		}
-		if (pdHandler == null) {
-			pdHandler = new PureDataHandler(getActivity(), carData);
-			pdHandler.addReadyListener(new PureDataHandler.ReadyListener() {
-				@Override
-				public void ready() {
-					init();
-				}
-			});
-		} else {
-			init();
+		if (pdHandler.ready()) {
+			Log.v("audiobahn", "initView (onActivityCreated)");
+			initView();
 		}
 	}
 
@@ -90,24 +109,17 @@ public class AudiobahnFragment extends Fragment implements OnClickListener {
 			list.addView(item);
 		}
 		// add some data graphs
-		game = new AudioGame(getActivity());
-		game.addToView(container);
-		carData.addObserver(game);
+		container.addView(game.getSpeedGraph());
+		container.addView(game.getAmpGraph());
+		container.addView(game.getAmpStateGraph());
 
-		DataGraph graph;
-		graph = new DataGraph(getActivity(), carData, DataGraph.DATA.SPEED);
-		container.addView(graph);
-		graph = new DataGraph(getActivity(), carData, DataGraph.DATA.AMP);
-		container.addView(graph);
+		// DataGraph graph;
+		// graph = new DataGraph(getActivity(), carData, DataGraph.DATA.SPEED);
+		// container.addView(graph);
+		// graph = new DataGraph(getActivity(), carData, DataGraph.DATA.AMP);
+		// container.addView(graph);
 		// graph = new DataGraph(this, carData, DataGraph.DATA.SOC);
 		// container.addView(graph);
-	}
-
-	private void init() {
-		loadedPatches = pdHandler.loadPatchesFromDirectory(Environment
-				.getExternalStorageDirectory() + "/puredata/");
-		Log.v("puredata", "patches: " + loadedPatches.length);
-		initView();
 	}
 
 	@Override
@@ -116,14 +128,26 @@ public class AudiobahnFragment extends Fragment implements OnClickListener {
 		if (v instanceof TextView) {
 			Object tag = v.getTag();
 			if (tag != null && tag instanceof Patch) {
-				TextView text = (TextView) v;
+				LinearLayout list = (LinearLayout) getView().findViewById(
+						R.id.patch_list);
 				Patch patch = (Patch) tag;
-				if (patch.isOpen()) {
-					text.setText(patch.getFileName());
-					text.setBackgroundColor(getResources().getColor(
-							R.color.white));
-					patch.close();
-				} else {
+				boolean open = patch.isOpen();
+				TextView text;
+				// close all patches
+				for (int i = 0; i < loadedPatches.length; i++) {
+					patch = loadedPatches[i];
+					if (patch.isOpen()) {
+						text = (TextView) list.getChildAt(i);
+						text.setText(patch.getFileName());
+						text.setBackgroundColor(getResources().getColor(
+								R.color.white));
+						patch.close();
+					}
+				}
+				// open the patch if it was closed
+				if (!open) {
+					text = (TextView) v;
+					patch = (Patch) tag;
 					text.setText("[open] " + patch.getFileName());
 					text.setBackgroundColor(getResources().getColor(
 							R.color.green));

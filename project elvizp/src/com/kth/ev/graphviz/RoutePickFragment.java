@@ -9,6 +9,7 @@ import org.json.JSONObject;
 
 import se.kth.ev.gmapsviz.R;
 
+
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;

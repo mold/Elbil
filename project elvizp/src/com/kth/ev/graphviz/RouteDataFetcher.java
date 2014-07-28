@@ -24,7 +24,7 @@ import com.kth.ev.graphviz.APIDataTypes.Step;
 public class RouteDataFetcher extends Observable implements Runnable {
 	private static final String TAG = "RouteDataFetcher";
 	String pointA, pointB;
-	List<Step> data;
+	public List<Step> data;
 
 	/**
 	 * Constructor
@@ -34,6 +34,7 @@ public class RouteDataFetcher extends Observable implements Runnable {
 	public RouteDataFetcher() {
 		pointA = "KTH, Sweden";
 		pointB = "Sundbyberg, Sweden";
+		data = new ArrayList<Step>();
 	}
 
 	/**
