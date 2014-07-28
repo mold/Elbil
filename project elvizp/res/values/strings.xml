@@ -10,7 +10,5 @@
 	<string name="from">From</string>
 	<string name="to">To</string>
 	<string name="load_directions">Load directions</string>
-	
-	
-	
+	<string name="reload_folder">Reload patch folder</string>
 </resources>

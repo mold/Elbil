@@ -36,6 +36,7 @@ public class AudiobahnFragment extends Fragment implements OnClickListener {
 	// View
 	View audiobahnView;
 	Button soundToggle;
+	Button buttonReload;
 	TextView dataText;
 
 	// PureData
@@ -55,12 +56,6 @@ public class AudiobahnFragment extends Fragment implements OnClickListener {
 				@Override
 				public void ready() {
 					Log.v("audiobahn", "pd initialized");
-					// TODO: check if the directory exists
-					// load patches from the local puredata directory
-					loadedPatches = pdHandler
-							.loadPatchesFromDirectory(Environment
-									.getExternalStorageDirectory()
-									+ "/puredata/");
 					if (audiobahnView != null) {
 						initView();
 					}
@@ -92,22 +87,12 @@ public class AudiobahnFragment extends Fragment implements OnClickListener {
 				R.id.container);
 		soundToggle = (Button) getView().findViewById(R.id.toggle_sound);
 		soundToggle.setOnClickListener(this);
-		// init the patch list
-		TextView item;
-		LinearLayout list = (LinearLayout) getView().findViewById(
-				R.id.patch_list);
-		for (int i = 0; i < loadedPatches.length; i++) {
-			item = new TextView(getActivity());
-			item.setTag(loadedPatches[i]);
-			item.setText(loadedPatches[i].getFileName());
-			item.setOnClickListener(this);
-			// TODO: add this to a style
-			item.setBackgroundColor(getResources().getColor(R.color.white));
-			item.setTextColor(getResources().getColor(R.color.black));
-			item.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
-			item.setPadding(10, 10, 10, 10);
-			list.addView(item);
-		}
+		buttonReload = (Button) getView().findViewById(R.id.reload_folder);
+		buttonReload.setOnClickListener(this);
+		
+		// load the patches and init the patch list view
+		loadPatches();
+		
 		// add some data graphs
 		container.addView(game.getSpeedGraph());
 		container.addView(game.getAmpGraph());
@@ -120,6 +105,33 @@ public class AudiobahnFragment extends Fragment implements OnClickListener {
 		// container.addView(graph);
 		// graph = new DataGraph(this, carData, DataGraph.DATA.SOC);
 		// container.addView(graph);
+	}
+	
+	/**
+	 * Load the patches in the 'puredata' directory.
+	 * This method also updates the list view.
+	 */
+	private void loadPatches() {
+		// TODO: check if the directory exists
+		// load patches from the local puredata directory
+		loadedPatches = pdHandler.loadPatchesFromDirectory(Environment.getExternalStorageDirectory() + "/puredata/");
+		
+		// update the list view
+		TextView item;
+		LinearLayout list = (LinearLayout) getView().findViewById(R.id.patch_list);
+		list.removeAllViews();
+		for (int i = 0; i < loadedPatches.length; i++) {
+			item = new TextView(getActivity());
+			item.setTag(loadedPatches[i]);
+			item.setText(loadedPatches[i].getFileName());
+			item.setOnClickListener(this);
+			// TODO: add this to a style
+			item.setBackgroundColor(getResources().getColor(R.color.white));
+			item.setTextColor(getResources().getColor(R.color.black));
+			item.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+			item.setPadding(10, 10, 10, 10);
+			list.addView(item);
+		}
 	}
 
 	@Override
@@ -165,6 +177,9 @@ public class AudiobahnFragment extends Fragment implements OnClickListener {
 				pdHandler.startAudio();
 				soundToggle.setText(R.string.stop_sound);
 			}
+			break;
+		case R.id.reload_folder:
+			loadPatches();
 			break;
 		}
 	}
