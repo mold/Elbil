@@ -34,12 +34,14 @@ public class EVVizSurface extends SurfaceView implements
 
 	@Override
 	public void surfaceCreated(SurfaceHolder holder) {
+		updateDimensions(holder);
 		redraw();
 	}
 
 	@Override
 	public void surfaceChanged(SurfaceHolder holder, int format, int width,
 			int height) {
+		updateDimensions(holder);
 		redraw();
 	}
 
@@ -65,7 +67,7 @@ public class EVVizSurface extends SurfaceView implements
 	public void redraw(){
 		// Perform update to UI
 		Canvas c = null;
-		Log.d("ElvizSurface", "Is holder null? "+(getHolder()==null)+"Is the surface valid? "+getHolder().getSurface().isValid());
+		//Log.d("ElvizSurface", "Is holder null? "+(getHolder()==null)+". Is the surface valid? "+getHolder().getSurface().isValid());
 		if(getHolder() == null || !getHolder().getSurface().isValid())
 			return;
 		try {
@@ -74,6 +76,29 @@ public class EVVizSurface extends SurfaceView implements
 				c.drawColor(Color.BLACK);
 				for(CanvasRenderer cr : crl)
 					cr.draw(c);
+				
+		}catch(OutOfResourcesException e){
+			e.printStackTrace();
+		}catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (c != null)
+				getHolder().getSurface().unlockCanvasAndPost(c);
+		}
+	}
+
+	/**
+	 * Internal method to update the dimensions for each canvasrenderer.
+	 * @param holder
+	 */
+	private void updateDimensions(SurfaceHolder holder) {
+		Canvas c = null;
+		if(!holder.getSurface().isValid())
+			return;
+		try {
+				c = holder.lockCanvas(null);
+				for(CanvasRenderer cr : crl)
+					cr.updateDimensions(c);
 				
 		}catch(OutOfResourcesException e){
 			e.printStackTrace();

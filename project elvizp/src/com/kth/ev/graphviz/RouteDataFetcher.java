@@ -22,6 +22,7 @@ import com.kth.ev.graphviz.APIDataTypes.Step;
  *
  */
 public class RouteDataFetcher extends Observable implements Runnable {
+	private static final String TAG = "RouteDataFetcher";
 	String pointA, pointB;
 	List<Step> data;
 
@@ -85,15 +86,19 @@ public class RouteDataFetcher extends Observable implements Runnable {
 				List<ElevationData> ed = eres.elevationpoints;
 
 				int i = 0;
+				double d = 0;
 				for (Step s : steps) {
+					d += s.distance.value;
 					ElevationData a = ed.get(i), b = ed.get(i + 1);
 					s.updateSlope(a.elevation, b.elevation);
-					Log.d("POOP", s.slope + "");
 				}
+				Log.d(TAG, "from: "+pointA+", to: "+pointB);
 
+				Log.d(TAG, "distance: "+d);
 				data = steps;
 			}
 		} catch (Exception e) {
+			Log.d(TAG, "Something went wrong");
 			e.printStackTrace();
 		}
 		setChanged();

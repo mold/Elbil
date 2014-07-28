@@ -18,5 +18,13 @@ public interface CanvasRenderer {
 	 * @param c The canvas to render onto.
 	 */
 	public void draw(Canvas c);
+	
+	/**
+	 * Updates the internal dimensions of the renderer.
+	 *  
+	 * @param c The canvas to render onto.
+	 */
+	public void updateDimensions(Canvas c);
+	
 
 }

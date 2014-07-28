@@ -7,6 +7,9 @@
 	<string name="google_browser_api_key">AIzaSyCIbD8tbedBaRRVxuEgwK-rg6pxbqOILbg</string>
 	<string name="start_sound">Start sound</string>
 	<string name="stop_sound">Stop sound</string>
+	<string name="from">From</string>
+	<string name="to">To</string>
+	<string name="load_directions">Load directions</string>
 	
 	
 	

@@ -1,0 +1,37 @@
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:alignmentMode="alignBounds"
+	android:orientation="horizontal"
+	android:padding="16dp"
+	android:useDefaultMargins="true"
+	android:columnCount="1">
+
+	<TextView
+		android:id="@+id/from_label"
+		android:text="@string/from"
+		android:textColor="?android:textColorSecondary" />
+
+	<AutoCompleteTextView
+		android:id="@+id/from"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:completionThreshold="3" />
+
+	<TextView
+		android:id="@+id/to_label"
+		android:text="@string/to"
+		android:textColor="?android:textColorSecondary" />
+
+	<AutoCompleteTextView
+		android:id="@+id/to"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:completionThreshold="3" />
+
+	<Button
+		android:id="@+id/load_directions"
+		android:text="@string/load_directions" />
+
+</GridLayout>

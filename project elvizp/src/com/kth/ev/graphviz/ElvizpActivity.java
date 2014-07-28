@@ -18,7 +18,9 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 /**
  * Main activity for the electric car visualizations.
@@ -27,6 +29,7 @@ import android.view.ViewGroup;
  *
  */
 public class ElvizpActivity extends FragmentActivity implements Observer {
+	protected static final String TAG = "ElvizpActivity";
 	CarData cd;
 	CarDataFetcher cdf;
 	RouteDataFetcher ee;
@@ -57,7 +60,6 @@ public class ElvizpActivity extends FragmentActivity implements Observer {
 		//Starts a separate thread for fetching the data
 		cdf = new CarDataFetcher(cd, false);
 		new Thread(cdf).start();
-		
 		
 	}
 
@@ -95,6 +97,8 @@ public class ElvizpActivity extends FragmentActivity implements Observer {
             this.cd = cd;
             this.c = c;
         }
+        
+        
 
         @Override
         public int getCount() {
@@ -109,12 +113,13 @@ public class ElvizpActivity extends FragmentActivity implements Observer {
         		cd.addObserver(e);
         		return e;
         	case 1:
-        		return new TextFragment();
+        		return new RoutePickFragment();
         	default:
            		AudiobahnFragment ab = new AudiobahnFragment();
         		return ab;
         	}
         }
+        
     }
     /**
      * 
@@ -130,6 +135,23 @@ public class ElvizpActivity extends FragmentActivity implements Observer {
       }
     }
     
+    
+    
+    /**
+     * Adds the given fragment as an observer to the given observable object.
+     * 
+     * @param frag_index Fragments index in the ViewPager.
+     */
+    public void relayObservable(Observable o, int frag_id){
+    	o.addObserver((EVVizFragment) getFragmentByPosition(frag_id));
+    }
+    
+    public Fragment getFragmentByPosition(int pos) {
+            String tag = "android:switcher:" + vp.getId() + ":" + pos;
+            return getSupportFragmentManager().findFragmentByTag(tag);
+    }
+
+
 
 
 

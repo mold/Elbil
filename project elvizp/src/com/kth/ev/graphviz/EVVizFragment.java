@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 public class EVVizFragment extends Fragment implements Observer {
+	private static final String TAG = "EVVizFragment";
 	private EVVizSurface canvas;
 	private CarData cd;
 	private RouteDataFetcher rdf;
@@ -94,6 +95,15 @@ public class EVVizFragment extends Fragment implements Observer {
 		}
 	}
 	
+	/**
+	 * Starts thread to fetch new data and update the visualization.
+	 * 
+	 * @param from
+	 * @param to
+	 */
+	public void changeRoute(String from, String to){
+	}
+	
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle bundle) {
       View v = inflater.inflate(R.layout.fragment_elviz, container, false);
@@ -106,8 +116,11 @@ public class EVVizFragment extends Fragment implements Observer {
 	public void update(Observable observable, Object data) {
 		if(canvas != null){
 			if(observable instanceof RouteDataFetcher){
-				addEvData(cd, rdf);
-				if(t_consump == null){
+				Log.d(TAG, "GOT SOME NEW DATA!");
+				evg.reset();
+				rdf = (RouteDataFetcher) observable;
+				addEvData(cd, (RouteDataFetcher) observable);
+				if(t_consump == null || !t_consump.isAlive()){
 					t_consump = new Thread(consumptionProgressUpdater);
 					t_consump.start();
 				}
@@ -118,6 +131,9 @@ public class EVVizFragment extends Fragment implements Observer {
 	
 	
 	public void addEvData(CarData cd, RouteDataFetcher rdf) {
+		if(rdf.data.size() < 1)
+			return;
+		
 		int factors = 0;
 		factors |= CarData.SLOPE | CarData.TIME | CarData.SPEED;
 		double[] consumption = cd.consumptionOnRoute(rdf.data, factors);

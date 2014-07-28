@@ -2,6 +2,7 @@ package com.kth.ev.graphviz;
 import java.io.IOException;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.http.GenericUrl;
@@ -26,6 +27,7 @@ public class APIRequestTask extends AsyncTask<URLParameter, Integer, String> {
 	static final HttpTransport HTTP_TRANSPORT = AndroidHttp
 			.newCompatibleTransport();
 	static final JsonFactory JSON_FACTORY = new JacksonFactory();
+	private static final String TAG = "APIRequestTask";
 
 	/**
 	 * Constructs task
@@ -86,6 +88,8 @@ public class APIRequestTask extends AsyncTask<URLParameter, Integer, String> {
 		try {
 			httpResponse = getResponse(urlParams).parseAsString();
 		} catch (IOException ex) {
+			Log.e(TAG, "Something went wrong...");
+			Log.e(TAG, ex.toString());
 			ex.printStackTrace();//We don't care about the error.
 		}
 		return httpResponse;
