@@ -7,7 +7,5 @@
 	<string name="google_browser_api_key">AIzaSyCIbD8tbedBaRRVxuEgwK-rg6pxbqOILbg</string>
 	<string name="start_sound">Start sound</string>
 	<string name="stop_sound">Stop sound</string>
-	
-	
-	
+	<string name="reload_folder">Reload patch folder</string>
 </resources>

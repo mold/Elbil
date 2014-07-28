@@ -91,6 +91,7 @@ public class AudioGame implements Observer {
 			if(ampState != 0 && change != ampState) {
 				if (ampState == 1) {
 					long time = System.currentTimeMillis() - ampStartTime;
+					Log.v("pdgame", "gain streak: " + time);
 					PdBase.sendFloat("amp_gain_time", time);
 				}
 				ampState = 0;
