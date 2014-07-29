@@ -4,3 +4,4 @@
 */gen/*
 *.classpath
 */android-support-v7-appcompat.jar
+*.db
