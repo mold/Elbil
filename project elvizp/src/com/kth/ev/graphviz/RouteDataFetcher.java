@@ -11,6 +11,7 @@ import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.api.client.json.JsonParser;
+import com.google.gson.Gson;
 import com.google.maps.android.PolyUtil;
 import com.kth.ev.graphviz.APIDataTypes.DirectionsResult;
 import com.kth.ev.graphviz.APIDataTypes.ElevationData;
@@ -28,7 +29,7 @@ public class RouteDataFetcher extends Observable implements Runnable {
 	private static final String TAG = "RouteDataFetcher";
 	String pointA, pointB;
 	public List<Step> data;
-	public String raw;
+	public String raw, rawextra;
 
 	/**
 	 * Constructor
@@ -64,7 +65,7 @@ public class RouteDataFetcher extends Observable implements Runnable {
 				JsonParser parser = APIRequestTask.JSON_FACTORY
 						.createJsonParser(raw);
 				DirectionsResult dRes = parser.parse(DirectionsResult.class);
-
+				
 				List<LatLng> step_locas = new ArrayList<LatLng>(20);
 				// Push all LatLng from the parsed data.
 				List<Leg> legs = dRes.routes.get(0).legs;
@@ -98,9 +99,12 @@ public class RouteDataFetcher extends Observable implements Runnable {
 					s.updateSlope(a.elevation, b.elevation);
 				}
 				Log.d(TAG, "from: "+pointA+", to: "+pointB);
-
+				
 				Log.d(TAG, "distance: "+d);
 				data = steps;
+				Gson gson = new Gson();
+				rawextra = gson.toJson(steps);
+				Log.v(TAG, rawextra);
 			}
 		} catch (Exception e) {
 			Log.d(TAG, "Something went wrong");

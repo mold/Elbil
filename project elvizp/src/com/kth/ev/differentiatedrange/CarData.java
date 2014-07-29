@@ -460,7 +460,6 @@ public class CarData extends Observable {
 	 */
     @JavascriptInterface
     public String toJson() {
-    	Log.d(TAG, "JSON CALL!");
     	JSONObject jo = new JSONObject();
     	try {
 			jo.put("speed", speed+"");

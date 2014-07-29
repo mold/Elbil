@@ -5,6 +5,7 @@ import java.util.Observer;
 
 import se.kth.ev.gmapsviz.R;
 
+import com.google.gson.Gson;
 import com.kth.ev.differentiatedrange.CarData;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -59,7 +60,7 @@ public class D3Fragment extends Fragment implements Observer {
 				rdf.addObserver(this);
 				t_rdf = new Thread(rdf);
 				t_rdf.start();
-			}else{
+			} else {
 				Log.e(TAG, "Cannot start API call without internet access.");
 			}
 		}
@@ -81,32 +82,40 @@ public class D3Fragment extends Fragment implements Observer {
 
 	}
 
+	/**
+	 * Listens for the routedatafetcher thread completion.
+	 */
 	@Override
 	public void update(Observable observable, Object data) {
 		if (observable instanceof RouteDataFetcher) {
-			// Log.d(TAG, "GOT SOME NEW DATA!");
 			rdf = (RouteDataFetcher) observable;
 			addEstimation(cd, (RouteDataFetcher) observable);
-			setRoute(rdf.raw);
+			setRoute(rdf.rawextra);
 		}
 	}
 
 	/**
-	 * Loads a json encoded step file (fetched from google api) into
-	 * the visualization. Interpreted as the current route.
+	 * Loads a json encoded step file (fetched from google api) into the
+	 * visualization. Interpreted as the current route.
 	 * 
 	 * @param json
 	 */
 	private void setRoute(String json) {
-		runBrowserCommand("javascript:setRoute(" + json + ")");
+		if (!isValidJSON(json)) {
+			throw new IllegalArgumentException("Not a valid JSON string.");
+		} else {
+			runBrowserCommand("javascript:setRoute(" + json + ")");
+		}
 	}
 
 	/**
-	 * Adds an energy estimation to the visualization based on the 
-	 * route data and car data.
+	 * Adds an energy estimation to the visualization based on the route data
+	 * and car data.
 	 * 
-	 * @param cd2 CarData object.
-	 * @param observable Thread which fetched the route data.
+	 * @param cd2
+	 *            CarData object.
+	 * @param observable
+	 *            Thread which fetched the route data.
 	 */
 	private void addEstimation(CarData cd2, RouteDataFetcher observable) {
 		if (rdf.data.size() < 1)
@@ -116,16 +125,26 @@ public class D3Fragment extends Fragment implements Observer {
 		factors |= CarData.SLOPE | CarData.TIME | CarData.SPEED;
 		final String consumption = cd.consumptionOnRouteJSON(rdf.data, factors);
 		runBrowserCommand("javascript:updateSeries(\"Estimated consumption\","
-						+ consumption + ")");
+				+ consumption + ")");
 	}
-	
-	private void runBrowserCommand(final String c){
+
+	private void runBrowserCommand(final String c) {
 		getActivity().runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
 				browser.loadUrl(c);
 			}
 		});
+	}
+
+	private static final Gson gson = new Gson();
+	private boolean isValidJSON(String JSON_STRING) {
+		try {
+			gson.fromJson(JSON_STRING, Object.class);
+			return true;
+		} catch (com.google.gson.JsonSyntaxException ex) {
+			return false;
+		}
 	}
 
 }
