@@ -98,6 +98,7 @@ public class AudiobahnFragment extends Fragment implements OnClickListener {
 		container.addView(game.getSpeedGraph());
 		container.addView(game.getAmpGraph());
 		container.addView(game.getAmpStateGraph());
+		container.addView(game.getAmpSpeedGraph());
 
 		// DataGraph graph;
 		// graph = new DataGraph(getActivity(), carData, DataGraph.DATA.SPEED);
@@ -120,7 +121,7 @@ public class AudiobahnFragment extends Fragment implements OnClickListener {
 				loadedPatches[i].close();
 			}
 		}
-		loadedPatches = pdHandler.loadPatchesFromDirectory(Environment.getExternalStorageDirectory() + "/puredata/");
+		loadedPatches = pdHandler.loadPatches();
 		
 		// update the list view
 		TextView item;
