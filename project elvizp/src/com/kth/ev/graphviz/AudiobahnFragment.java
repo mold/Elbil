@@ -7,6 +7,7 @@ import com.kth.ev.differentiatedrange.gamification.AudioGame;
 import com.kth.ev.differentiatedrange.puredata.Patch;
 import com.kth.ev.differentiatedrange.puredata.PureDataHandler;
 
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
@@ -114,6 +115,11 @@ public class AudiobahnFragment extends Fragment implements OnClickListener {
 	private void loadPatches() {
 		// TODO: check if the directory exists
 		// load patches from the local puredata directory
+		if (loadedPatches != null) {
+			for (int i = 0; i < loadedPatches.length; i++) {
+				loadedPatches[i].close();
+			}
+		}
 		loadedPatches = pdHandler.loadPatchesFromDirectory(Environment.getExternalStorageDirectory() + "/puredata/");
 		
 		// update the list view
