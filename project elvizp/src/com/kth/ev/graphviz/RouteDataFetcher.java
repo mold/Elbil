@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -25,6 +28,7 @@ public class RouteDataFetcher extends Observable implements Runnable {
 	private static final String TAG = "RouteDataFetcher";
 	String pointA, pointB;
 	public List<Step> data;
+	public String raw;
 
 	/**
 	 * Constructor
@@ -52,13 +56,13 @@ public class RouteDataFetcher extends Observable implements Runnable {
 	public void run() {
 		try {
 			synchronized (this) {
-				String routes_data = GoogleAPIQueries.requestDirections(pointA,
+				raw = GoogleAPIQueries.requestDirections(pointA,
 						pointB).get();
-				if (routes_data == null) {
+				if (raw == null) {
 					throw new Exception("Google Direction API call failed!");
 				}
 				JsonParser parser = APIRequestTask.JSON_FACTORY
-						.createJsonParser(routes_data);
+						.createJsonParser(raw);
 				DirectionsResult dRes = parser.parse(DirectionsResult.class);
 
 				List<LatLng> step_locas = new ArrayList<LatLng>(20);

@@ -16,6 +16,13 @@ import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 
+/**
+ * Fragment that contains a WebView for rendering graphs using the d3.js
+ * framework.
+ * 
+ * @author marothon
+ * 
+ */
 @SuppressLint("SetJavaScriptEnabled")
 public class D3Fragment extends Fragment implements Observer {
 	private static final String TAG = "D3Fragment";
@@ -46,11 +53,15 @@ public class D3Fragment extends Fragment implements Observer {
 				cd.addObserver(this);
 			}
 		if (t_rdf == null) {
-			Log.d("ElvizFragment", "GET DATA");
-			rdf = new RouteDataFetcher();
-			rdf.addObserver(this);
-			t_rdf = new Thread(rdf);
-			t_rdf.start();
+			if (((ElvizpActivity) getActivity()).isNetworkAvailable()) {
+				Log.d("ElvizFragment", "GET DATA");
+				rdf = new RouteDataFetcher();
+				rdf.addObserver(this);
+				t_rdf = new Thread(rdf);
+				t_rdf.start();
+			}else{
+				Log.e(TAG, "Cannot start API call without internet access.");
+			}
 		}
 
 		browser = new WebView(getActivity());
@@ -76,23 +87,45 @@ public class D3Fragment extends Fragment implements Observer {
 			// Log.d(TAG, "GOT SOME NEW DATA!");
 			rdf = (RouteDataFetcher) observable;
 			addEstimation(cd, (RouteDataFetcher) observable);
+			setRoute(rdf.raw);
 		}
 	}
 
+	/**
+	 * Loads a json encoded step file (fetched from google api) into
+	 * the visualization. Interpreted as the current route.
+	 * 
+	 * @param json
+	 */
+	private void setRoute(String json) {
+		runBrowserCommand("javascript:setRoute(" + json + ")");
+	}
+
+	/**
+	 * Adds an energy estimation to the visualization based on the 
+	 * route data and car data.
+	 * 
+	 * @param cd2 CarData object.
+	 * @param observable Thread which fetched the route data.
+	 */
 	private void addEstimation(CarData cd2, RouteDataFetcher observable) {
-		if(rdf.data.size() < 1)
+		if (rdf.data.size() < 1)
 			return;
-		
+
 		int factors = 0;
 		factors |= CarData.SLOPE | CarData.TIME | CarData.SPEED;
 		final String consumption = cd.consumptionOnRouteJSON(rdf.data, factors);
-		getActivity().runOnUiThread(new Runnable(){
+		runBrowserCommand("javascript:updateSeries(\"Estimated consumption\","
+						+ consumption + ")");
+	}
+	
+	private void runBrowserCommand(final String c){
+		getActivity().runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				browser.loadUrl("javascript:updateSeries(\"Estimated consumption\","+consumption+")");
+				browser.loadUrl(c);
 			}
 		});
 	}
-	
 
 }
