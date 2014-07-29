@@ -2,104 +2,201 @@
 <meta charset="utf-8">
 <style>
 
-body {
-  font: 10px sans-serif;
-}
+  body {
+    font: 10px sans-serif;
+  }
 
-.axis path,
-.axis line {
-  fill: none;
-  stroke: #000;
-  shape-rendering: crispEdges;
-}
+  .axis path,
+  .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+  }
 
-.x.axis path {
-  display: none;
-}
+  .x.axis path {
+    display: none;
+  }
 
-.line {
-  fill: none;
-  stroke: steelblue;
-  stroke-width: 1.5px;
-}
+  .area.above {
+    fill: rgb(252,141,89);
+  }
+
+  .area.below {
+    fill: rgb(145,207,96);
+  }
+
+  .line {
+    fill: none;
+    stroke: #000;
+    stroke-width: 1.5px;
+  }
+
+  .progressLine {
+    fill: none;
+    stroke: #F00;
+    stroke-width: 1.75px;
+  }
 
 </style>
 <body>
+
 <script src="d3.v3.min.js"></script>
+<script src="evenergy.js"></script>
+
 <script>
 
-d3.select("body").append("p");
+  d3.select("body").append("p");
 
-var carData;
+  var carData = {};
+  var currentRoute = new Array();
+  var currentProgress = new Array();
+  var currentEstimation = {};
 
-var margin = {top: 20, right: 20, bottom: 30, left: 50},
-    width = window.innerWidth - 50 - margin.left - margin.right,
-    height = window.innerHeight - 50 - margin.top - margin.bottom;
+  var margin = {top: 20, right: 20, bottom: 30, left: 50},
+  width = window.innerWidth - 50 - margin.left - margin.right,
+  height = window.innerHeight - 50 - margin.top - margin.bottom;
 
-var svg = d3.select("body").append("svg")
+  var svg = d3.select("body").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
-  .append("g")
+    .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-var x = d3.scale.linear()
+  var x = d3.scale.linear()
     .range([0, width]);
 
-var y = d3.scale.linear()
+  var y = d3.scale.linear()
     .range([height, 0]);
 
-var xAxis = d3.svg.axis()
+  var xAxis = d3.svg.axis()
     .scale(x)
     .orient("bottom");
 
-var yAxis = d3.svg.axis()
+  var yAxis = d3.svg.axis()
     .scale(y)
     .orient("left");
 
-var energy_curve = d3.svg.line()
+  var energy_curve = d3.svg.line()
     .x(function(d) { return x(d.distance/1000); })
     .y(function(d) { return y(d.energy); })	
+    .interpolate("basis");
+
+  var energy_curve2 = d3.svg.line()
+    .x(function(d) { return x(d.distance/1000); })
+    .y(function(d) { return y(d.energy); }) 
     .interpolate("linear");
 
-//(function requestLoop(){
-// requestAnimationFrame(requestLoop);
-//  carData = JSON.parse(CarData.toJson());
-//  d3.select("body p").html(carData.speed +", "+carData.soc);
-//})();
+  var area = d3.svg.area()
+    .interpolate("basis")
+    .x(function(d) { return x(d.date); })
+    .y1(function(d) { return y(d["New York"]); });
 
-function updateSeries(name, values){
-  x.domain(d3.extent(values, function(d) { return d.distance/1000; }));
-  y.domain(d3.extent(values, function(d) { return d.energy; }));
-  
-  svg.selectAll("g").remove();
-  svg.select("path").remove();
-  
-  svg.append("g")
+  function setRoute(routeData){
+    travelled_distance = 0;
+    var sofar = 0;
+    currentProgress.push({distance: 0, energy: 0});
+    for(var i=0; i<routeData.length; i++){
+      sofar += routeData[i].distance.value;
+      elem = routeData[i];
+      elem.overallDistance = sofar;
+      currentRoute.push(elem);
+    }
+  }
+
+  function updateSeries(name, values){
+    currentEstimation = {};
+    currentEstimation.name = name;
+    currentEstimation.data = values;
+
+    x.domain([0, d3.max(values, function(d) { return d.distance/1000; })]);
+    y.domain(d3.extent(values, function(d) { return d.energy; }));
+
+    svg.selectAll("g").remove();
+    svg.select("path").remove();
+
+    svg.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
       .call(xAxis)
-    .append("text")
+      .append("text")
       .attr("y", 6)
       .attr("dx", "-4em")
       .attr("dy", "1.71em")
       .style("text-anchor", "start")
       .text("Distance (km)");
 
-  svg.append("g")
+    svg.append("g")
       .attr("class", "y axis")
       .call(yAxis)
-    .append("text")
+      .append("text")
       .attr("transform", "rotate(-90)")
       .attr("y", 6)
       .attr("dx", "-4em")
       .attr("dy", "-4.71em")
       .style("text-anchor", "end")
       .text("Energy consumption (kWh/km)");
-  
-  svg.append("path")
+
+    svg.append("path")
       .datum(values)
       .attr("class", "line")
       .attr("d", energy_curve);
+
+    svg.append("path")
+      .datum(currentProgress)
+      .attr("id", "progressLine")
+      .attr("class", "progressLine")
+      .attr("d", energy_curve);
+    
+    window.setInterval(requestLoop, 100);
+  }
+
+
+function requestLoop(){
+  carData = JSON.parse(CarData.toJson());
+  d3.select("body p").html(carData.speed +", "+carData.soc);
+  incrementProgress(carData);
+}
+
+vehicle = {
+  cd:0.29,
+  cr:0.012,
+  area:2.7435,
+  mass:1521
+}
+
+evenergy.config(vehicle)
+
+var route_index = 0;
+last_speed = 0;
+
+function incrementProgress(data){
+  if(route_index >= currentRoute.length)
+    return;
+
+  speed = 200.0 * 33.0 / 3.6;
+  lin_acc = 0;
+  // double lin_acc = (speed - last_speed)/dt;
+  dist = (last_speed + speed) / 2.0 * 0.1;// meters
+  travelled_distance += dist;
+  current_step = currentRoute[route_index];
+ 
+  if (travelled_distance > current_step.overallDistance) {
+    route_index++;
+  }
+
+  evenergy.speed(speed/200,"ms").distance(dist,"m").time(0.1*200.0, "s").slope(current_step.slope).soc(carData.soc);
+  e = evenergy.kWhPerKm();
+  console.log(route_index+", "+travelled_distance+" m, "+e+" kWh/Km");
+  //alert(travelled_distance/1000 + " " +e);
+  currentProgress.push({distance: travelled_distance, energy: e});
+  last_speed = speed;
+ 
+  svg.select("#progressLine")
+    .transition()
+    .ease("linear")
+    .duration(100)
+    .attr("d", energy_curve)
+
 }
 
 </script>

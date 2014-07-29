@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import com.kth.ev.graphviz.CanvasRenderer;
 
 import android.graphics.Canvas;
 import android.graphics.Color;

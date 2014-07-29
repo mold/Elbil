@@ -11,6 +11,8 @@ import com.kth.ev.differentiatedrange.CarData;
 import com.kth.ev.differentiatedrange.CarDataFetcher;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -155,8 +157,12 @@ public class ElvizpActivity extends FragmentActivity implements Observer {
             return getSupportFragmentManager().findFragmentByTag(tag);
     }
 
-
-
+	public boolean isNetworkAvailable() {
+	    ConnectivityManager connectivityManager 
+	          = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+	    NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+	    return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+	}
 
 
 }

@@ -3,7 +3,6 @@ package old.junk;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.kth.ev.graphviz.CanvasRenderer;
 
 import android.content.Context;
 import android.graphics.Canvas;

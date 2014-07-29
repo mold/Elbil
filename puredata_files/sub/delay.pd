@@ -1,11 +1,10 @@
-#N canvas 1324 399 450 513 10;
+#N canvas 1356 541 450 513 10;
 #X obj 89 199 inlet~;
 #X obj 94 385 outlet~;
-#X obj 86 246 delwrite~ del 500;
 #X obj 231 248 vsl 15 128 0 1 0 0 empty empty feedback_level 0 -9 0
 10 -261234 -204800 -1 2700 1;
 #X obj 282 184 vsl 15 128 0 499 0 0 empty empty speed 0 -9 0 10 -204800
--261234 -1 5900 1;
+-261234 -1 2900 1;
 #X floatatom 231 384 5 0 0 0 - - -, f 5;
 #X floatatom 282 320 5 0 0 0 - - -, f 5;
 #X obj 231 95 loadbang;
@@ -17,18 +16,19 @@
 ©©©©©©©©©©©©©©©©©©©©©©©©©©©©©©©©©©©
 ;
 #X obj 40 294 *~ 0.212;
-#X obj 95 337 delread~ del 139.3;
 #X text 30 14 \$1: feedback level (0-1) | Default: 0.212;
 #X text 31 32 \$2: speed (0-500 ish) | Default: 139.3;
-#X connect 0 0 2 0;
+#X obj 86 246 delwrite~ dell 500;
+#X obj 95 337 delread~ dell 139.3;
+#X connect 0 0 15 0;
+#X connect 2 0 4 0;
+#X connect 2 0 12 1;
 #X connect 3 0 5 0;
-#X connect 3 0 13 1;
-#X connect 4 0 6 0;
-#X connect 4 0 14 0;
-#X connect 7 0 8 0;
-#X connect 7 0 9 0;
+#X connect 3 0 16 0;
+#X connect 6 0 7 0;
+#X connect 6 0 8 0;
+#X connect 7 0 2 0;
 #X connect 8 0 3 0;
-#X connect 9 0 4 0;
-#X connect 13 0 2 0;
-#X connect 14 0 1 0;
-#X connect 14 0 13 0;
+#X connect 12 0 15 0;
+#X connect 16 0 1 0;
+#X connect 16 0 12 0;
