@@ -26,6 +26,7 @@ public class AudioGame implements Observer {
 	DataGraph speedGraph;
 	DataGraph ampGraph;
 	DataGraph ampStateGraph;
+	DataGraph ampSpeedGraph;
 	int prevAmpChange = 0;
 	
 	long ampStartTime;
@@ -38,13 +39,13 @@ public class AudioGame implements Observer {
 	}
 	
 	public DataGraph getSpeedGraph() {
-		speedGraph = new DataGraph(context, "speed", 0, 255);
+		speedGraph = new DataGraph(context, "speed", 0, 80);
 		speedGraph.setColor(Color.GREEN);
 		return speedGraph;
 	}
 	
 	public DataGraph getAmpGraph() {
-		ampGraph = new DataGraph(context, "amp", -100, 100);
+		ampGraph = new DataGraph(context, "amp", -40, 40);
 		ampGraph.setColor(Color.CYAN);
 		return ampGraph;
 	}
@@ -54,22 +55,31 @@ public class AudioGame implements Observer {
 		ampStateGraph.setColor(Color.CYAN);
 		return ampStateGraph;
 	}
+	
+	public DataGraph getAmpSpeedGraph() {
+		ampSpeedGraph = new DataGraph(context, "speed/amp", -30, 30);
+		ampSpeedGraph.setColor(Color.MAGENTA);
+		return ampSpeedGraph;
+	}
 
 	@Override
 	public void update(Observable observable, Object data) {
 		if (observable instanceof CarData) {
 			CarData carData = (CarData) observable;
-			speedData.pushData(carData.getSpeed(false));
-			ampData.pushData(carData.getAmp(false));
+			double speed = carData.getSpeed(false);
+			double amp = carData.getAmp(false);
+			speedData.pushData(speed);
+			ampData.pushData(amp);
 			
 			float average = (float) speedData.getAverage();
 			if (speedGraph != null) {
-				speedGraph.addDataPoint(average);
+				speedGraph.addDataPoint((float) speed);
 			}
 			
 			int change = ampData.getStateOfChange();
 			if (ampGraph != null) {
-				ampGraph.addDataPoint((float) ampData.getAverage());
+				//ampGraph.addDataPoint((float) ampData.getAverage());
+				ampGraph.addDataPoint((float) amp);
 			}
 			if (ampStateGraph != null) {
 				ampStateGraph.addDataPoint(change);
@@ -81,6 +91,10 @@ public class AudioGame implements Observer {
 				PdBase.sendBang("amp_low");
 			}
 			prevAmpChange = change;
+			
+			if (ampSpeedGraph != null) {
+				ampSpeedGraph.addDataPoint((float) (speed / amp));
+			}
 			
 			// entering a new state
 			if (ampState == 0 && change != 0) {

@@ -7,6 +7,8 @@ package com.kth.ev.differentiatedrange.puredata;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Observable;
@@ -19,13 +21,16 @@ import org.puredata.android.service.PdPreferences;
 import org.puredata.android.service.PdService;
 import org.puredata.core.PdBase;
 import org.puredata.core.PdReceiver;
+import org.puredata.core.utils.IoUtils;
 
 import com.kth.ev.differentiatedrange.CarData;
 
+import android.R;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.res.Resources;
 import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
@@ -34,6 +39,7 @@ public class PureDataHandler implements Runnable {
 	
 	private final String TAG = "puredata";
 	private final int THREAD_SLEEP = 50;
+	private final String PATCH_DIRECTORY = Environment.getExternalStorageDirectory() + "/puredata/";
 	
 	private Thread thread;
 	private Context context;
@@ -186,8 +192,12 @@ public class PureDataHandler implements Runnable {
 		return new Patch(context, resource);
 	}
 	
-	public Patch[] loadPatchesFromDirectory(String dir) {
-		File[] files = new File(dir).listFiles(new FilenameFilter() {
+	public Patch[] loadPatches() {
+		File dir = new File(PATCH_DIRECTORY);
+		if (!dir.exists()) {
+			dir.mkdir();
+		}
+		File[] files = dir.listFiles(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String filename) {
 				Pattern pattern = Pattern.compile(".*\\.(pd|PD)$");
