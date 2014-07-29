@@ -23,10 +23,12 @@ public class AudioGame implements Observer {
 	
 	DataAnalyzer speedData;
 	DataAnalyzer ampData;
+	DataAnalyzer accData;
 	DataGraph speedGraph;
 	DataGraph ampGraph;
 	DataGraph ampStateGraph;
 	DataGraph ampSpeedGraph;
+	DataGraph accGraph;
 	int prevAmpChange = 0;
 	
 	long ampStartTime;
@@ -36,6 +38,7 @@ public class AudioGame implements Observer {
 		this.context = context;
 		speedData = new DataAnalyzer(DATA_SIZE, 0);
 		ampData = new DataAnalyzer(DATA_SIZE, 0.5);
+		accData = new DataAnalyzer(DATA_SIZE, 0);
 	}
 	
 	public DataGraph getSpeedGraph() {
@@ -61,6 +64,12 @@ public class AudioGame implements Observer {
 		ampSpeedGraph.setColor(Color.MAGENTA);
 		return ampSpeedGraph;
 	}
+	
+	public DataGraph getAccelerationGraph() {
+		accGraph = new DataGraph(context, "acceleration", -20, 20);
+		accGraph.setColor(Color.RED);
+		return accGraph;
+	}
 
 	@Override
 	public void update(Observable observable, Object data) {
@@ -68,12 +77,22 @@ public class AudioGame implements Observer {
 			CarData carData = (CarData) observable;
 			double speed = carData.getSpeed(false);
 			double amp = carData.getAmp(false);
+			double acceleration = carData.getAcceleration(false);
 			speedData.pushData(speed);
 			ampData.pushData(amp);
+			accData.pushData(acceleration);
+			double accelerationAvg = accData.getAverage();
 			
-			float average = (float) speedData.getAverage();
+			PdBase.sendFloat("speed", (float) speed);
+			PdBase.sendFloat("amp", (float) amp);
+			PdBase.sendFloat("acceleration", (float) accelerationAvg);
+			
 			if (speedGraph != null) {
 				speedGraph.addDataPoint((float) speed);
+			}
+			
+			if (accGraph != null) {
+				accGraph.addDataPoint((float) accelerationAvg);
 			}
 			
 			int change = ampData.getStateOfChange();

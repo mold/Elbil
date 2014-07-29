@@ -96,6 +96,7 @@ public class AudiobahnFragment extends Fragment implements OnClickListener {
 		
 		// add some data graphs
 		container.addView(game.getSpeedGraph());
+		container.addView(game.getAccelerationGraph());
 		container.addView(game.getAmpGraph());
 		container.addView(game.getAmpStateGraph());
 		container.addView(game.getAmpSpeedGraph());
