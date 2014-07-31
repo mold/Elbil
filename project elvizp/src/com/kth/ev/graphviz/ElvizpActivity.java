@@ -3,8 +3,6 @@ package com.kth.ev.graphviz;
 import java.util.Observable;
 import java.util.Observer;
 
-import old.junk.EVVizFragment;
-
 import se.kth.ev.gmapsviz.R;
 
 import com.kth.ev.differentiatedrange.CarData;
@@ -22,13 +20,11 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 /**
  * Main activity for the electric car visualizations.
- * '
+ * 
  * @author marothon
  *
  */
@@ -101,8 +97,6 @@ public class ElvizpActivity extends FragmentActivity implements Observer {
             this.cd = cd;
             this.c = c;
         }
-        
-        
 
         @Override
         public int getCount() {
@@ -113,7 +107,7 @@ public class ElvizpActivity extends FragmentActivity implements Observer {
         public Fragment getItem(int position) {
         	switch(position){
         	case 0:
-        		D3Fragment e = new D3Fragment();
+        		VizFragment e = new VizFragment();
         		//EVVizFragment e = new EVVizFragment();
         		//cd.addObserver(e);
         		return e;
@@ -140,8 +134,6 @@ public class ElvizpActivity extends FragmentActivity implements Observer {
       }
     }
     
-    
-    
     /**
      * Adds the given fragment as an observer to the given observable object.
      * 
@@ -157,6 +149,11 @@ public class ElvizpActivity extends FragmentActivity implements Observer {
             return getSupportFragmentManager().findFragmentByTag(tag);
     }
 
+    /**
+     * Checks if the application has internet access. Returns true if so.
+     * 
+     * @return True if internet is available.
+     */
 	public boolean isNetworkAvailable() {
 	    ConnectivityManager connectivityManager 
 	          = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);

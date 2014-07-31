@@ -7,11 +7,8 @@ import com.kth.ev.differentiatedrange.gamification.AudioGame;
 import com.kth.ev.differentiatedrange.puredata.Patch;
 import com.kth.ev.differentiatedrange.puredata.PureDataHandler;
 
-import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -29,6 +26,7 @@ import android.widget.TextView;
  * 
  */
 public class AudiobahnFragment extends Fragment implements OnClickListener {
+	//private static final String TAG = "AudiobahnFragment";
 	private static PureDataHandler pdHandler;
 	private static CarData carData;
 
@@ -47,7 +45,7 @@ public class AudiobahnFragment extends Fragment implements OnClickListener {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		Log.v("audiobahn", "onCreate");
+		//Log.v(TAG, "onCreate");
 		game = new AudioGame(getActivity());
 		if (getActivity() instanceof ElvizpActivity) {
 			carData = ((ElvizpActivity) getActivity()).cd;
@@ -68,7 +66,7 @@ public class AudiobahnFragment extends Fragment implements OnClickListener {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle bundle) {
-		Log.v("audiobahn", "onCreateView");
+		//Log.v(TAG, "onCreateView");
 		audiobahnView = inflater.inflate(R.layout.fragment_audiobahn,
 				container, false);
 		return audiobahnView;
@@ -78,7 +76,7 @@ public class AudiobahnFragment extends Fragment implements OnClickListener {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		if (pdHandler.ready()) {
-			Log.v("audiobahn", "initView (onActivityCreated)");
+			//Log.v(TAG, "initView (onActivityCreated)");
 			initView();
 		}
 	}

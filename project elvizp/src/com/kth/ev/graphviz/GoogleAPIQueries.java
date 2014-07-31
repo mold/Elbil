@@ -1,10 +1,6 @@
 package com.kth.ev.graphviz;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.List;
-
-import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.PolyUtil;
@@ -16,7 +12,7 @@ import com.google.maps.android.PolyUtil;
  * 
  */
 public class GoogleAPIQueries {
-	private static final String TAG = "GoogleAPIQueries";
+	//private static final String TAG = "GoogleAPIQueries";
 	public static final String elevation_url = "https://maps.googleapis.com/maps/api/elevation/json";
 	public static final String directions_url = "https://maps.googleapis.com/maps/api/directions/json";
 	public static final String places_url = "https://maps.googleapis.com/maps/api/place";
