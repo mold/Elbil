@@ -148,6 +148,10 @@ public class DataGraph extends SurfaceView implements SurfaceHolder.Callback,
 			}
 		}
 	}
+	
+	public void addDataPoint() {
+		
+	}
 
 	public void setColor(int color) {
 		paint.setColor(color);

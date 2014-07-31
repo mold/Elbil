@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import com.google.android.gms.drive.query.internal.InFilter;
 import com.kth.ev.differentiatedrange.CarData;
 import com.kth.ev.graphviz.DataGraph;
 
@@ -28,6 +29,7 @@ public class AudioGame implements Observer {
 	DataGraph ampGraph;
 	DataGraph ampStateGraph;
 	DataGraph ampSpeedGraph;
+	DataGraph ampAccGraph;
 	DataGraph accGraph;
 	int prevAmpChange = 0;
 	
@@ -38,7 +40,7 @@ public class AudioGame implements Observer {
 		this.context = context;
 		speedData = new DataAnalyzer(DATA_SIZE, 0);
 		ampData = new DataAnalyzer(DATA_SIZE, 0.5);
-		accData = new DataAnalyzer(DATA_SIZE, 0);
+		accData = new DataAnalyzer(4, 0);
 	}
 	
 	public DataGraph getSpeedGraph() {
@@ -60,15 +62,21 @@ public class AudioGame implements Observer {
 	}
 	
 	public DataGraph getAmpSpeedGraph() {
-		ampSpeedGraph = new DataGraph(context, "speed/amp", -30, 30);
+		ampSpeedGraph = new DataGraph(context, "amp/acc", -30, 30);
 		ampSpeedGraph.setColor(Color.MAGENTA);
 		return ampSpeedGraph;
 	}
 	
 	public DataGraph getAccelerationGraph() {
-		accGraph = new DataGraph(context, "acceleration", -20, 20);
+		accGraph = new DataGraph(context, "acceleration", -10, 10);
 		accGraph.setColor(Color.RED);
 		return accGraph;
+	}
+	
+	public DataGraph getAmpAccelerationGraph() {
+		ampAccGraph = new DataGraph(context, "amp/acc", -30, 30);
+		ampAccGraph.setColor(Color.RED);
+		return ampAccGraph;
 	}
 
 	@Override
@@ -112,7 +120,15 @@ public class AudioGame implements Observer {
 			prevAmpChange = change;
 			
 			if (ampSpeedGraph != null) {
-				ampSpeedGraph.addDataPoint((float) (speed / amp));
+				if (speed != 0.0) {
+					ampSpeedGraph.addDataPoint((float) (amp / speed));
+				} else {
+					ampSpeedGraph.addDataPoint();
+				}
+			}
+			
+			if (ampAccGraph != null) {
+				ampAccGraph.addDataPoint((float) (amp / accelerationAvg));
 			}
 			
 			// entering a new state
