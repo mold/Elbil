@@ -38,7 +38,7 @@ public class AudioGame implements Observer {
 		this.context = context;
 		speedData = new DataAnalyzer(DATA_SIZE, 0);
 		ampData = new DataAnalyzer(DATA_SIZE, 0.5);
-		accData = new DataAnalyzer(DATA_SIZE, 0);
+		accData = new DataAnalyzer(2, 0);
 	}
 	
 	public DataGraph getSpeedGraph() {
