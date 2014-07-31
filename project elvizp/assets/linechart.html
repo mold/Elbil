@@ -18,11 +18,13 @@
   }
 
   .area.above {
-    fill: rgb(252,141,89);
+    fill: rgb(145,207,96);
+    opacity: 0.5;
   }
 
   .area.below {
-    fill: rgb(145,207,96);
+    fill: rgb(252,141,89);
+    opacity: 0.5;
   }
 
   .line {
@@ -48,9 +50,10 @@
   d3.select("body").append("p");
 
   var carData = {};
-  var currentRoute = new Array();
   var currentProgress = new Array();
+  var currentRoute = new Array();
   var currentEstimation = {};
+  var vizData = {};
 
   var margin = {top: 20, right: 20, bottom: 30, left: 50},
   width = window.innerWidth - 50 - margin.left - margin.right,
@@ -86,15 +89,18 @@
     .y(function(d) { return y(d.energy); }) 
     .interpolate("linear");
 
-  var area = d3.svg.area()
-    .interpolate("basis")
-    .x(function(d) { return x(d.date); })
-    .y1(function(d) { return y(d["New York"]); });
+  // var area = d3.svg.area()
+  //   .interpolate("basis")
+  //   .x(function(d) { return x(d.distance/1000); })
+  //   .y1(function(d) { return y(d.energy); });
 
   function setRoute(routeData){
     travelled_distance = 0;
     var sofar = 0;
+    currentProgress.length = 0;
     currentProgress.push({distance: 0, energy: 0});
+    vizData.progress = currentProgress;
+
     for(var i=0; i<routeData.length; i++){
       sofar += routeData[i].distance.value;
       elem = routeData[i];
@@ -104,12 +110,9 @@
   }
 
   function updateSeries(name, values){
-    currentEstimation = {};
-    currentEstimation.name = name;
-    currentEstimation.data = values;
-
-    x.domain([0, d3.max(values, function(d) { return d.distance/1000; })]);
-    y.domain(d3.extent(values, function(d) { return d.energy; }));
+    vizData.estimation = values;
+    x.domain([0, d3.max(vizData.estimation, function(d) { return d.distance/1000; })]);
+    y.domain(d3.extent(vizData.estimation, function(d) { return d.energy; }));
 
     svg.selectAll("g").remove();
     svg.select("path").remove();
@@ -136,17 +139,49 @@
       .style("text-anchor", "end")
       .text("Energy consumption (kWh/km)");
 
-    svg.append("path")
-      .datum(values)
+    est_path = svg.append("path");
+
+    est_path
+      .datum(vizData.estimation)
       .attr("class", "line")
       .attr("d", energy_curve);
 
     svg.append("path")
-      .datum(currentProgress)
+      .datum(vizData.progress)
       .attr("id", "progressLine")
       .attr("class", "progressLine")
       .attr("d", energy_curve);
     
+    //Difference chart stuff
+    //  svg.append("clipPath")
+    //    .attr("id", "clip-below")
+    //  .append("path")
+    //     .datum(vizData.progress)
+    //    .attr("d", area.y0(height));
+
+    //   svg.append("clipPath")
+    //     .attr("id", "clip-above")
+    //   .append("path")
+    //      .datum(vizData.progress)
+    //     .attr("d", area.y0(0));
+
+    //  svg.append("path")
+    //    .datum(vizData.progress)
+    //    .attr("class", "area above")
+    //    .attr("clip-path", "url(#clip-above)")
+    //    .attr("d", area.y0(function(d) { return y(d.est_energy);}));
+
+    // svg.append("path")
+    //   .datum(vizData.progress)
+    //   .attr("class", "area below")
+    //   .attr("clip-path", "url(#clip-below)")
+    //   .attr("d", area);
+
+    // svg.append("path")
+    //   .datum(vizData.progress)
+    //   .attr("class", "line")
+    //   .attr("d", energy_curve);
+
     window.setInterval(requestLoop, 100);
   }
 
@@ -186,16 +221,35 @@ function incrementProgress(data){
 
   evenergy.speed(speed/200,"ms").distance(dist,"m").time(0.1*200.0, "s").slope(current_step.slope).soc(carData.soc);
   e = evenergy.kWhPerKm();
-  console.log(route_index+", "+travelled_distance+" m, "+e+" kWh/Km");
+  //console.log(route_index+", "+travelled_distance+" m, "+e+" kWh/Km");
+
   //alert(travelled_distance/1000 + " " +e);
-  currentProgress.push({distance: travelled_distance, energy: e});
+  var dist_x = x(travelled_distance/1000);
+  var point = est_path.node().getPointAtLength(dist_x);
+  var est_y = y.invert(point.y);
+  console.log("For distance "+travelled_distance+", the kWh/km should be "+est_y);
+  currentProgress.push({distance: travelled_distance, energy: e, est_energy: est_y});
   last_speed = speed;
- 
+
   svg.select("#progressLine")
     .transition()
     .ease("linear")
     .duration(100)
     .attr("d", energy_curve)
+ 
+  // svg.select("#clip-below path")
+  //    .attr("d", area.y0(height));
+
+  //  svg.select("#clip-above path")
+  //    .attr("d", area.y0(0));
+
+  //  svg.select(".area.above")
+  //    .attr("d", area.y0(function(d) { return y(d.est_energy);}));
+
+  //  svg.select(".area.below")
+  //    .attr("d", area);
+      
+
 
 }
 

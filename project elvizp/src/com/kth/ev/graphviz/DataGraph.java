@@ -6,22 +6,20 @@ import java.util.Random;
 
 import com.kth.ev.differentiatedrange.CarData;
 
-import android.app.ActionBar.LayoutParams;
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.PorterDuff.Mode;
 import android.graphics.Rect;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
 import android.view.ViewGroup;
 
+@SuppressLint("ViewConstructor")
 public class DataGraph extends SurfaceView implements SurfaceHolder.Callback,
 		Observer {
 

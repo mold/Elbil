@@ -21,11 +21,11 @@ import android.webkit.WebView;
  * Fragment that contains a WebView for rendering graphs using the d3.js
  * framework.
  * 
- * @author marothon
+ * @author marothon  
  * 
  */
 @SuppressLint("SetJavaScriptEnabled")
-public class D3Fragment extends Fragment implements Observer {
+public class VizFragment extends Fragment implements Observer {
 	private static final String TAG = "D3Fragment";
 	private RouteDataFetcher rdf;
 	private Thread t_rdf;
@@ -89,9 +89,9 @@ public class D3Fragment extends Fragment implements Observer {
 	public void update(Observable observable, Object data) {
 		if (observable instanceof RouteDataFetcher) {
 			rdf = (RouteDataFetcher) observable;
+			setRoute(rdf.json_processed); 
 			addEstimation(cd, (RouteDataFetcher) observable);
-			setRoute(rdf.rawextra);
-		}
+		} 
 	}
 
 	/**
@@ -105,7 +105,7 @@ public class D3Fragment extends Fragment implements Observer {
 			throw new IllegalArgumentException("Not a valid JSON string.");
 		} else {
 			runBrowserCommand("javascript:setRoute(" + json + ")");
-		}
+		} 
 	}
 
 	/**
@@ -134,7 +134,7 @@ public class D3Fragment extends Fragment implements Observer {
 			public void run() {
 				browser.loadUrl(c);
 			}
-		});
+		});    
 	}
 
 	private static final Gson gson = new Gson();
@@ -145,6 +145,6 @@ public class D3Fragment extends Fragment implements Observer {
 		} catch (com.google.gson.JsonSyntaxException ex) {
 			return false;
 		}
-	}
+	}  
 
 }

@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -29,7 +26,7 @@ public class RouteDataFetcher extends Observable implements Runnable {
 	private static final String TAG = "RouteDataFetcher";
 	String pointA, pointB;
 	public List<Step> data;
-	public String raw, rawextra;
+	public String json, json_processed;
 
 	/**
 	 * Constructor
@@ -57,13 +54,13 @@ public class RouteDataFetcher extends Observable implements Runnable {
 	public void run() {
 		try {
 			synchronized (this) {
-				raw = GoogleAPIQueries.requestDirections(pointA,
+				json = GoogleAPIQueries.requestDirections(pointA,
 						pointB).get();
-				if (raw == null) {
+				if (json == null) {
 					throw new Exception("Google Direction API call failed!");
 				}
 				JsonParser parser = APIRequestTask.JSON_FACTORY
-						.createJsonParser(raw);
+						.createJsonParser(json);
 				DirectionsResult dRes = parser.parse(DirectionsResult.class);
 				
 				List<LatLng> step_locas = new ArrayList<LatLng>(20);
@@ -92,19 +89,14 @@ public class RouteDataFetcher extends Observable implements Runnable {
 				List<ElevationData> ed = eres.elevationpoints;
 
 				int i = 0;
-				double d = 0;
 				for (Step s : steps) {
-					d += s.distance.value;
 					ElevationData a = ed.get(i), b = ed.get(i + 1);
 					s.updateSlope(a.elevation, b.elevation);
 				}
-				Log.d(TAG, "from: "+pointA+", to: "+pointB);
-				
-				Log.d(TAG, "distance: "+d);
 				data = steps;
 				Gson gson = new Gson();
-				rawextra = gson.toJson(steps);
-				Log.v(TAG, rawextra);
+				json_processed = gson.toJson(steps);
+				//Log.v(TAG, rawextra);
 			}
 		} catch (Exception e) {
 			Log.d(TAG, "Something went wrong");

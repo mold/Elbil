@@ -8,7 +8,6 @@ import se.kth.ev.gmapsviz.R;
 
 import com.kth.ev.differentiatedrange.CarData;
 import com.kth.ev.differentiatedrange.EVEnergy;
-import com.kth.ev.graphviz.APIDataTypes;
 import com.kth.ev.graphviz.ElvizpActivity;
 import com.kth.ev.graphviz.RouteDataFetcher;
 import com.kth.ev.graphviz.APIDataTypes.Step;
@@ -20,9 +19,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
+  
 public class EVVizFragment extends Fragment implements Observer {
-	private static final String TAG = "EVVizFragment";
+	//private static final String TAG = "EVVizFragment";
 	private EVVizSurface canvas;
 	private CarData cd;
 	private RouteDataFetcher rdf;
