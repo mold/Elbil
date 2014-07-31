@@ -80,18 +80,18 @@
     .orient("left");
 
   var energy_curve = d3.svg.line()
-    .x(function(d) { return x(d.distance/1000); })
+    .x(function(d) { return x(d.distance); })
     .y(function(d) { return y(d.energy); })	
     .interpolate("basis");
 
   var energy_curve2 = d3.svg.line()
-    .x(function(d) { return x(d.distance/1000); })
+    .x(function(d) { return x(d.distance); })
     .y(function(d) { return y(d.energy); }) 
     .interpolate("linear");
 
   // var area = d3.svg.area()
   //   .interpolate("basis")
-  //   .x(function(d) { return x(d.distance/1000); })
+  //   .x(function(d) { return x(d.distance); })
   //   .y1(function(d) { return y(d.energy); });
 
   function setRoute(routeData){
@@ -111,7 +111,7 @@
 
   function updateSeries(name, values){
     vizData.estimation = values;
-    x.domain([0, d3.max(vizData.estimation, function(d) { return d.distance/1000; })]);
+    x.domain([0, d3.max(vizData.estimation, function(d) { return d.distance; })]);
     y.domain(d3.extent(vizData.estimation, function(d) { return d.energy; }));
 
     svg.selectAll("g").remove();
@@ -144,6 +144,7 @@
     est_path
       .datum(vizData.estimation)
       .attr("class", "line")
+      .attr("id", "estimation")
       .attr("d", energy_curve);
 
     svg.append("path")
@@ -224,9 +225,9 @@ function incrementProgress(data){
   //console.log(route_index+", "+travelled_distance+" m, "+e+" kWh/Km");
 
   //alert(travelled_distance/1000 + " " +e);
-  var dist_x = x(travelled_distance/1000);
-  var point = est_path.node().getPointAtLength(dist_x);
-  var est_y = y.invert(point.y);
+  //var point = find_point_from_x(travelled_distance, est_path.node());
+  //var est_y = y.invert(point.y);
+  var est_y = 0;
   console.log("For distance "+travelled_distance+", the kWh/km should be "+est_y);
   currentProgress.push({distance: travelled_distance, energy: e, est_energy: est_y});
   last_speed = speed;
@@ -237,19 +238,33 @@ function incrementProgress(data){
     .duration(100)
     .attr("d", energy_curve)
  
-  // svg.select("#clip-below path")
-  //    .attr("d", area.y0(height));
+//   svg.select("#clip-below path")
+//      .attr("d", area.y0(height));
 
-  //  svg.select("#clip-above path")
-  //    .attr("d", area.y0(0));
+//    svg.select("#clip-above path")
+//      .attr("d", area.y0(0));
 
-  //  svg.select(".area.above")
-  //    .attr("d", area.y0(function(d) { return y(d.est_energy);}));
+//    svg.select(".area.above")
+//      .attr("d", area.y0(function(d) { return y(d.est_energy);}));
 
-  //  svg.select(".area.below")
-  //    .attr("d", area);
-      
+//    svg.select(".area.below")
+//      .attr("d", area);
 
+// var offsetLeft = document.getElementById("#estimation").offsetLeft;
+// function find_point_from_x(xval, path_node){
+//   var beginning = x(xval)-offsetLeft, end = path_node.getTotalLength(), target;
+//   while (true) {
+//     target = Math.floor((beginning + end) / 2);
+//     pos = path_node.getPointAtLength(target);
+//     if ((target === end || target === beginning) && pos.x !== x) {
+//         break;
+//     }
+//     if (pos.x > x)      end = target;
+//     else if (pos.x < x) beginning = target;
+//     else                break; //position found
+//   }
+//   return pos;
+// }
 
 }
 

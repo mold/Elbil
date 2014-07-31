@@ -141,6 +141,13 @@
 			}
 			return slope;
 		},
+		acceleration: function(value) {
+			if(value !== undefined) {
+				acceleration = value;
+				return evenergy;
+			}
+			return acceleration;
+		},
 		mass: function(value) {
 			if(value !== undefined) {
 				mass = value;

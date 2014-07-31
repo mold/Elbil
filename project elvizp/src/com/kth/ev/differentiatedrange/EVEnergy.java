@@ -36,7 +36,7 @@ public class EVEnergy {
 	public double Power(double speed, double acceleration, double slope,
 			double heating) {
 		return heating + TotalForce(speed, acceleration, slope) * speed / 1000
-				/ efficiency; // kW
+				/ efficiency; // kW 
 	}
 
 	public double TotalForce(double speed, double acceleration, double slope) {
@@ -60,7 +60,7 @@ public class EVEnergy {
 
 		return total; // kg m/s^2
 
-	}
+	}  
 
 	public double Energy(double speed, double acceleration, double slope,
 			double heating, double dt) {
@@ -72,7 +72,7 @@ public class EVEnergy {
 		return distance / 1000.0f
 				/ Energy(speed, acceleration, slope, heating, dt);
 	}
-
+   
 	public double kWhPerKm(double distance, double speed, double acceleration,
 			double slope, double heating, double dt) {
 		return Energy(speed, acceleration, slope, heating, dt) / distance * 1000.0f;
