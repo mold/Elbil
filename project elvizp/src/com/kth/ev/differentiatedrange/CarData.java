@@ -31,8 +31,8 @@ import android.util.Log;
  * 
  */
 public class CarData extends Observable {
-	private double soc, speed, fan, climate, amp;
-	private double socPrev, speedPrev, fanPrev, climatePrev, ampPrev;
+	private double soc, speed, fan, climate, amp, acceleration;
+	private double socPrev, speedPrev, fanPrev, climatePrev, ampPrev, accelerationPrev;
 
 	private double kmpKWh;
 	private EVEnergy evEnergy;
@@ -115,6 +115,9 @@ public class CarData extends Observable {
 				/ timesPerMin;
 		speedFiveMinMean = (speedFiveMinMean * (timesPer5Min - 1) + speed)
 				/ timesPer5Min;
+		// update the acceleration
+		accelerationPrev = acceleration;
+		acceleration = 1000*(speed - speedPrev) / (timeSinceLast);
 
 		/** Calculate distances **/
 		if (speed >= 0.1) {
@@ -197,6 +200,7 @@ public class CarData extends Observable {
 		if (speed >= 255)
 			speed = 0;
 		this.speed = speed;
+		
 		setChanged();
 	}
 
@@ -237,6 +241,13 @@ public class CarData extends Observable {
 		this.ampPrev = this.amp;
 		this.amp = amp;
 		setChanged();
+	}
+	
+	public double getAcceleration(boolean interpolate) {
+		if (interpolate) {
+			return lerp(accelerationPrev, acceleration);
+		}
+		return acceleration;
 	}
 
 	/**
