@@ -1,0 +1,90 @@
+#N canvas 0 50 450 300 10;
+#X obj -553 63 inlet;
+#X obj -510 136 &&;
+#X msg -401 110 0;
+#X obj -329 152 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X floatatom -418 192 5 0 0 0 - - -, f 5;
+#X floatatom -401 142 5 0 0 0 - - -, f 5;
+#X obj -522 195 moses 1;
+#X obj -350 61 inlet;
+#X text -302 61 Bang for reset;
+#X text -508 62 Get banged;
+#X obj -474 244 outlet;
+#X text -421 243 Sends a bang out;
+#X obj -314 103 loadbang;
+#X msg -314 125 1;
+#X msg -554 99 1;
+#X obj -483 218 bng 15 250 50 0 empty empty empty 17 7 0 10 -114624
+-232576 -1;
+#X obj -501 234 bng 15 250 50 0 empty empty empty 17 7 0 10 -114624
+-232576 -1;
+#X obj -473 271 bng 15 250 50 0 empty empty empty 17 7 0 10 -114624
+-232576 -1;
+#X obj -499 256 bng 15 250 50 0 empty empty empty 17 7 0 10 -114624
+-232576 -1;
+#X obj -448 272 bng 15 250 50 0 empty empty empty 17 7 0 10 -114624
+-232576 -1;
+#X obj -423 275 bng 15 250 50 0 empty empty empty 17 7 0 10 -114624
+-232576 -1;
+#X obj -395 273 bng 15 250 50 0 empty empty empty 17 7 0 10 -114624
+-232576 -1;
+#X obj -368 272 bng 15 250 50 0 empty empty empty 17 7 0 10 -114624
+-232576 -1;
+#X obj -340 268 bng 15 250 50 0 empty empty empty 17 7 0 10 -114624
+-232576 -1;
+#X obj -314 268 bng 15 250 50 0 empty empty empty 17 7 0 10 -114624
+-232576 -1;
+#X obj -290 255 bng 15 250 50 0 empty empty empty 17 7 0 10 -114624
+-232576 -1;
+#X obj -285 229 bng 15 250 50 0 empty empty empty 17 7 0 10 -114624
+-232576 -1;
+#X obj -312 218 bng 15 250 50 0 empty empty empty 17 7 0 10 -114624
+-232576 -1;
+#X obj -341 217 bng 15 250 50 0 empty empty empty 17 7 0 10 -114624
+-232576 -1;
+#X obj -367 218 bng 15 250 50 0 empty empty empty 17 7 0 10 -114624
+-232576 -1;
+#X obj -388 219 bng 15 250 50 0 empty empty empty 17 7 0 10 -114624
+-232576 -1;
+#X obj -410 219 bng 15 250 50 0 empty empty empty 17 7 0 10 -114624
+-232576 -1;
+#X obj -433 218 bng 15 250 50 0 empty empty empty 17 7 0 10 -114624
+-232576 -1;
+#X obj -458 216 bng 15 250 50 0 empty empty empty 17 7 0 10 -114624
+-232576 -1;
+#X text -563 7 Only forwards ONE bang until this block has been reset.
+;
+#X text -567 24 Good to use before delays so that the delayed bang
+gets sent through :---);
+#X connect 0 0 14 0;
+#X connect 1 0 2 0;
+#X connect 1 0 4 0;
+#X connect 1 0 6 0;
+#X connect 2 0 3 0;
+#X connect 2 0 5 0;
+#X connect 5 0 1 1;
+#X connect 6 1 15 0;
+#X connect 7 0 13 0;
+#X connect 12 0 13 0;
+#X connect 13 0 5 0;
+#X connect 14 0 1 0;
+#X connect 15 0 10 0;
+#X connect 15 0 16 0;
+#X connect 16 0 18 0;
+#X connect 17 0 19 0;
+#X connect 18 0 17 0;
+#X connect 19 0 20 0;
+#X connect 20 0 21 0;
+#X connect 21 0 22 0;
+#X connect 22 0 23 0;
+#X connect 23 0 24 0;
+#X connect 24 0 25 0;
+#X connect 25 0 26 0;
+#X connect 26 0 27 0;
+#X connect 27 0 28 0;
+#X connect 28 0 29 0;
+#X connect 29 0 30 0;
+#X connect 30 0 31 0;
+#X connect 31 0 32 0;
+#X connect 32 0 33 0;

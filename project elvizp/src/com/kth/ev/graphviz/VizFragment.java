@@ -70,7 +70,7 @@ public class VizFragment extends Fragment implements Observer {
 		browser.setVerticalScrollBarEnabled(false);
 		browser.setHorizontalScrollBarEnabled(false);
 		((ViewGroup) getView()).addView(browser);
-
+ 
 		if (getActivity() instanceof ElvizpActivity) {
 			Log.d(TAG, "Adding javascript interface");
 			browser.addJavascriptInterface(cd, "CarData");
@@ -78,7 +78,7 @@ public class VizFragment extends Fragment implements Observer {
 
 		browser.setWebChromeClient(new WebChromeClient());
 		browser.getSettings().setJavaScriptEnabled(true);
-		browser.loadUrl("file:///android_asset/linechart.html");
+		browser.loadUrl("file:///android_asset/donut.html");
 
 	}
 
@@ -130,7 +130,7 @@ public class VizFragment extends Fragment implements Observer {
 
 	private void runBrowserCommand(final String c) {
 		getActivity().runOnUiThread(new Runnable() {
-			@Override
+			@Override  
 			public void run() {
 				browser.loadUrl(c);
 			}
@@ -145,6 +145,6 @@ public class VizFragment extends Fragment implements Observer {
 		} catch (com.google.gson.JsonSyntaxException ex) {
 			return false;
 		}
-	}  
+	}       
 
 }

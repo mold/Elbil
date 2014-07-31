@@ -114,10 +114,10 @@ public class CarData extends Observable {
 		speedOneMinMean = (speedOneMinMean * (timesPerMin - 1) + speed)
 				/ timesPerMin;
 		speedFiveMinMean = (speedFiveMinMean * (timesPer5Min - 1) + speed)
-				/ timesPer5Min;
-		// update the acceleration
+				/ timesPer5Min; 
+		// update the acceleration        
 		accelerationPrev = acceleration;
-		acceleration = 1000*(speed - speedPrev) / (timeSinceLast);
+		acceleration = 1000.0f*((speed - speedPrev)/3.6f) / (timeSinceLast);
 
 		/** Calculate distances **/
 		if (speed >= 0.1) {
@@ -473,12 +473,14 @@ public class CarData extends Observable {
     public String toJson() {
     	JSONObject jo = new JSONObject();
     	try {
-			jo.put("speed", speed+"");
-	    	jo.put("soc", soc+"");
-		} catch (JSONException e) {
+			jo.put("speed", String.valueOf(getSpeed(true)));
+	    	jo.put("acceleration", String.valueOf(getAcceleration(true)));
+	    	jo.put("soc", String.valueOf(getSoc(true)));
+	    	jo.put("amp", String.valueOf(getAmp(true)));
+	    	jo.put("climate", String.valueOf(getCurrentClimateConsumption(true)));
+	    } catch (JSONException e) {  
 			e.printStackTrace();
 		}
-    	
     	return jo.toString();
     }
     
@@ -516,7 +518,7 @@ public class CarData extends Observable {
 								(factors & CLIMATE) > 0 ? 0.7 + currentClimateConsumption
 										: 0,
 								(factors & TIME) > 0 ? s.duration.value : 1);
-
+ 
 				totalDistance += s.distance.value;
 				try {
 					element.put("distance", totalDistance);
