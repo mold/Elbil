@@ -62,7 +62,7 @@ public class AudioGame implements Observer {
 	}
 	
 	public DataGraph getAmpSpeedGraph() {
-		ampSpeedGraph = new DataGraph(context, "amp/acc", -30, 30);
+		ampSpeedGraph = new DataGraph(context, "amp/speed", -2, 2);
 		ampSpeedGraph.setColor(Color.MAGENTA);
 		return ampSpeedGraph;
 	}
@@ -74,7 +74,7 @@ public class AudioGame implements Observer {
 	}
 	
 	public DataGraph getAmpAccelerationGraph() {
-		ampAccGraph = new DataGraph(context, "amp/acc", -30, 30);
+		ampAccGraph = new DataGraph(context, "amp/acc", -40, 40);
 		ampAccGraph.setColor(Color.RED);
 		return ampAccGraph;
 	}
@@ -127,8 +127,18 @@ public class AudioGame implements Observer {
 				}
 			}
 			
+			if (speed != 0.0) {
+				PdBase.sendFloat("amp_acc", (float) (amp/speed));
+			} else {
+				PdBase.sendFloat("amp_acc", 0);
+			}
+			
 			if (ampAccGraph != null) {
-				ampAccGraph.addDataPoint((float) (amp / accelerationAvg));
+				if (accelerationAvg != 0.0) {
+					ampAccGraph.addDataPoint((float) (amp / accelerationAvg));
+				} else {
+					ampAccGraph.addDataPoint();
+				}
 			}
 			
 			// entering a new state
