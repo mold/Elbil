@@ -1,34 +1,35 @@
-#N canvas 1428 283 450 513 10;
-#X obj 89 199 inlet~;
-#X obj 94 385 outlet~;
-#X obj 231 248 vsl 15 128 0 1 0 0 empty empty feedback_level 0 -9 0
-10 -261234 -204800 -1 12700 1;
-#X obj 345 242 vsl 15 128 0 499 0 0 empty empty speed 0 -9 0 10 -204800
--261234 -1 0 1;
-#X floatatom 231 384 5 0 0 0 - - -, f 5;
-#X floatatom 345 378 5 0 0 0 - - -, f 5;
-#X obj 231 68 loadbang;
-#X text 94 296 <-- feedebeck --->;
-#X text 365 241 speed;
-#X text 56 443 COPRYFIUHT DANIEKL MOLIN 200014 RÖR DU DÖR DU OK?????????????
+#N canvas 841 233 451 548 10;
+#X obj 69 112 inlet~;
+#X obj 230 460 outlet~;
+#X obj 232 268 vsl 15 128 0 1 0 0 empty empty feedback_level 0 -9 0
+10 -261234 -204800 -1 2680 1;
+#X obj 346 268 vsl 15 128 0 499 0 0 empty empty speed 0 -9 0 10 -204800
+-261234 -1 3538 1;
+#X floatatom 232 404 5 0 0 0 - - -, f 5;
+#X floatatom 346 404 5 0 0 0 - - -, f 5;
+#X obj 232 182 loadbang;
+#X text 96 315 <-- feedebeck --->;
+#X text 57 491 COPRYFIUHT DANIEKL MOLIN 200014 RÖR DU DÖR DU OK?????????????
 ©©©©©©©©©©©©©©©©©©©©©©©©©©©©©©©©©©©
 ;
-#X obj 40 294 *~ 0.212;
-#X obj 87 246 delwrite~ \$1 500;
-#X obj 95 337 delread~ \$1 139.3;
-#X obj 231 106 f \$2;
-#X obj 282 108 f \$3;
-#X text 30 14 \$1: feedback level (0-1) | Rec: 0.212;
-#X text 31 32 \$2: speed (0-500 ish) | Rec: 139.3;
-#X connect 0 0 11 0;
+#X obj 30 315 *~ 0.212;
+#X obj 69 244 delwrite~ \$1 500;
+#X obj 231 433 delread~ \$1 139.3;
+#X obj 232 213 f \$2;
+#X obj 346 213 f \$3;
+#X text 31 62 \$1: feedback level (0-1) | Rec: 0.212;
+#X text 32 80 \$2: speed (0-500 ish) | Rec: 139.3;
+#X text 30 17 A basic delay "pedal".;
+#X text 30 32 --------------------------------------;
+#X connect 0 0 10 0;
 #X connect 2 0 4 0;
-#X connect 2 0 10 1;
+#X connect 2 0 9 1;
 #X connect 3 0 5 0;
-#X connect 3 0 12 0;
+#X connect 3 0 11 0;
+#X connect 6 0 12 0;
 #X connect 6 0 13 0;
-#X connect 6 0 14 0;
-#X connect 10 0 11 0;
-#X connect 12 0 1 0;
-#X connect 12 0 10 0;
-#X connect 13 0 2 0;
-#X connect 14 0 3 0;
+#X connect 9 0 10 0;
+#X connect 11 0 1 0;
+#X connect 11 0 9 0;
+#X connect 12 0 2 0;
+#X connect 13 0 3 0;

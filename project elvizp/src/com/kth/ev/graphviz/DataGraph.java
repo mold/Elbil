@@ -39,6 +39,7 @@ public class DataGraph extends SurfaceView implements SurfaceHolder.Callback,
 	int width;
 	int height;
 	int textSize = 40;
+	boolean invalidDataPoint;
 	float dataPoint;
 	String typeString;
 	int textWidth;
@@ -148,9 +149,10 @@ public class DataGraph extends SurfaceView implements SurfaceHolder.Callback,
 			}
 		}
 	}
-	
+
 	public void addDataPoint() {
-		
+		invalidDataPoint = true;
+		addDataPoint(0);
 	}
 
 	public void setColor(int color) {
@@ -200,12 +202,19 @@ public class DataGraph extends SurfaceView implements SurfaceHolder.Callback,
 		c.drawText("" + max, 0, textSize, textPaint);
 		c.drawText("" + min, 0, height - 5, textPaint);
 		c.drawText(typeString, width - textWidth - 5, textSize, textPaint);
-		c.drawText("" + dataPoint, dataPoints * dx + 5, y + textSize / 2 - 5,
-				textPaint);
-		if (dataPoints > 0) {
-			path.lineTo(x, y);
-		} else {
+		if (invalidDataPoint) {
+			invalidDataPoint = false;
+			c.drawText("undefined", dataPoints * dx + 5, height - textSize / 2
+					+ min * yScale, textPaint);
 			path.moveTo(x, y);
+		} else {
+			c.drawText("" + dataPoint, dataPoints * dx + 5, y + textSize / 2
+					- 5, textPaint);
+			if (dataPoints > 0) {
+				path.lineTo(x, y);
+			} else {
+				path.moveTo(x, y);
+			}
 		}
 		c.drawPath(path, paint);
 	}
