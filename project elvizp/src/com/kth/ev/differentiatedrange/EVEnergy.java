@@ -59,8 +59,8 @@ public class EVEnergy {
 		double total = fa + fs + fr + fd;
 
 		return total; // kg m/s^2
-
-	}  
+ 
+	}   
 
 	public double Energy(double speed, double acceleration, double slope,
 			double heating, double dt) {

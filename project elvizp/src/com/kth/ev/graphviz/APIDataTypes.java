@@ -48,14 +48,14 @@ public class APIDataTypes {
 		
 		public String toString(){
 			return start+"-->"+end+": "+slope+" slope, "+distance.value+" m, "+duration.value+" s";
-		}
-	}
+		}                      
+	}  
 	
 	public static class Value{
 		@Key("value")
 		public double value;
-	}
-
+	}    
+    
 	public static class OverviewPolyLine {
 		@Key("points")
 		public String points;

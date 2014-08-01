@@ -64,7 +64,7 @@ public class VizFragment extends Fragment implements Observer {
 				Log.e(TAG, "Cannot start API call without internet access.");
 			}
 		}
-
+       
 		browser = new WebView(getActivity());
 
 		browser.setVerticalScrollBarEnabled(false);
@@ -74,13 +74,13 @@ public class VizFragment extends Fragment implements Observer {
 		if (getActivity() instanceof ElvizpActivity) {
 			Log.d(TAG, "Adding javascript interface");
 			browser.addJavascriptInterface(cd, "CarData");
-		}
-
+		}     
+  
 		browser.setWebChromeClient(new WebChromeClient());
 		browser.getSettings().setJavaScriptEnabled(true);
-		browser.loadUrl("file:///android_asset/donut.html");
-
-	}
+		browser.loadUrl("file:///android_asset/viz.html");    
+  
+	}    
 
 	/**
 	 * Listens for the routedatafetcher thread completion.
@@ -91,8 +91,8 @@ public class VizFragment extends Fragment implements Observer {
 			rdf = (RouteDataFetcher) observable;
 			setRoute(rdf.json_processed); 
 			addEstimation(cd, (RouteDataFetcher) observable);
-		} 
-	}
+		}  
+	}  
 
 	/**
 	 * Loads a json encoded step file (fetched from google api) into the
@@ -120,7 +120,7 @@ public class VizFragment extends Fragment implements Observer {
 	private void addEstimation(CarData cd2, RouteDataFetcher observable) {
 		if (rdf.data.size() < 1)
 			return;
-
+  
 		int factors = 0;
 		factors |= CarData.SLOPE | CarData.TIME | CarData.SPEED;
 		final String consumption = cd.consumptionOnRouteJSON(rdf.data, factors);

@@ -7,12 +7,8 @@ import org.puredata.core.PdBase;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.text.Layout;
 import android.util.Log;
-import android.view.View;
-import android.widget.LinearLayout;
 
-import com.google.android.gms.drive.query.internal.InFilter;
 import com.kth.ev.differentiatedrange.CarData;
 import com.kth.ev.graphviz.DataGraph;
 
