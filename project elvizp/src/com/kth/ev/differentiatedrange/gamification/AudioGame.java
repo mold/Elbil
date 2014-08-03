@@ -25,6 +25,8 @@ public class AudioGame implements Observer {
 	final double ACC_T = 3; // acc threshold
 	final double BRK_D = 2; // time below break threshold (s)
 	final double BRK_T = -3; // break threshold
+	final double AMP_ACC_T = -2;
+	final double AMP_BRK_T = -1.5;
 	
 	long accThresholdTime;
 	boolean accThresholdCrossing;
@@ -105,7 +107,7 @@ public class AudioGame implements Observer {
 	
 	private void readRecords() {
 		String str;
-		str = "your record for longest smooth drive is " + longestSmoothDrive + " seconds.";
+		str = "your record for longest smooth drive is " + getTimeString(longestSmoothDrive);
 		speech.speak(str, TextToSpeech.QUEUE_ADD, null);
 	}
 
@@ -145,6 +147,29 @@ public class AudioGame implements Observer {
 		return ampAccGraph;
 	}
 	
+	private String getTimeString(long time) {
+		long real_time = time;
+		String str = "";
+		// hours
+		long tmp = time / 360;
+		if (tmp >= 1) {
+			str += tmp + " hours ";
+			time -= tmp*360;
+		}
+		// hours
+		tmp = time / 60;
+		if (tmp >= 1) {
+			str += tmp + " minutes ";
+			time -= tmp*60;
+		}
+		if (real_time != time) {
+			str += "and ";
+		}
+		// seconds
+		str += time + " seconds";
+		return str;
+	}
+	
 	private void interruptSmoothDrive() {
 		long time = System.currentTimeMillis();
 		long smoothDrive = (time - smoothDriveTime) / 1000;
@@ -168,6 +193,7 @@ public class AudioGame implements Observer {
 			double speed = carData.getSpeed(false);
 			double amp = carData.getAmp(false);
 			double acceleration = carData.getAcceleration(false);
+			double amp_speed = amp / speed; 
 
 			speedData.pushData(speed);
 			ampData.pushData(amp);
@@ -204,14 +230,14 @@ public class AudioGame implements Observer {
 
 			if (ampSpeedGraph != null) {
 				if (speed != 0.0) {
-					ampSpeedGraph.addDataPoint((float) (amp / speed));
+					ampSpeedGraph.addDataPoint((float) amp_speed);
 				} else {
-					ampSpeedGraph.addDataPoint();
+					ampSpeedGraph.addDataPoint(0);
 				}
 			}
 
 			if (speed != 0.0) {
-				PdBase.sendFloat("amp_speed", (float) (amp / speed));
+				PdBase.sendFloat("amp_speed", (float) amp_speed);
 			} else {
 				PdBase.sendFloat("amp_speed", 0);
 			}
@@ -226,7 +252,7 @@ public class AudioGame implements Observer {
 				if (accelerationAvg != 0.0) {
 					ampAccGraph.addDataPoint((float) (amp / acceleration));
 				} else {
-					ampAccGraph.addDataPoint();
+					ampAccGraph.addDataPoint(0);
 				}
 			}
 
@@ -246,7 +272,7 @@ public class AudioGame implements Observer {
 			}
 			
 			/* data threshold checking */
-			if (acceleration > ACC_T) {
+			if (acceleration > ACC_T || amp_speed < AMP_ACC_T) {
 				if (!accThresholdCrossing) {
 					accThresholdTime = System.currentTimeMillis();
 					accThresholdCrossing = true;
@@ -260,7 +286,7 @@ public class AudioGame implements Observer {
 					Log.v("audiogame", "Acc time: " + time);
 				}
 			}
-			if (acceleration < BRK_T) {
+			if (acceleration < BRK_T || amp_speed > AMP_BRK_T) {
 				if (!brkThresholdCrossing) {
 					brkThresholdTime = System.currentTimeMillis();
 					brkThresholdCrossing = true;
