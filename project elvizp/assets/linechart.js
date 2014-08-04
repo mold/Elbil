@@ -1,3 +1,15 @@
+  var margin = {top: 10, right: 15, bottom: 10, left: 15},
+  width = window.innerWidth - 15 - margin.left - margin.right,
+  height = window.innerHeight/2 - margin.top - margin.bottom;
+  
+  var svg = d3.select("body").append("svg")
+  .attr("width", width + margin.left + margin.right)
+  .attr("height", height + margin.top + margin.bottom)
+  .attr("class", "linecanvas")
+  .append("g")
+  .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
   var x = d3.scale.linear()
     .range([0, width]);
 
@@ -56,16 +68,20 @@
   */
   function updateSeries(name, values){
     vizData.estimation = values;
-    x.domain([0, d3.max(vizData.estimation, function(d) { return d.distance; })]);
-    y.domain(d3.extent(vizData.estimation, function(d) { return d.energy; }));
 
     route_energy = 0;
     d3.sum(values, function(d){
       route_energy += d.energy * d.distance/1000;
     });
-    alert(route_energy);
-    bullet_data[1]["markers"][0] = route_energy;
 
+    initEstimation();
+    window.setInterval(requestLoop, 100);
+
+  }
+
+function initEstimation(){
+    x.domain([0, d3.max(vizData.estimation, function(d) { return d.distance; })]);
+    y.domain(d3.extent(vizData.estimation, function(d) { return d.energy; }));
     svg.selectAll("g").remove();
     svg.selectAll("path").remove();
 
@@ -137,55 +153,56 @@
       .attr("class", "line")
       .attr("d", energy_curve);
 
-    window.setInterval(requestLoop, 100);
-
-  }
+}
 
 var route_index = 0;
-last_speed = 0;
 /*
 
   Realtime update of energy consumption.
 
 */
+var t = Date.now();
 function incrementProgress(data){
   if(route_index >= currentRoute.length)
     return;
 
-  speed = 200.0 * 33.0 / 3.6;
-  // double lin_acc = (speed - last_speed)/dt;
-  dist = (last_speed + speed) / 2.0 * 0.1;// meters
-  travelled_distance += dist;
+  speed = scale * data.speed / 3.6;
+  dist = speed * data.time;// meters
+  travelled_distance += dist; 
  
+  //alert(speed+" m/s, "+data.time+" s");
+
   if (travelled_distance > current_step.overallDistance) {
     route_index++;
   }
 
   current_step = currentRoute[route_index];
- 
-  evenergy.speed(speed/200,"ms").distance(dist,"m").slope(current_step.slope).acceleration(0);
+  
+  evenergy.reset();
+  evenergy.speed(speed/scale,"ms").distance(dist,"m").slope(current_step.slope);
   e = evenergy.kWhPerKm();
+
+  if(isNumber(e)){
+    var point = find_point_from_x(travelled_distance, est_path.node());
+    var est_y = y.invert(point.y);
   
-  var point = find_point_from_x(travelled_distance, est_path.node());
-  var est_y = y.invert(point.y);
+    currentProgress.push({distance: travelled_distance, energy: e, est_energy: est_y});
   
-  currentProgress.push({distance: travelled_distance, energy: e, est_energy: est_y});
-  last_speed = speed;
+    svg.select("#progressLine")
+      .attr("d", energy_curve)
+   
+    svg.select("#clip-below path")
+       .attr("d", area.y0(height));
 
-  svg.select("#progressLine")
-    .attr("d", energy_curve)
- 
-  svg.select("#clip-below path")
-     .attr("d", area.y0(height));
+     svg.select("#clip-above path")
+       .attr("d", area.y0(0));
 
-   svg.select("#clip-above path")
-     .attr("d", area.y0(0));
+     svg.select(".area.above")
+       .attr("d", area.y0(function(d) { return y(d.est_energy);}));
 
-   svg.select(".area.above")
-     .attr("d", area.y0(function(d) { return y(d.est_energy);}));
-
-   svg.select(".area.below")
-     .attr("d", area);
+     svg.select(".area.below")
+       .attr("d", area);
+  }
 }
 
 /*

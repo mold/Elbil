@@ -24,6 +24,15 @@ import android.widget.Button;
 import android.widget.Filter;
 import android.widget.Filterable;
 
+/**
+ * Fragment for picking a route. Uses auto completion
+ * to help the user. When a route has been picked, the
+ * fragment pushes the RouteDataFetched observable to
+ * the first fragment (with id 0) of the main activity.
+ * 
+ * @author marothon
+ *
+ */
 public class RoutePickFragment extends Fragment {
 	protected static final String TAG = "RoutePickFragment";
 
@@ -44,26 +53,26 @@ public class RoutePickFragment extends Fragment {
 		AutoCompleteTextView to = (AutoCompleteTextView) getView()
 				.findViewById(R.id.to);
 
-		from.setText("Stockholm, Sweden");
-		to.setText("Blackeberg, Sweden");  
-
+		from.setText("Lindstedtsvägen 9, Stockholm, Sweden");
+		to.setText("Blackeberg, Sweden");       
+        
 		from.setAdapter(new PlacesAutoCompleteAdapter(getActivity(),
 				android.R.layout.simple_dropdown_item_1line));
 		to.setAdapter(new PlacesAutoCompleteAdapter(getActivity(),
 				android.R.layout.simple_dropdown_item_1line));
-		
+		  
 		//Connect route picker fragment with viz fragment
 		Button butt = (Button) getView().findViewById(R.id.load_directions);
 		butt.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
-				Log.d(TAG, "GET ROUTE DATA");
+				//Log.d(TAG, "GET ROUTE DATA");
 				AutoCompleteTextView from = (AutoCompleteTextView) getView()
 						.findViewById(R.id.from);
 				AutoCompleteTextView to = (AutoCompleteTextView) getView()
 						.findViewById(R.id.to);
-				Log.d(TAG, "Clicked for query "+from.getText().toString()+" to "+to.getText().toString());
+				//Log.d(TAG, "Clicked for query "+from.getText().toString()+" to "+to.getText().toString());
 				RouteDataFetcher rdf = new RouteDataFetcher(from.getText().toString(), to.getText().toString());
 				ElvizpActivity a = (ElvizpActivity) getActivity();
 				a.relayObservable(rdf, 0);
@@ -73,6 +82,10 @@ public class RoutePickFragment extends Fragment {
 		});
 	}
 	
+	/**
+	 * Autocompletion class.
+	 * 
+	 */
 	private class PlacesAutoCompleteAdapter extends ArrayAdapter<String>
 			implements Filterable {
 		private ArrayList<String> resultList;

@@ -34,8 +34,8 @@ public class RouteDataFetcher extends Observable implements Runnable {
 	 * Sets some random locations for the route.
 	 */
 	public RouteDataFetcher() {
-		pointA = "KTH, Sweden";
-		pointB = "Sundbyberg, Sweden";
+		pointA = "Lindstedtsvägen 9, Stockholm, Sweden";
+		pointB = "Blackeberg, Sweden";
 		data = new ArrayList<Step>();
 	}
 
@@ -100,7 +100,7 @@ public class RouteDataFetcher extends Observable implements Runnable {
 			}
 		} catch (Exception e) {
 			Log.d(TAG, "Something went wrong");
-			e.printStackTrace();
+			Log.d(TAG, e.toString());
 		}
 		setChanged();
 		notifyObservers();

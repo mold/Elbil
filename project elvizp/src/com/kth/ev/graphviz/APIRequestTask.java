@@ -90,7 +90,7 @@ public class APIRequestTask extends AsyncTask<URLParameter, Integer, String> {
 		} catch (IOException ex) {
 			Log.e(TAG, "Something went wrong...");
 			Log.e(TAG, ex.toString());
-			ex.printStackTrace();//We don't care about the error.
+			ex.printStackTrace();
 		}
 		return httpResponse;
 	}
