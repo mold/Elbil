@@ -1,0 +1,4 @@
+[
+  {"title":"Current","subtitle":"kWh/km","ranges":[0.08,0.11,0.2],"measures":[0.04,0.09,0.12],"markers":[0.1]},
+    {"title":"Total","subtitle":"kWh","ranges":[10,15,20],"measures":[2.5,13],"markers":[12]}
+]

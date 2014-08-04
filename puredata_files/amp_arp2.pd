@@ -88,12 +88,19 @@
 #X connect 30 0 7 0;
 #X connect 31 0 8 0;
 #X connect 31 1 9 0;
-
+<<<<<<< HEAD
+#X restore 230 410 pd amp_speed_sound;
+#X obj 290 360 r speed;
+#X obj 220 381 /;
+#N canvas 668 234 1217 778 amp_positive 0;
+#X obj 19 294 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+=======
 #X restore 45 440 pd amp_speed_sound;
 #X obj 111 419 r speed;
 #X obj 45 417 /;
 #N canvas 443 76 1079 845 amp_positive 1;
 #X obj 92 294 bng 15 250 50 0 empty empty empty 17 7 0 10 -261234 -1
+>>>>>>> origin/master
 -1;
 #X floatatom 177 240 5 0 0 0 - - -, f 5;
 #X floatatom 131 124 5 0 0 0 - - -, f 5;
@@ -101,11 +108,18 @@
 #X obj 65 253 loadbang;
 #X floatatom 452 64 5 0 0 0 - - -, f 5;
 #X floatatom 452 112 5 0 0 0 - - -, f 5;
-
+<<<<<<< HEAD
+#X obj 166 408 *~;
+#X obj 276 409 *~;
+#X obj 326 335 vsl 15 70 0 1 0 0 empty empty empty 0 -9 0 10 -262144
+-1 -1 0 1;
+#X text 351 335 volum :>;
+=======
 #X obj 94 433 *~;
 #X obj 275 430 *~;
 #X obj 293 335 vsl 15 70 0 1 0 0 empty empty empty 0 -9 0 10 -262130
 -1 -1 0 1;
+>>>>>>> origin/master
 #X text 131 103 tempo;
 #X text 452 43 pitch/transpose;
 #X floatatom 302 273 5 0 0 0 - - -, f 5;
@@ -190,6 +204,93 @@ the fan (i.e. amp is "really high");
 #X connect 22 0 7 0;
 #X connect 22 1 8 0;
 #X connect 23 0 32 0;
+<<<<<<< HEAD
+#X connect 24 0 44 1;
+#X connect 25 0 9 0;
+#X connect 25 0 14 0;
+#X connect 26 0 6 0;
+#X connect 27 0 19 0;
+#X connect 29 0 36 0;
+#X connect 29 0 40 0;
+#X connect 31 0 32 1;
+#X connect 31 0 33 0;
+#X connect 31 0 44 0;
+#X connect 32 0 35 0;
+#X connect 33 0 45 0;
+#X connect 34 0 33 1;
+#X connect 35 0 39 0;
+#X connect 36 0 31 0;
+#X connect 38 0 39 1;
+#X connect 39 0 18 0;
+#X connect 40 0 34 0;
+#X connect 41 0 43 0;
+#X connect 42 0 43 1;
+#X connect 43 0 17 0;
+#X connect 44 0 41 0;
+#X connect 45 0 35 1;
+#X connect 45 0 41 1;
+#X connect 46 0 7 0;
+#X connect 46 1 8 0;
+#X restore 60 117 pd amp_negative;
+#X obj 149 178 abs;
+#X obj 241 94 moses 0;
+#X floatatom 241 68 5 0 0 0 - - -, f 5;
+#N canvas 1005 227 871 728 amp_negative_2 1;
+#X obj 60 226 osc~;
+#X obj 83 300 *~;
+#X obj 172 236 osc~;
+#X obj 172 258 +~ 1;
+#X obj 172 280 *~ 0.5;
+#X obj 83 274 *~;
+#X floatatom 127 186 5 0 0 0 - - -, f 5;
+#X obj 191 209 / 20;
+#X floatatom 104 38 5 0 0 0 - - -, f 5;
+#X floatatom 58 124 5 0 0 0 - - -, f 5;
+#X obj 111 215 phasor~;
+#X obj 58 88 sub/clipscale 0 30 50 200;
+#X obj 315 212 osc~;
+#X floatatom 315 126 5 0 0 0 - - -, f 5;
+#X obj 315 90 sub/clipscale 0 30 50 200;
+#X obj 406 212 osc~;
+#X obj 406 234 +~ 1;
+#X obj 406 256 *~ 0.5;
+#X obj 315 269 *~;
+#X msg 407 186 0.7;
+#X obj 265 325 *~;
+#X obj 332 354 *~, f 4;
+#X obj 234 261 phasor~;
+#X obj 481 277 osc~;
+#X obj 456 308 +~ 1;
+#X obj 456 330 *~ 0.5;
+#X msg 486 250 30;
+#X obj 234 283 *~ 0.4;
+#X obj 111 237 *~ 0.4;
+#X obj 117 114 sub/scale 0 30 20 100;
+#X obj 525 329 osc~;
+#X msg 525 306 0.2;
+#X obj 525 351 *~ 0.5;
+#X obj 606 419 osc~;
+#X obj 606 441 +~ 1;
+#X obj 606 473 *~;
+#X obj 428 393 sub/clipscale 30 50 0 1;
+#X msg 606 397 400;
+#X obj 499 510 *~ 0.3;
+#X obj 107 14 inlet;
+#X obj 221 551 outlet~;
+#X obj 106 555 outlet~;
+#X obj -35 396 vsl 15 128 0 1 0 0 empty empty empty 0 -9 0 10 -262144
+-1 -1 12700 1;
+#X obj 173 30 s amp_in_neg;
+#X obj -47 317 r amp_in_neg;
+#X obj 256 410 *~;
+#X obj 113 429 *~;
+#X obj 641 96 loadbang;
+#X obj -47 361 sub/clipscale 3 30 0 1;
+#X obj 227 493 lop~;
+#X obj 135 480 lop~;
+#X msg 189 463 476;
+#X obj 185 437 loadbang;
+=======
 #X connect 26 0 68 0;
 #X connect 27 0 68 0;
 #X connect 28 0 31 0;
@@ -285,6 +386,7 @@ effects kick in.;
 #X obj 472 188 sub/clipscale 0 30 50 200;
 #X obj 842 364 sub/clipscale 30 50 0 1;
 #X obj 51 255 sub/clipscale 3 30 0 1;
+>>>>>>> origin/master
 #X connect 0 0 5 0;
 #X connect 1 0 43 0;
 #X connect 1 0 42 0;
@@ -314,7 +416,54 @@ effects kick in.;
 #X connect 21 0 26 0;
 #X connect 22 0 23 0;
 #X connect 23 0 24 0;
-
+<<<<<<< HEAD
+#X connect 24 0 25 0;
+#X connect 25 0 20 1;
+#X connect 26 0 23 0;
+#X connect 28 0 5 1;
+#X connect 29 0 6 0;
+#X connect 29 0 22 0;
+#X connect 30 0 32 0;
+#X connect 31 0 30 0;
+#X connect 32 0 21 1;
+#X connect 33 0 34 0;
+#X connect 34 0 35 0;
+#X connect 35 0 38 0;
+#X connect 35 0 21 1;
+#X connect 36 0 35 1;
+#X connect 37 0 33 0;
+#X connect 38 0 20 0;
+#X connect 39 0 8 0;
+#X connect 39 0 43 0;
+#X connect 42 0 46 1;
+#X connect 42 0 45 1;
+#X connect 44 0 48 0;
+#X connect 45 0 49 0;
+#X connect 46 0 50 0;
+#X connect 47 0 19 0;
+#X connect 47 0 26 0;
+#X connect 47 0 31 0;
+#X connect 47 0 37 0;
+#X connect 48 0 42 0;
+#X connect 49 0 40 0;
+#X connect 50 0 41 0;
+#X connect 51 0 50 1;
+#X connect 51 0 49 1;
+#X connect 52 0 51 0;
+#X restore 144 211 pd amp_negative_2;
+#X connect 5 0 13 0;
+#X connect 6 0 4 0;
+#X connect 6 1 4 1;
+#X connect 7 0 8 0;
+#X connect 9 0 10 0;
+#X connect 9 1 10 1;
+#X connect 12 0 15 0;
+#X connect 13 0 12 0;
+#X connect 13 1 9 0;
+#X connect 14 0 13 0;
+#X connect 15 0 10 0;
+#X connect 15 1 10 1;
+=======
 #X connect 24 0 19 1;
 #X connect 25 0 22 0;
 #X connect 27 0 5 1;
@@ -364,3 +513,4 @@ amp is negative \, an unpleasant sound environment is created.;
 #X connect 9 0 8 0;
 #X connect 10 0 6 0;
 #X connect 10 0 6 1;
+>>>>>>> origin/master

@@ -1,0 +1,81 @@
+
+  body {
+    font: 10px sans-serif;
+  }
+
+  .axis path,
+  .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+  }
+
+  .x.axis path {
+    display: none;
+  }
+
+
+  .area.above {
+    fill: rgb(145,207,96);
+    opacity: 0.5;
+  }
+
+  .area.below {
+    fill: rgb(252,141,89);
+    opacity: 0.5;
+  }
+
+  .line {
+    fill: none;
+    stroke: #000;
+    stroke-width: 1.5px;
+  }
+
+  .est.line{
+    opacity: 1;
+  }
+
+  .progressLine {
+    fill: none;
+    stroke: #F00;
+    stroke-width: 1.75px;
+  }
+
+  .linecanvas{
+    //background-color: rgba(25,25,25,0.2);
+    margin-left: 12%;
+    margin-right: 17%;
+    width: 66%;
+  }
+
+  .bullet { font: 10px sans-serif; }
+  .bullet .marker { stroke: #000; stroke-width: 2px; }
+  .bullet .tick line { stroke: #666; stroke-width: .5px; }
+  .bullet .range.s0 { fill: #ff0000; }
+  .bullet .range.s1 { fill: #eeee00; }
+  .bullet .range.s2 { fill: #00cc00; }
+  .bullet .measure.s0 { fill: lightgrey; }
+  .bullet .measure.s1 { fill: black; }
+  .bullet .measure.s2 { fill: cyan; }
+  .bullet .measure.s3 { fill: magenta; }
+  .bullet .measure.s4 { fill: purple; }
+  .bullet .title { font-size: 14px; font-weight: bold; }
+  .bullet .subtitle { fill: #999; }
+  
+  .current { font: 10px sans-serif; }
+  .current .marker { stroke: #000; stroke-width: 2px; }
+  .current .tick line { stroke: #666; stroke-width: .5px; }
+  .current .range.s0 { fill: #ff0000; }
+  .current .range.s1 { fill: #eeee00; }
+  .current .range.s2 { fill: #00cc00; }
+
+  .current .measure.s0 { fill: #98BDFC; }
+  .current .measure.s1 { fill: #6BA1FC; }
+  .current .measure.s2 { fill: #4488FC; }
+  .current .measure.s4 { fill: #075EF1; }
+  .current .measure.s3 { fill: #1A6DF9; }
+
+  .current .title { font-size: 14px; font-weight: bold; }
+  .current .subtitle { fill: #999; }  
+  
+

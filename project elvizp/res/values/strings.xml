@@ -11,4 +11,5 @@
 	<string name="to">To</string>
 	<string name="load_directions">Load directions</string>
 	<string name="reload_folder">Reload patch folder</string>
+	<string name="start_game">Start audio game</string><string name="stop_game">Stop audio game</string>
 </resources>

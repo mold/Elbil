@@ -7,12 +7,8 @@ package com.kth.ev.differentiatedrange.puredata;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,16 +17,13 @@ import org.puredata.android.service.PdPreferences;
 import org.puredata.android.service.PdService;
 import org.puredata.core.PdBase;
 import org.puredata.core.PdReceiver;
-import org.puredata.core.utils.IoUtils;
 
 import com.kth.ev.differentiatedrange.CarData;
 
-import android.R;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.res.Resources;
 import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;

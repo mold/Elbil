@@ -45,7 +45,7 @@ public class RoutePickFragment extends Fragment {
 				.findViewById(R.id.to);
 
 		from.setText("Stockholm, Sweden");
-		to.setText("Gothenburg, Sweden");
+		to.setText("Blackeberg, Sweden");  
 
 		from.setAdapter(new PlacesAutoCompleteAdapter(getActivity(),
 				android.R.layout.simple_dropdown_item_1line));

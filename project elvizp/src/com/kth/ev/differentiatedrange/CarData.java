@@ -31,6 +31,11 @@ import android.util.Log;
  * 
  */
 public class CarData extends Observable {
+	public static final int SPEED = 1, SLOPE = 2, CLIMATE = 4,
+			ACCELERATION = 8, TIME = 16;
+	@SuppressWarnings("unused")
+	private static final String TAG = "CarData";
+
 	private double soc, speed, fan, climate, amp, acceleration;
 	private double socPrev, speedPrev, fanPrev, climatePrev, ampPrev, accelerationPrev;
 
@@ -408,9 +413,6 @@ public class CarData extends Observable {
 		return kmpKWh;
 	}
 
-	public static final int SPEED = 1, SLOPE = 2, CLIMATE = 4,
-			ACCELERATION = 8, TIME = 16;
-	private static final String TAG = "CarData";
 
 	/**
 	 * Calculates the consumption rate of the given route, consisting of steps
@@ -452,8 +454,6 @@ public class CarData extends Observable {
 		return ret;
 	}
 
-	// public double update
-
 	private double lerp(double a, double b) {
 		long time = System.currentTimeMillis();
 		double f = (time - lastUpdateTime) / (double) timeSinceLast;
@@ -467,24 +467,25 @@ public class CarData extends Observable {
 	 * 
 	 * Returns the current data as a JSON string.
 	 * 
+	 * @param interpolate whether or not the data should be interpolated.
 	 * @return json-fied cardata.
 	 */
     @JavascriptInterface
-    public String toJson() {
+    public String toJson(boolean interpolate) {
     	JSONObject jo = new JSONObject();
-    	try {
-			jo.put("speed", String.valueOf(getSpeed(true)));
-	    	jo.put("acceleration", String.valueOf(getAcceleration(true)));
-	    	jo.put("soc", String.valueOf(getSoc(true)));
-	    	jo.put("amp", String.valueOf(getAmp(true)));
-	    	jo.put("climate", String.valueOf(getCurrentClimateConsumption(true)));
+    	try {         
+		    jo.put("speed", String.valueOf(getSpeed(interpolate)));
+	    	jo.put("acceleration", String.valueOf(getAcceleration(interpolate)));
+	    	jo.put("soc", String.valueOf(getSoc(interpolate)));
+	    	jo.put("amp", String.valueOf(getAmp(interpolate)));
+	    	jo.put("climate", String.valueOf(getCurrentClimateConsumption(interpolate)));
 	    } catch (JSONException e) {  
 			e.printStackTrace();
 		}
-    	return jo.toString();
-    }
-    
-	/**
+    	return jo.toString(); 
+    }                
+             
+	/**  
 	 * 
 	 * Same as consumptonOnRoute, only that the return value is a json encoded
 	 * string.
@@ -503,12 +504,18 @@ public class CarData extends Observable {
 		}
 		double totalDistance = 0;
 		synchronized (this) {
+			//Start estimation with 0 energy consumption
+			JSONObject element = new JSONObject();
+			try {
+				element.put("distance", 0);
+				element.put("energy", 0);
+				ja.put(element);
+			} catch (JSONException e) {e.printStackTrace();}
+			
 			for (Step s : steps) {
-				JSONObject element = new JSONObject();
-				// ret[i] = evEnergy.kWhPerKm(s.distance.value,
-				// s.distance.value/s.duration.value, 0, s.slope,
-				// 0.7+currentClimateConsumption, s.duration.value);
-				double energy = evEnergy
+				element = new JSONObject();
+				
+				double energy = evEnergy      
 						.kWhPerKm(
 								s.distance.value,
 								(factors & SPEED) > 0 ? s.distance.value
@@ -520,15 +527,15 @@ public class CarData extends Observable {
 								(factors & TIME) > 0 ? s.duration.value : 1);
  
 				totalDistance += s.distance.value;
-				try {
+				try { 
 					element.put("distance", totalDistance);
 					element.put("energy", energy);
 					ja.put(element);
 				} catch (JSONException e) {
 					e.printStackTrace();
-				}
-			}
-		}
+				}      
+			} 
+		} 
 		return ja.toString();
 	}
 
