@@ -3,7 +3,7 @@
 #X obj 125 -4 + 1;
 #X obj 88 -51 loadbang;
 #X obj 88 100 synth/samplesynth_1;
-#X obj 34 -46 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 1
+#X obj 34 -46 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
 #X obj 89 45 select 0 1;
 #X obj 88 20 mod 2;
@@ -11,17 +11,17 @@
 #X msg 124 70 58;
 #X obj 88 -27 metro 900;
 #X obj 106 135 lop~;
-#X floatatom -192 33 5 0 0 0 - - -, f 5;
+#X floatatom -118 46 5 0 0 0 - - -, f 5;
 #X obj 202 208 sub/delay dededaly 0.4 300;
 #X obj 61 136 lop~;
 #X obj -27 209 sub/delay dedasfdaly 0.45 260;
-#X obj -192 -188 inlet;
+#X obj -118 -175 inlet;
 #X obj -28 239 outlet~;
 #X obj 203 241 outlet~;
-#X obj -192 -135 vsl 15 128 1 90 0 0 empty empty empty 0 -9 0 10 -262144
+#X obj -118 -122 vsl 15 128 1 90 0 0 empty empty empty 0 -9 0 10 -262144
 -1 -1 0 1;
-#X obj -192 -162 sub/clipscale 0 1 0 90;
-#X obj -192 6 expr pow($f1 \, 2)-1;
+#X obj -118 -149 sub/clipscale 0 1 0 90;
+#X obj -118 19 expr pow($f1 \, 2)-1;
 #X connect 0 0 1 0;
 #X connect 0 0 6 0;
 #X connect 1 0 0 1;
