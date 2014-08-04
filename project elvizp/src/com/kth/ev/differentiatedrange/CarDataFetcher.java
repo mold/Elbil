@@ -29,7 +29,7 @@ public class CarDataFetcher implements Runnable{
 	private BufferedReader in;
 
 	public CarDataFetcher(CarData carData, boolean fromCar) {
-		this.carData = carData;
+		this.carData = carData; 
 		this.fromCar = fromCar;
 
 		if (fromCar) { // Gonna get data from car, not from server

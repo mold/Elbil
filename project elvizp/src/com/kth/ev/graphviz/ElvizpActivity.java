@@ -72,14 +72,7 @@ public class ElvizpActivity extends FragmentActivity implements Observer {
 		if(observable instanceof CarData){
 			CarData cd = (CarData) observable;
 			String battery = String.valueOf(cd.getSoc(true));
-			Log.d("Energy", battery);
-		}else if(observable instanceof RouteDataFetcher){
-			/*
-			EnergyEstimator ee = (EnergyEstimator) observable;
-			double[] consumption = cd.determineConsumption(ee.data);
-			for(int i=0; i<consumption.length; i++)
-			Log.d("consump", consumption[i]+"");
-			*/
+			Log.d(TAG, battery);
 		}
 	}
 	
@@ -148,12 +141,12 @@ public class ElvizpActivity extends FragmentActivity implements Observer {
             String tag = "android:switcher:" + vp.getId() + ":" + pos;
             return getSupportFragmentManager().findFragmentByTag(tag);
     }
-
-    /**
+ 
+    /**   
      * Checks if the application has internet access. Returns true if so.
      * 
      * @return True if internet is available.
-     */
+     */    
 	public boolean isNetworkAvailable() {
 	    ConnectivityManager connectivityManager 
 	          = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);

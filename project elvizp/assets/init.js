@@ -1,33 +1,31 @@
  initBullets();
- d3.select("body").append("p");
 
- var carData = {};
+ //d3.select("body").append("p");
+
  var currentProgress = new Array();
  var currentRoute = new Array();
  var currentEstimation = {};
  var vizData = {};
-
- var svg = d3.select("body").append("svg")
- .attr("width", width + margin.left + margin.right)
- .attr("height", height + margin.top + margin.bottom)
- .attr("class", "linecanvas")
- .append("g")
- .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+ var prevEst, prevSpeed;
 
 /**
   Request loop to poll cardata from the CarData class.
  */
-function requestLoop(){
+function requestLoop(){ 
   carData = JSON.parse(CarData.toJson(true));
-  d3.select("body p").html(carData.speed +", "+carData.soc);
-  // alert(route_distance);
-  evenergy.speed(carData.speed,"kmh").distance(route_distance,"m").acceleration(carData.acceleration);
 
-  var current_consumption = evenergy.energy();
-
-  bullet_data[1]["measures"][1] = current_consumption;
-  //alert(bullet_svg);
-  bullet_svg.call(chart.duration(10));
-
+  if(start_energy === undefined){
+    start_energy = carData.soc;
+  }
+ 
+  consumed_energy = start_energy - carData.soc;
+  //d3.select("body p").html(carData.speed +", "+carData.soc);
+  evenergy.speed(carData.speed,"kmh").distance(route_distance,"m").soc(carData.soc);
+  //carData.consumption = 3;
+  carData.est_distance = carData.speed !== 0 ? evenergy.estimatedDistance() : 0;
+  carData.consumption = evenergy.energy();
+  carData.consumption = isNumber(carData.consumption) ? carData.consumption : 0;
+  carData.kWhPerKm = evenergy.kWhPerKm();
+  updateBullet(carData)
   incrementProgress(carData);
 }

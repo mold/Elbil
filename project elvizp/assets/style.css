@@ -37,15 +37,8 @@
 
   .progressLine {
     fill: none;
-    stroke: #F00;
+    stroke: gray;
     stroke-width: 1.75px;
-  }
-
-  .linecanvas{
-    //background-color: rgba(25,25,25,0.2);
-    margin-left: 12%;
-    margin-right: 17%;
-    width: 66%;
   }
 
   .bullet { font: 10px sans-serif; }

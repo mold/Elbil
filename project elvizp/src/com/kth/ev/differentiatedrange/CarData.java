@@ -46,7 +46,7 @@ public class CarData extends Observable {
 	private double speedOneMinMean, speedFiveMinMean, speed10SecMean;
 
 	private double currentClimateConsumption = 3.0,
-			currentClimateConsumptionPrev;
+			currentClimateConsumptionPrev; 
 
 	private long lastUpdateTime = System.currentTimeMillis();
 
@@ -253,7 +253,7 @@ public class CarData extends Observable {
 		this.amp = amp;
 		setChanged();
 	}
-	
+	               
 	public double getAcceleration(boolean interpolate) {
 		if (interpolate) {
 			return lerp(accelerationPrev, acceleration);
@@ -447,9 +447,6 @@ public class CarData extends Observable {
 		int i = 0;
 		synchronized (this) {
 			for (Step s : steps) {
-				// ret[i] = evEnergy.kWhPerKm(s.distance.value,
-				// s.distance.value/s.duration.value, 0, s.slope,
-				// 0.7+currentClimateConsumption, s.duration.value);
 				ret[i] = evEnergy
 						.kWhPerKm(
 								s.distance.value,
@@ -492,11 +489,15 @@ public class CarData extends Observable {
 	    	jo.put("soc", String.valueOf(getSoc(interpolate)));
 	    	jo.put("amp", String.valueOf(getAmp(interpolate)));
 	    	jo.put("climate", String.valueOf(getCurrentClimateConsumption(interpolate)));
-	    } catch (JSONException e) {  
-			e.printStackTrace();
+	    	jo.put("time", String.valueOf((double)(System.currentTimeMillis()-lastUpdateTime)/1000));
+	    } catch (JSONException e) {        
+	    	Log.e(TAG, "oopsie!");
+	    	Log.e(TAG, e.toString());    
+			e.printStackTrace(); 
 		}
+    	//Log.d(TAG,jo.toString());
     	return jo.toString(); 
-    }                
+    }                 
              
 	/**  
 	 * 

@@ -188,14 +188,14 @@ public class AudioGame implements Observer {
 	private void interruptSmoothDrive() {
 		long time = System.currentTimeMillis();
 		long smoothDrive = (time - smoothDriveTime) / 1000;
-		
+		                    
 		if (smoothDrive > longestSmoothDrive) {
 			longestSmoothDrive = smoothDrive;
 			readRecords();
 		}
 		
 		smoothDriveTime = time;
-	}
+	}        
 
 	@Override
 	public void update(Observable observable, Object data) {
