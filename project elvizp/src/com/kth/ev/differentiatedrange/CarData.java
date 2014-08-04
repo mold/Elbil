@@ -51,6 +51,9 @@ public class CarData extends Observable {
 	private long lastUpdateTime = System.currentTimeMillis();
 
 	private long timeSinceLast;
+	
+	/** how far the car has travelled since the app was started (m) */
+	private double distanceTravelled,distanceTravelledPrev;
 
 	/**
 	 * Create a CarData with the default EVEnergy.
@@ -164,6 +167,9 @@ public class CarData extends Observable {
 						(soc * evEnergy.batterySize), 0.7);
 		}
 
+		distanceTravelledPrev = distanceTravelled;
+		distanceTravelled += (speed / 3.6) * timeSinceLast;
+		
 		calculateClimatePower();
 		setChanged();
 	}
@@ -253,6 +259,13 @@ public class CarData extends Observable {
 			return lerp(accelerationPrev, acceleration);
 		}
 		return acceleration;
+	}
+	
+	public double getDistanceTravelled(boolean interpolate) {
+		if (interpolate) {
+			return lerp(distanceTravelledPrev, distanceTravelled);
+		}
+		return distanceTravelled;
 	}
 
 	/**

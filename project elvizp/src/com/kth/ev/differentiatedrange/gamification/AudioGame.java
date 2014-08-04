@@ -12,13 +12,21 @@ import android.speech.tts.TextToSpeech;
 import android.util.Log;
 
 import com.kth.ev.differentiatedrange.CarData;
+import com.kth.ev.graphviz.APIDataTypes.Step;
 import com.kth.ev.graphviz.DataGraph;
+import com.kth.ev.graphviz.RouteDataFetcher;
 
 public class AudioGame implements Observer {
 
 	final String GAME_START = "The audio game has been started. . "; 
 	
 	Context context;
+	RouteDataFetcher routeData;
+	/* The distance travelled at the start of a route */
+	double distanceTravelledStart;
+	double routeDistanceTravelled;
+	double[] routeConsumptions;
+	int routeStepIndex;
 	
 	/* game variables */
 	final double ACC_D = 2; // time above acc threshold (s)
@@ -170,6 +178,13 @@ public class AudioGame implements Observer {
 		return str;
 	}
 	
+	public void setRouteData(RouteDataFetcher routeData) {
+		this.routeData = routeData;
+		// set the distance travelled to be initialized at the next CarData update
+		routeDistanceTravelled = 0;
+		distanceTravelledStart = -1;
+	}
+
 	private void interruptSmoothDrive() {
 		long time = System.currentTimeMillis();
 		long smoothDrive = (time - smoothDriveTime) / 1000;
@@ -315,6 +330,34 @@ public class AudioGame implements Observer {
 							interruptSmoothDrive();
 						}
 						Log.v("audiogame", "Brk time: " + time);
+					}
+				}
+			}
+			
+			// RouteDataFetcher
+			double distance = carData.getDistanceTravelled(false);
+			if (routeData != null) {
+				if (distanceTravelledStart == -1) {
+					distanceTravelledStart = distance;
+					routeConsumptions = carData.consumptionOnRoute(routeData.data, CarData.SPEED & CarData.TIME);
+				} else {
+					Step step = routeData.data.get(routeStepIndex);
+					if (step != null) {
+						double distanceSum = routeDistanceTravelled + step.distance.value;
+						// get the next step
+						while (distance > distanceSum && routeStepIndex < routeData.data.size()) {
+							routeStepIndex++;
+							step = routeData.data.get(routeStepIndex);
+							distanceSum += step.distance.value;
+						}
+						if (routeStepIndex >= routeData.data.size() - 1) {
+							// interrupt drive
+						} else {
+							double relativeDistance = (distance - distanceTravelledStart) / step.distance.value;
+							double currentConsumption = routeConsumptions[routeStepIndex - 1] + relativeDistance * (routeConsumptions[routeStepIndex] - routeConsumptions[routeStepIndex - 1]);
+							PdBase.sendFloat("consumption", (float) currentConsumption);
+							Log.v("pdgame", "consumption: " + currentConsumption);
+						}
 					}
 				}
 			}
