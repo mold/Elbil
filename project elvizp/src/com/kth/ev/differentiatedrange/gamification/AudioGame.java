@@ -26,7 +26,7 @@ public class AudioGame implements Observer {
 	final double BRK_D = 2; // time below break threshold (s)
 	final double BRK_T = -3; // break threshold
 	final double AMP_ACC_T = -2;
-	final double AMP_BRK_T = -1.5;
+	final double AMP_BRK_T = 1.5;
 	
 	long accThresholdTime;
 	boolean accThresholdCrossing;
@@ -193,7 +193,10 @@ public class AudioGame implements Observer {
 			double speed = carData.getSpeed(false);
 			double amp = carData.getAmp(false);
 			double acceleration = carData.getAcceleration(false);
-			double amp_speed = amp / speed; 
+			double amp_speed = 0;
+			if (speed != 0.0) {
+				amp_speed = amp / speed;
+			}
 
 			speedData.pushData(speed);
 			ampData.pushData(amp);
@@ -271,33 +274,48 @@ public class AudioGame implements Observer {
 				ampState = 0;
 			}
 			
-			/* data threshold checking */
-			if (acceleration > ACC_T || amp_speed < AMP_ACC_T) {
-				if (!accThresholdCrossing) {
-					accThresholdTime = System.currentTimeMillis();
-					accThresholdCrossing = true;
-				}
+			if (acceleration > 0) {
+				PdBase.sendFloat("acc_threshold", (float) (acceleration / ACC_T));
 			} else {
-				if (accThresholdCrossing) {
-					time = System.currentTimeMillis() - accThresholdTime;
-					if (time > ACC_D) {
-						interruptSmoothDrive();
-					}
-					Log.v("audiogame", "Acc time: " + time);
-				}
+				PdBase.sendFloat("acc_threshold", (float) (acceleration / BRK_T));
 			}
-			if (acceleration < BRK_T || amp_speed > AMP_BRK_T) {
-				if (!brkThresholdCrossing) {
-					brkThresholdTime = System.currentTimeMillis();
-					brkThresholdCrossing = true;
-				}
+			if (amp_speed > 0) {
+				PdBase.sendFloat("amp_speed_threshold", (float) (amp_speed / AMP_BRK_T));
 			} else {
-				if (brkThresholdCrossing) {
-					time = System.currentTimeMillis() - brkThresholdTime;
-					if (time > BRK_D) {
-						interruptSmoothDrive();
+				PdBase.sendFloat("amp_speed_threshold", (float) (amp_speed / AMP_ACC_T));
+			}
+			
+			if (gameRunning) {
+				/* data threshold checking */
+				if (speed > 1 && (acceleration > ACC_T || amp_speed < AMP_ACC_T)) {
+					Log.v("pdgame", "acc: " + acceleration + ", amp/speed: " + amp_speed);
+					if (!accThresholdCrossing) {
+						accThresholdTime = System.currentTimeMillis();
+						accThresholdCrossing = true;
 					}
-					Log.v("audiogame", "Brk time: " + time);
+				} else {
+					if (accThresholdCrossing) {
+						time = System.currentTimeMillis() - accThresholdTime;
+						if (time > ACC_D) {
+							interruptSmoothDrive();
+						}
+						Log.v("audiogame", "Acc time: " + time);
+					}
+				}
+				if (speed > 1 && (acceleration < BRK_T || amp_speed > AMP_BRK_T)) {
+					Log.v("pdgame", "acc: " + acceleration + ", amp/speed: " + amp_speed);
+					if (!brkThresholdCrossing) {
+						brkThresholdTime = System.currentTimeMillis();
+						brkThresholdCrossing = true;
+					}
+				} else {
+					if (brkThresholdCrossing) {
+						time = System.currentTimeMillis() - brkThresholdTime;
+						if (time > BRK_D) {
+							interruptSmoothDrive();
+						}
+						Log.v("audiogame", "Brk time: " + time);
+					}
 				}
 			}
 		}
