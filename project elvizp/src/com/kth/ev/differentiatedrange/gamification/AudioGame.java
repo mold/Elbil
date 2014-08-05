@@ -334,7 +334,7 @@ public class AudioGame implements Observer {
 						if (time > ACC_D) {
 							interruptSmoothDrive();
 						}
-						Log.v("audiogame", "Acc time: " + time);
+						Log.v("pdgame", "Acc time: " + time);
 					}
 				}
 				// break
@@ -352,7 +352,7 @@ public class AudioGame implements Observer {
 						if (time > BRK_D) {
 							interruptSmoothDrive();
 						}
-						Log.v("audiogame", "Brk time: " + time);
+						Log.v("pdgame", "Brk time: " + time);
 					}
 				}
 			}
