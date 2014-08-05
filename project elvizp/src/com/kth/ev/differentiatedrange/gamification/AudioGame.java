@@ -330,6 +330,7 @@ public class AudioGame implements Observer {
 					}
 				} else {
 					if (accThresholdCrossing) {
+						accThresholdCrossing = false;
 						time = System.currentTimeMillis() - accThresholdTime;
 						if (time > ACC_D) {
 							interruptSmoothDrive();
@@ -348,6 +349,7 @@ public class AudioGame implements Observer {
 					}
 				} else {
 					if (brkThresholdCrossing) {
+						brkThresholdCrossing = false;
 						time = System.currentTimeMillis() - brkThresholdTime;
 						if (time > BRK_D) {
 							interruptSmoothDrive();
