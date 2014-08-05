@@ -36,11 +36,16 @@ public class AudioGame implements Observer {
 	final double BRK_T = -3; // break threshold
 	final double AMP_ACC_T = -2;
 	final double AMP_BRK_T = 1.5;
+	final double AMP_GAIN_T = 1;
 
 	long accThresholdTime;
 	boolean accThresholdCrossing;
 	long brkThresholdTime;
 	boolean brkThresholdCrossing;
+	long ampGainTimeStart;
+	double ampGainMax = 10;
+	double ampGainLevelMeter;
+	double ampGainTotal;
 
 	/* game data */
 	long longestSmoothDrive;
@@ -198,6 +203,11 @@ public class AudioGame implements Observer {
 		}
 
 		smoothDriveTime = time;
+		
+		smoothDrivePoints--;
+		PdBase.sendFloat("drive_points", smoothDrivePoints);
+		PdBase.sendBang("drive_points_loss");
+		Log.v("pdgame", "Smooth drive points: " + smoothDrivePoints + " (-1)");
 	}
 
 	@Override
@@ -309,6 +319,7 @@ public class AudioGame implements Observer {
 
 			if (gameRunning) {
 				/* data threshold checking */
+				// acceleration
 				if (speed > 1
 						&& (acceleration > ACC_T || amp_speed < AMP_ACC_T)) {
 					Log.v("pdgame", "acc: " + acceleration + ", amp/speed: "
@@ -326,6 +337,7 @@ public class AudioGame implements Observer {
 						Log.v("audiogame", "Acc time: " + time);
 					}
 				}
+				// break
 				if (speed > 1
 						&& (acceleration < BRK_T || amp_speed > AMP_BRK_T)) {
 					Log.v("pdgame", "acc: " + acceleration + ", amp/speed: "
@@ -342,6 +354,43 @@ public class AudioGame implements Observer {
 						}
 						Log.v("audiogame", "Brk time: " + time);
 					}
+				}
+			}
+			
+			// amp gain (game)
+			if (amp > 0) {
+				if (ampGainTotal == 0.0) {
+					ampGainTimeStart = System.currentTimeMillis();
+				}
+				ampGainTotal += amp;
+			} else {
+				if (ampGainTotal != 0.0) {
+					time = System.currentTimeMillis() - ampGainTimeStart;
+					double gain = ampGainTotal / (time / 1000);
+					int newPoints = 0;
+					Log.v("pdgame", "gain: " + gain);
+					ampGainLevelMeter += gain;
+					// add gain to the level meter
+					while (ampGainLevelMeter > ampGainMax) {
+						// recieve points!
+						smoothDrivePoints++;
+						newPoints++;
+						
+						ampGainLevelMeter -= ampGainMax;
+						if (ampGainLevelMeter < 0) {
+							ampGainLevelMeter = 0;
+						}
+					}
+					// recieved points
+					if (newPoints > 0) {
+						PdBase.sendFloat("drive_points", smoothDrivePoints);
+						PdBase.sendBang("drive_points_gain");
+						Log.v("pdgame", "Smooth drive points: " + smoothDrivePoints + " (+" + newPoints + ")");
+					}
+					if (gain > ampGainMax) {
+						ampGainMax = gain;
+					}
+					ampGainTotal = 0;
 				}
 			}
 
