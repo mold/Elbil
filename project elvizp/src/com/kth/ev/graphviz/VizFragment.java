@@ -21,12 +21,12 @@ import android.webkit.WebView;
  * Fragment that contains a WebView for rendering graphs using the d3.js
  * framework.
  * 
- * @author marothon  
+ * @author marothon
  * 
  */
-@SuppressLint("SetJavaScriptEnabled")
+@SuppressLint("SetJavaScriptEnabled") 
 public class VizFragment extends Fragment implements Observer {
-	private static final String TAG = "D3Fragment";
+	private static final String TAG = "VizFragment";
 	private RouteDataFetcher rdf;
 	private Thread t_rdf;
 	private CarData cd;
@@ -62,25 +62,32 @@ public class VizFragment extends Fragment implements Observer {
 				t_rdf.start();
 			} else {
 				Log.e(TAG, "Cannot start API call without internet access.");
-			}
-		}
-       
-		browser = new WebView(getActivity());
+			}  
+		}  
+		if (browser == null) {
+			browser = new WebView(getActivity());
 
-		browser.setVerticalScrollBarEnabled(false);
-		browser.setHorizontalScrollBarEnabled(false);
-		((ViewGroup) getView()).addView(browser);
- 
-		if (getActivity() instanceof ElvizpActivity) {
-			Log.d(TAG, "Adding javascript interface");
-			browser.addJavascriptInterface(cd, "CarData");
-		}     
-  
-		browser.setWebChromeClient(new WebChromeClient());
-		browser.getSettings().setJavaScriptEnabled(true);
-		browser.loadUrl("file:///android_asset/viz.html");    
-  
-	}    
+			browser.setVerticalScrollBarEnabled(false);
+			browser.setHorizontalScrollBarEnabled(false);
+
+			if (getActivity() instanceof ElvizpActivity) {
+				Log.d(TAG, "Adding javascript interface");
+				browser.addJavascriptInterface(cd, "CarData");
+			}
+
+			browser.setWebChromeClient(new WebChromeClient());
+			browser.getSettings().setJavaScriptEnabled(true);
+			browser.loadUrl("file:///android_asset/viz.html");
+		}
+		((ViewGroup) getView()).addView(browser); 
+
+	}
+	
+	@Override   
+	public void onDestroyView() {
+		super.onDestroyView();
+		((ViewGroup) getView()).removeView(browser); 
+	};
 
 	/**
 	 * Listens for the routedatafetcher thread completion.
@@ -89,10 +96,10 @@ public class VizFragment extends Fragment implements Observer {
 	public void update(Observable observable, Object data) {
 		if (observable instanceof RouteDataFetcher) {
 			rdf = (RouteDataFetcher) observable;
-			setRoute(rdf.json_processed); 
+			setRoute(rdf.json_processed);
 			addEstimation(cd, (RouteDataFetcher) observable);
-		}  
-	}  
+		}
+	}
 
 	/**
 	 * Loads a json encoded step file (fetched from google api) into the
@@ -105,7 +112,7 @@ public class VizFragment extends Fragment implements Observer {
 			throw new IllegalArgumentException("Not a valid JSON string.");
 		} else {
 			runBrowserCommand("javascript:setRoute(" + json + ")");
-		} 
+		}
 	}
 
 	/**
@@ -120,7 +127,7 @@ public class VizFragment extends Fragment implements Observer {
 	private void addEstimation(CarData cd2, RouteDataFetcher observable) {
 		if (rdf.data.size() < 1)
 			return;
-  
+
 		int factors = 0;
 		factors |= CarData.SLOPE | CarData.TIME | CarData.SPEED;
 		final String consumption = cd.consumptionOnRouteJSON(rdf.data, factors);
@@ -130,14 +137,15 @@ public class VizFragment extends Fragment implements Observer {
 
 	private void runBrowserCommand(final String c) {
 		getActivity().runOnUiThread(new Runnable() {
-			@Override  
+			@Override
 			public void run() {
 				browser.loadUrl(c);
 			}
-		});    
+		});
 	}
 
 	private static final Gson gson = new Gson();
+
 	private boolean isValidJSON(String JSON_STRING) {
 		try {
 			gson.fromJson(JSON_STRING, Object.class);
@@ -145,6 +153,6 @@ public class VizFragment extends Fragment implements Observer {
 		} catch (com.google.gson.JsonSyntaxException ex) {
 			return false;
 		}
-	}       
+	}
 
 }

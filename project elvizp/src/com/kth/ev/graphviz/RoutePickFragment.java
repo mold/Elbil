@@ -25,7 +25,6 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.Filter;
 import android.widget.Filterable;
-import android.widget.GridLayout;
 
 /**
  * Fragment for picking a route. Uses auto completion
