@@ -18,8 +18,8 @@ import com.kth.ev.graphviz.RouteDataFetcher;
 
 public class AudioGame implements Observer {
 
-	final String GAME_START = "The audio game has been started. . "; 
-	
+	final String GAME_START = "The audio game has been started. . ";
+
 	Context context;
 	RouteDataFetcher routeData;
 	/* The distance travelled at the start of a route */
@@ -27,7 +27,7 @@ public class AudioGame implements Observer {
 	double routeDistanceTravelled;
 	double[] routeConsumptions;
 	int routeStepIndex;
-	
+
 	/* game variables */
 	final double ACC_D = 2; // time above acc threshold (s)
 	final double ACC_T = 3; // acc threshold
@@ -35,12 +35,12 @@ public class AudioGame implements Observer {
 	final double BRK_T = -3; // break threshold
 	final double AMP_ACC_T = -2;
 	final double AMP_BRK_T = 1.5;
-	
+
 	long accThresholdTime;
 	boolean accThresholdCrossing;
 	long brkThresholdTime;
 	boolean brkThresholdCrossing;
-	
+
 	/* game data */
 	long longestSmoothDrive;
 	long smoothDriveTime;
@@ -69,7 +69,7 @@ public class AudioGame implements Observer {
 		speedData = new DataAnalyzer(2, 0);
 		ampData = new DataAnalyzer(2, 0.5);
 		accData = new DataAnalyzer(2, 0);
-		
+
 		ttsLoaded = false;
 		gameRunning = false;
 
@@ -79,7 +79,7 @@ public class AudioGame implements Observer {
 				speech.setLanguage(Locale.US);
 				ttsLoaded = true;
 				Log.v("puredata", "tts loaded");
-				
+
 				if (gameRunning) {
 					start();
 				}
@@ -88,34 +88,35 @@ public class AudioGame implements Observer {
 
 		intervalTime = System.currentTimeMillis();
 	}
-	
+
 	public void start() {
 		gameRunning = true;
-		
+
 		smoothDriveTime = System.currentTimeMillis();
 		accThresholdTime = 0;
 		accThresholdCrossing = false;
 		brkThresholdTime = 0;
 		brkThresholdCrossing = false;
-		
+
 		if (ttsLoaded) {
 			Log.v("puredata", "speech");
 			speech.speak(GAME_START, TextToSpeech.QUEUE_ADD, null);
 			readRecords();
 		}
 	}
-	
+
 	public void stop() {
 		gameRunning = false;
 	}
-	
+
 	public boolean isRunning() {
 		return gameRunning;
 	}
-	
+
 	private void readRecords() {
 		String str;
-		str = "your record for longest smooth drive is " + getTimeString(longestSmoothDrive);
+		str = "your record for longest smooth drive is "
+				+ getTimeString(longestSmoothDrive);
 		speech.speak(str, TextToSpeech.QUEUE_ADD, null);
 	}
 
@@ -154,7 +155,7 @@ public class AudioGame implements Observer {
 		ampAccGraph.setColor(Color.RED);
 		return ampAccGraph;
 	}
-	
+
 	private String getTimeString(long time) {
 		long real_time = time;
 		String str = "";
@@ -162,13 +163,13 @@ public class AudioGame implements Observer {
 		long tmp = time / 360;
 		if (tmp >= 1) {
 			str += tmp + " hours ";
-			time -= tmp*360;
+			time -= tmp * 360;
 		}
 		// hours
 		tmp = time / 60;
 		if (tmp >= 1) {
 			str += tmp + " minutes ";
-			time -= tmp*60;
+			time -= tmp * 60;
 		}
 		if (real_time != time) {
 			str += "and ";
@@ -177,10 +178,11 @@ public class AudioGame implements Observer {
 		str += time + " seconds";
 		return str;
 	}
-	
+
 	public void setRouteData(RouteDataFetcher routeData) {
 		this.routeData = routeData;
-		// set the distance travelled to be initialized at the next CarData update
+		// set the distance travelled to be initialized at the next CarData
+		// update
 		routeDistanceTravelled = 0;
 		distanceTravelledStart = -1;
 	}
@@ -188,20 +190,20 @@ public class AudioGame implements Observer {
 	private void interruptSmoothDrive() {
 		long time = System.currentTimeMillis();
 		long smoothDrive = (time - smoothDriveTime) / 1000;
-		                    
+
 		if (smoothDrive > longestSmoothDrive) {
 			longestSmoothDrive = smoothDrive;
 			readRecords();
 		}
-		
+
 		smoothDriveTime = time;
-	}        
+	}
 
 	@Override
 	public void update(Observable observable, Object data) {
 		if (observable instanceof CarData) {
 			long time = System.currentTimeMillis();
-			//double delta = (time - intervalTime) / 1000.0;
+			// double delta = (time - intervalTime) / 1000.0;
 			intervalTime = time;
 
 			CarData carData = (CarData) observable;
@@ -288,22 +290,28 @@ public class AudioGame implements Observer {
 				}
 				ampState = 0;
 			}
-			
+
 			if (acceleration > 0) {
-				PdBase.sendFloat("acc_threshold", (float) (acceleration / ACC_T));
+				PdBase.sendFloat("acc_threshold",
+						(float) (acceleration / ACC_T));
 			} else {
-				PdBase.sendFloat("acc_threshold", (float) (acceleration / BRK_T));
+				PdBase.sendFloat("acc_threshold",
+						(float) (acceleration / BRK_T));
 			}
 			if (amp_speed > 0) {
-				PdBase.sendFloat("amp_speed_threshold", (float) (amp_speed / AMP_BRK_T));
+				PdBase.sendFloat("amp_speed_threshold",
+						(float) (amp_speed / AMP_BRK_T));
 			} else {
-				PdBase.sendFloat("amp_speed_threshold", (float) (amp_speed / AMP_ACC_T));
+				PdBase.sendFloat("amp_speed_threshold",
+						(float) (amp_speed / AMP_ACC_T));
 			}
-			
+
 			if (gameRunning) {
 				/* data threshold checking */
-				if (speed > 1 && (acceleration > ACC_T || amp_speed < AMP_ACC_T)) {
-					Log.v("pdgame", "acc: " + acceleration + ", amp/speed: " + amp_speed);
+				if (speed > 1
+						&& (acceleration > ACC_T || amp_speed < AMP_ACC_T)) {
+					Log.v("pdgame", "acc: " + acceleration + ", amp/speed: "
+							+ amp_speed);
 					if (!accThresholdCrossing) {
 						accThresholdTime = System.currentTimeMillis();
 						accThresholdCrossing = true;
@@ -317,8 +325,10 @@ public class AudioGame implements Observer {
 						Log.v("audiogame", "Acc time: " + time);
 					}
 				}
-				if (speed > 1 && (acceleration < BRK_T || amp_speed > AMP_BRK_T)) {
-					Log.v("pdgame", "acc: " + acceleration + ", amp/speed: " + amp_speed);
+				if (speed > 1
+						&& (acceleration < BRK_T || amp_speed > AMP_BRK_T)) {
+					Log.v("pdgame", "acc: " + acceleration + ", amp/speed: "
+							+ amp_speed);
 					if (!brkThresholdCrossing) {
 						brkThresholdTime = System.currentTimeMillis();
 						brkThresholdCrossing = true;
@@ -333,19 +343,22 @@ public class AudioGame implements Observer {
 					}
 				}
 			}
-			
+
 			// RouteDataFetcher
 			double distance = carData.getDistanceTravelled(false);
 			if (routeData != null) {
 				if (distanceTravelledStart == -1) {
 					distanceTravelledStart = distance;
-					routeConsumptions = carData.consumptionOnRoute(routeData.data, CarData.SPEED & CarData.TIME);
+					routeConsumptions = carData.consumptionOnRoute(
+							routeData.data, CarData.SPEED & CarData.TIME);
 				} else {
 					Step step = routeData.data.get(routeStepIndex);
 					if (step != null) {
-						double distanceSum = routeDistanceTravelled + step.distance.value;
+						double distanceSum = routeDistanceTravelled
+								+ step.distance.value;
 						// get the next step
-						while (distance > distanceSum && routeStepIndex < routeData.data.size()) {
+						while (distance > distanceSum
+								&& routeStepIndex < routeData.data.size()) {
 							routeStepIndex++;
 							step = routeData.data.get(routeStepIndex);
 							distanceSum += step.distance.value;
@@ -353,10 +366,15 @@ public class AudioGame implements Observer {
 						if (routeStepIndex >= routeData.data.size() - 1) {
 							// interrupt drive
 						} else {
-							double relativeDistance = (distance - distanceTravelledStart) / step.distance.value;
-							double currentConsumption = routeConsumptions[routeStepIndex - 1] + relativeDistance * (routeConsumptions[routeStepIndex] - routeConsumptions[routeStepIndex - 1]);
-							PdBase.sendFloat("consumption", (float) currentConsumption);
-							Log.v("pdgame", "consumption: " + currentConsumption);
+							double relativeDistance = (distance - distanceTravelledStart)
+									/ step.distance.value;
+							double currentConsumption = routeConsumptions[routeStepIndex - 1]
+									+ relativeDistance
+									* (routeConsumptions[routeStepIndex] - routeConsumptions[routeStepIndex - 1]);
+							PdBase.sendFloat("consumption",
+									(float) currentConsumption);
+							Log.v("pdgame", "consumption: "
+									+ currentConsumption);
 						}
 					}
 				}

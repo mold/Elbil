@@ -64,8 +64,7 @@ public class CarData extends Observable {
 	 *            How many milliseconds to sleep between fetching data
 	 */
 	public CarData() {
-		evEnergy = new EVEnergy((float) 1521, (float) 0.012, (float) 0.29,
-				(float) 2.7435);
+		evEnergy = new EVEnergy();
 		evEnergy.efficiency = (float) 0.88;
 	}
 

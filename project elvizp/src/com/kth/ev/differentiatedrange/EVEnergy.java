@@ -18,13 +18,6 @@ public class EVEnergy {
 									// of power.
 	public double batterySize = 15.0; // kwh
 
-	public EVEnergy(double mass, double cr, double cd, double area) {
-		mass = this.mass;
-		cr = this.cr;
-		cd = this.cd;
-		area = this.area;
-	}
-
 	public double EstimatedDistance(double speed, double acceleration,
 			double slope, double soc, double heating) {
 		return speed * (soc * 3600)
