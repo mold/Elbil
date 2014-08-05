@@ -11,6 +11,8 @@ import se.kth.ev.gmapsviz.R;
 
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -23,6 +25,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.GridLayout;
 
 /**
  * Fragment for picking a route. Uses auto completion
@@ -48,9 +51,9 @@ public class RoutePickFragment extends Fragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
-		AutoCompleteTextView from = (AutoCompleteTextView) getView()
+		final AutoCompleteTextView from = (AutoCompleteTextView) getView()
 				.findViewById(R.id.from);
-		AutoCompleteTextView to = (AutoCompleteTextView) getView()
+		final AutoCompleteTextView to = (AutoCompleteTextView) getView()
 				.findViewById(R.id.to);
 
 		from.setText("Lindstedtsvägen 9, Stockholm, Sweden");
@@ -79,8 +82,24 @@ public class RoutePickFragment extends Fragment {
 				Thread t_rdf = new Thread(rdf);
 				t_rdf.start();
 			}
+		}); 
+		
+		Button show_route = (Button) getView().findViewById(R.id.show_gmaps);
+		show_route.setText("Show route in Google Maps");
+		show_route.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				String sf = from.getText().toString();
+				sf.replace(" ", "+");
+				String st = to.getText().toString();
+				st.replace(" ", "+");
+				Intent intent = new Intent(android.content.Intent.ACTION_VIEW, 
+					    Uri.parse("http://www.google.se/maps/dir/"+sf+"/"+st));
+					startActivity(intent);
+			}
 		});
-	}
+	} 
 	
 	/**
 	 * Autocompletion class.
