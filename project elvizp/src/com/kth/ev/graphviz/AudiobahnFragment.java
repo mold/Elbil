@@ -3,6 +3,8 @@ package com.kth.ev.graphviz;
 import java.util.Observable;
 import java.util.Observer;
 
+import org.puredata.core.PdBase;
+
 import se.kth.ev.gmapsviz.R;
 
 import com.kth.ev.differentiatedrange.CarData;
@@ -20,6 +22,8 @@ import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
 /**
@@ -29,7 +33,7 @@ import android.widget.TextView;
  * 
  */
 public class AudiobahnFragment extends Fragment implements OnClickListener,
-		Observer {
+		Observer, OnSeekBarChangeListener {
 	// private static final String TAG = "AudiobahnFragment";
 	private static PureDataHandler pdHandler;
 	private static CarData carData;
@@ -42,6 +46,8 @@ public class AudiobahnFragment extends Fragment implements OnClickListener,
 	Button soundToggle;
 	Button buttonReload;
 	TextView dataText;
+	SeekBar seekbar1;
+	SeekBar seekbar2;
 
 	// PureData
 	Patch test;
@@ -95,6 +101,10 @@ public class AudiobahnFragment extends Fragment implements OnClickListener,
 		soundToggle.setOnClickListener(this);
 		buttonReload = (Button) getView().findViewById(R.id.reload_folder);
 		buttonReload.setOnClickListener(this);
+		seekbar1 = (SeekBar) getView().findViewById(R.id.seekBar1);
+		seekbar1.setOnSeekBarChangeListener(this);
+		seekbar2 = (SeekBar) getView().findViewById(R.id.seekBar2);
+		seekbar2.setOnSeekBarChangeListener(this);
 
 		// load the patches and init the patch list view
 		loadPatches();
@@ -215,5 +225,27 @@ public class AudiobahnFragment extends Fragment implements OnClickListener,
 		if (observable instanceof RouteDataFetcher) {
 			//audioGame.setRouteData((RouteDataFetcher) observable);
 		}
+	}
+
+	@Override
+	public void onProgressChanged(SeekBar seekBar, int progress,
+			boolean fromUser) {
+		if (seekBar == seekbar1) {
+			PdBase.sendFloat("slider1", progress / 1000);
+		} else if (seekBar == seekbar2) {
+			PdBase.sendFloat("slider2", progress / 1000);
+		}
+	}
+
+	@Override
+	public void onStartTrackingTouch(SeekBar seekBar) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onStopTrackingTouch(SeekBar seekBar) {
+		// TODO Auto-generated method stub
+		
 	}
 }

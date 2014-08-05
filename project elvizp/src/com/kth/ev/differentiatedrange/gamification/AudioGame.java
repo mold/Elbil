@@ -27,6 +27,7 @@ public class AudioGame implements Observer {
 	double routeDistanceTravelled;
 	double[] routeConsumptions;
 	int routeStepIndex;
+	int smoothDrivePoints;
 
 	/* game variables */
 	final double ACC_D = 2; // time above acc threshold (s)
@@ -100,7 +101,7 @@ public class AudioGame implements Observer {
 
 		if (ttsLoaded) {
 			Log.v("puredata", "speech");
-			speech.speak(GAME_START, TextToSpeech.QUEUE_ADD, null);
+			//speech.speak(GAME_START, TextToSpeech.QUEUE_ADD, null);
 			readRecords();
 		}
 	}
@@ -127,7 +128,7 @@ public class AudioGame implements Observer {
 	}
 
 	public DataGraph getAmpGraph() {
-		ampGraph = new DataGraph(context, "amp", -40, 40);
+		ampGraph = new DataGraph(context, "amp", -80, 80);
 		ampGraph.setColor(Color.CYAN);
 		return ampGraph;
 	}
