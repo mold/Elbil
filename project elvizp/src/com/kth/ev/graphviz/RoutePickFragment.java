@@ -79,6 +79,7 @@ public class RoutePickFragment extends Fragment {
 				RouteDataFetcher rdf = new RouteDataFetcher(from.getText().toString(), to.getText().toString());
 				ElvizpActivity a = (ElvizpActivity) getActivity();
 				a.relayObservable(rdf, 0);
+				a.relayObservable(rdf, 2);
 				Thread t_rdf = new Thread(rdf);
 				t_rdf.start();
 			}

@@ -1,5 +1,8 @@
 package com.kth.ev.graphviz;
 
+import java.util.Observable;
+import java.util.Observer;
+
 import se.kth.ev.gmapsviz.R;
 
 import com.kth.ev.differentiatedrange.CarData;
@@ -25,7 +28,7 @@ import android.widget.TextView;
  * @author johntu, dmol
  * 
  */
-public class AudiobahnFragment extends Fragment implements OnClickListener {
+public class AudiobahnFragment extends Fragment implements OnClickListener, Observer {
 	//private static final String TAG = "AudiobahnFragment";
 	private static PureDataHandler pdHandler;
 	private static CarData carData;
@@ -202,6 +205,12 @@ public class AudiobahnFragment extends Fragment implements OnClickListener {
 		case R.id.reload_folder:
 			loadPatches();
 			break;
+		}
+	}
+
+	@Override
+	public void update(Observable observable, Object data) {
+		if (observable instanceof RouteDataFetcher) {
 		}
 	}
 }
