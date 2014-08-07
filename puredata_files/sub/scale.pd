@@ -1,4 +1,4 @@
-#N canvas 1102 185 450 276 10;
+#N canvas 420 155 450 276 10;
 #X obj 106 66 loadbang;
 #X obj 106 157 f \$1;
 #X obj 37 66 inlet;
@@ -9,6 +9,10 @@
 #X obj 37 196 expr (($f1-$f2)/($f3-$f2))*($f5-$f4)+$f4;
 #X text 34 19 Scales a number on an input scale to an output scale
 \, without clipping!;
+#X obj 187 66 inlet;
+#X obj 246 66 inlet;
+#X obj 310 66 inlet;
+#X obj 371 66 inlet;
 #X connect 0 0 1 0;
 #X connect 0 0 4 0;
 #X connect 0 0 5 0;
@@ -19,3 +23,7 @@
 #X connect 5 0 7 3;
 #X connect 6 0 7 4;
 #X connect 7 0 3 0;
+#X connect 9 0 7 1;
+#X connect 10 0 7 2;
+#X connect 11 0 7 3;
+#X connect 12 0 7 4;

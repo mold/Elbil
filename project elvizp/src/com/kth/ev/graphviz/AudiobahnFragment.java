@@ -3,6 +3,8 @@ package com.kth.ev.graphviz;
 import java.util.Observable;
 import java.util.Observer;
 
+import org.puredata.core.PdBase;
+
 import se.kth.ev.gmapsviz.R;
 
 import com.kth.ev.differentiatedrange.CarData;
@@ -20,6 +22,8 @@ import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
 /**
@@ -28,8 +32,9 @@ import android.widget.TextView;
  * @author johntu, dmol
  * 
  */
-public class AudiobahnFragment extends Fragment implements OnClickListener, Observer {
-	//private static final String TAG = "AudiobahnFragment";
+public class AudiobahnFragment extends Fragment implements OnClickListener,
+		Observer, OnSeekBarChangeListener {
+	// private static final String TAG = "AudiobahnFragment";
 	private static PureDataHandler pdHandler;
 	private static CarData carData;
 
@@ -40,8 +45,9 @@ public class AudiobahnFragment extends Fragment implements OnClickListener, Obse
 	Button startGame;
 	Button soundToggle;
 	Button buttonReload;
-	TextView dataText;  
-
+	TextView dataText;
+	SeekBar seekbar1;
+	SeekBar seekbar2; 
 	// PureData
 	Patch test;
 	Patch[] loadedPatches;
@@ -49,7 +55,7 @@ public class AudiobahnFragment extends Fragment implements OnClickListener, Obse
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		//Log.v(TAG, "onCreate");
+		// Log.v(TAG, "onCreate");
 		audioGame = new AudioGame(getActivity());
 		if (getActivity() instanceof ElvizpActivity) {
 			carData = ((ElvizpActivity) getActivity()).cd;
@@ -70,7 +76,7 @@ public class AudiobahnFragment extends Fragment implements OnClickListener, Obse
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle bundle) {
-		//Log.v(TAG, "onCreateView");
+		// Log.v(TAG, "onCreateView");
 		audiobahnView = inflater.inflate(R.layout.fragment_audiobahn,
 				container, false);
 		return audiobahnView;
@@ -80,7 +86,7 @@ public class AudiobahnFragment extends Fragment implements OnClickListener, Obse
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		if (pdHandler.ready()) {
-			//Log.v(TAG, "initView (onActivityCreated)");
+			// Log.v(TAG, "initView (onActivityCreated)");
 			initView();
 		}
 	}
@@ -94,10 +100,14 @@ public class AudiobahnFragment extends Fragment implements OnClickListener, Obse
 		soundToggle.setOnClickListener(this);
 		buttonReload = (Button) getView().findViewById(R.id.reload_folder);
 		buttonReload.setOnClickListener(this);
-		
+		seekbar1 = (SeekBar) getView().findViewById(R.id.seekBar1);
+		seekbar1.setOnSeekBarChangeListener(this);
+		seekbar2 = (SeekBar) getView().findViewById(R.id.seekBar2);
+		seekbar2.setOnSeekBarChangeListener(this);
+
 		// load the patches and init the patch list view
 		loadPatches();
-		
+
 		// add some data graphs
 		container.addView(audioGame.getSpeedGraph());
 		container.addView(audioGame.getAccelerationGraph());
@@ -114,10 +124,10 @@ public class AudiobahnFragment extends Fragment implements OnClickListener, Obse
 		// graph = new DataGraph(this, carData, DataGraph.DATA.SOC);
 		// container.addView(graph);
 	}
-	
+
 	/**
-	 * Load the patches in the 'puredata' directory.
-	 * This method also updates the list view.
+	 * Load the patches in the 'puredata' directory. This method also updates
+	 * the list view.
 	 */
 	private void loadPatches() {
 		// TODO: check if the directory exists
@@ -128,10 +138,11 @@ public class AudiobahnFragment extends Fragment implements OnClickListener, Obse
 			}
 		}
 		loadedPatches = pdHandler.loadPatches();
-		
+
 		// update the list view
 		TextView item;
-		LinearLayout list = (LinearLayout) getView().findViewById(R.id.patch_list);
+		LinearLayout list = (LinearLayout) getView().findViewById(
+				R.id.patch_list);
 		list.removeAllViews();
 		for (int i = 0; i < loadedPatches.length; i++) {
 			item = new TextView(getActivity());
@@ -211,6 +222,29 @@ public class AudiobahnFragment extends Fragment implements OnClickListener, Obse
 	@Override
 	public void update(Observable observable, Object data) {
 		if (observable instanceof RouteDataFetcher) {
+			//audioGame.setRouteData((RouteDataFetcher) observable);
 		}
+	}
+
+	@Override
+	public void onProgressChanged(SeekBar seekBar, int progress,
+			boolean fromUser) {
+		if (seekBar == seekbar1) {
+			PdBase.sendFloat("slider1", progress / 1000);
+		} else if (seekBar == seekbar2) {
+			PdBase.sendFloat("slider2", progress / 1000);
+		}
+	}
+
+	@Override
+	public void onStartTrackingTouch(SeekBar seekBar) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onStopTrackingTouch(SeekBar seekBar) {
+		// TODO Auto-generated method stub
+		
 	}
 }
