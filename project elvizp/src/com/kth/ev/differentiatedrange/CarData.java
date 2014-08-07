@@ -33,12 +33,11 @@ import android.util.Log;
 public class CarData extends Observable {
 	public static final int SPEED = 1, SLOPE = 2, CLIMATE = 4,
 			ACCELERATION = 8, TIME = 16;
-	@SuppressWarnings("unused")
 	private static final String TAG = "CarData";
-
+          
 	private double soc, speed, fan, climate, amp, acceleration;
 	private double socPrev, speedPrev, fanPrev, climatePrev, ampPrev, accelerationPrev;
-
+	private double capacity;
 	private double kmpKWh;
 	private EVEnergy evEnergy;
 	private double[] rangeArray = new double[17]; // 0 is current
@@ -51,7 +50,7 @@ public class CarData extends Observable {
 	private long lastUpdateTime = System.currentTimeMillis();
 
 	private long timeSinceLast;
-	
+	  
 	/** how far the car has travelled since the app was started (m) */
 	private double distanceTravelled,distanceTravelledPrev;
 
@@ -67,6 +66,7 @@ public class CarData extends Observable {
 		evEnergy = new EVEnergy((float) 1521, (float) 0.012, (float) 0.29,
 				(float) 2.7435);
 		evEnergy.efficiency = (float) 0.88;
+		capacity = 16;
 	}
 
 	/**
@@ -489,13 +489,10 @@ public class CarData extends Observable {
 	    	jo.put("soc", String.valueOf(getSoc(interpolate)));
 	    	jo.put("amp", String.valueOf(getAmp(interpolate)));
 	    	jo.put("climate", String.valueOf(getCurrentClimateConsumption(interpolate)));
-	    	jo.put("time", String.valueOf((double)(System.currentTimeMillis()-lastUpdateTime)/1000));
-	    } catch (JSONException e) {        
-	    	Log.e(TAG, "oopsie!");
-	    	Log.e(TAG, e.toString());    
-			e.printStackTrace(); 
+	    	jo.put("capacity", String.valueOf(capacity));
+	    } catch (JSONException e) {  
+	    	Log.e(TAG, e.toString());
 		}
-    	//Log.d(TAG,jo.toString());
     	return jo.toString(); 
     }                 
              
@@ -515,7 +512,7 @@ public class CarData extends Observable {
 		JSONArray ja = new JSONArray();
 		if (steps == null) {
 			return ja.toString();
-		}
+		}  
 		double totalDistance = 0;
 		synchronized (this) {
 			//Start estimation with 0 energy consumption
@@ -526,7 +523,7 @@ public class CarData extends Observable {
 				ja.put(element);
 			} catch (JSONException e) {e.printStackTrace();}
 			
-			for (Step s : steps) {
+			for (Step s : steps) {    
 				element = new JSONObject();
 				
 				double energy = evEnergy      
@@ -541,13 +538,14 @@ public class CarData extends Observable {
 								(factors & TIME) > 0 ? s.duration.value : 1);
  
 				totalDistance += s.distance.value;
-				try { 
+				try {  
 					element.put("distance", totalDistance);
+					element.put("step", s.distance.value);        
 					element.put("energy", energy);
 					ja.put(element);
 				} catch (JSONException e) {
 					e.printStackTrace();
-				}      
+				}         
 			} 
 		} 
 		return ja.toString();

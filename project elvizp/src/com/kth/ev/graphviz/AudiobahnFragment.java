@@ -40,7 +40,7 @@ public class AudiobahnFragment extends Fragment implements OnClickListener, Obse
 	Button startGame;
 	Button soundToggle;
 	Button buttonReload;
-	TextView dataText;
+	TextView dataText;  
 
 	// PureData
 	Patch test;

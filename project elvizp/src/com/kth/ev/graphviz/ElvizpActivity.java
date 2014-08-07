@@ -26,13 +26,12 @@ import android.view.ViewGroup;
  * Main activity for the electric car visualizations.
  * 
  * @author marothon
- *
- */
+ *  
+ */             
 public class ElvizpActivity extends FragmentActivity implements Observer {
 	protected static final String TAG = "ElvizpActivity";
 	public CarData cd;
 	CarDataFetcher cdf;
-	RouteDataFetcher ee;
 	ViewPager vp;
 	ElvizpAdapter mp;
 	
@@ -86,23 +85,22 @@ public class ElvizpActivity extends FragmentActivity implements Observer {
     	CarData cd;
     	Context c;
         public ElvizpAdapter(FragmentManager fm, CarData cd, Context c) {
-            super(fm);
-            this.cd = cd;
+            super(fm); 
+            this.cd = cd;   
             this.c = c;
-        }
-
+                        
+        }   
+        
         @Override
         public int getCount() {
             return 3;
-        }
-
+        }                   
+        
         @Override
         public Fragment getItem(int position) {
         	switch(position){
         	case 0:
         		VizFragment e = new VizFragment();
-        		//EVVizFragment e = new EVVizFragment();
-        		//cd.addObserver(e);
         		return e;
         	case 1:
         		return new RoutePickFragment();
@@ -137,10 +135,16 @@ public class ElvizpActivity extends FragmentActivity implements Observer {
     		o.addObserver((Observer) getFragmentByPosition(frag_id));
     }
     
+    /**
+     * Finds fragment by the relative position in the swipe layout.
+     * 
+     * @param pos The id of the fragment.
+     * @return The requested fragment.
+     */
     public Fragment getFragmentByPosition(int pos) {
             String tag = "android:switcher:" + vp.getId() + ":" + pos;
             return getSupportFragmentManager().findFragmentByTag(tag);
-    }
+    }  
  
     /**   
      * Checks if the application has internet access. Returns true if so.

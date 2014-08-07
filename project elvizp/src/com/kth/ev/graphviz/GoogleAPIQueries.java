@@ -95,11 +95,11 @@ public class GoogleAPIQueries {
 		return requestSampledElevation(encoded, samples);
 	}
 
-	/**
+	/**  
 	 * Request a sample of the elevation along a given path.
 	 * 
 	 * @param points
-	 *            Encoded locations
+	 *            Encoded locations 
 	 * @param samples
 	 *            The number of elevation samples to be take along the path.
 	 * @return
@@ -111,7 +111,7 @@ public class GoogleAPIQueries {
 				Integer.toString(samples));
 		APIRequestTask task = new APIRequestTask(elevation_url);
 		task.execute(locations, samperi);
-		return task;
+		return task; 
 	}
 
 	public static APIRequestTask requestAutocomplete(String input) {

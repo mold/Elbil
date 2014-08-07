@@ -1,6 +1,6 @@
-  var margin = {top: 10, right: 15, bottom: 10, left: 15},
+  var margin = {top: 10, right: 15, bottom: 35, left: 35},
   width = window.innerWidth - 15 - margin.left - margin.right,
-  height = window.innerHeight/2 - margin.top - margin.bottom;
+  height = 0.9 * window.innerHeight - margin.top - margin.bottom;
   
   var svg = d3.select("body").append("svg")
   .attr("width", width + margin.left + margin.right)
@@ -24,6 +24,10 @@
     .scale(y)
     .orient("left");
 
+  var simple_line = d3.svg.line()
+    .x(function(d) { return x(d.distance); })
+    .y(function(d) { return y(d.energy); }) 
+
   var energy_curve = d3.svg.line()
     .x(function(d) { return x(d.distance); })
     .y(function(d) { return y(d.energy); }) 
@@ -33,6 +37,9 @@
     .interpolate("basis")
     .x(function(d) { return x(d.distance); })
     .y1(function(d) { return y(d.energy); });
+
+
+  var route_index = 0;  
 
  /**
 
@@ -44,9 +51,10 @@
   function setRoute(routeData){
     travelled_distance = 0;
     travel_time = 0;
+    route_index = 0;
     var sofar = 0;
     currentProgress.length = 0;
-    currentProgress.push({distance: 0, energy: 0});
+    currentRoute.length = 0;
     vizData.progress = currentProgress;
 
     for(var i=0; i<routeData.length; i++){
@@ -58,46 +66,59 @@
     }
     current_step = currentRoute[0];
     route_distance = sofar;
+    
+    consum_limit_data[1].distance = sofar;
+    consum_avg_data[1].distance = sofar;
+    consum_current_data[1].distance = sofar;
+
   }
 
-  /**
+/**
 
-  Cleans the svg and binds the data in values to the
-  line chart.
+Cleans the svg and binds the data in values to the
+line chart.
 
+*/
+function updateSeries(name, values){
+  vizData.estimation = values;
+
+  route_energy = d3.sum(vizData.estimation, function(d){
+    return d.step/1000 * d.energy;
+  });
+
+  avg_est_consump = route_energy / (route_distance / 1000);
+  //alert(avg_est_consump);
+  consum_avg_data[0].energy = avg_est_consump;
+  consum_avg_data[1].energy = avg_est_consump;
+  //alert(avg_est_consump +" kWh/km");
+  //alert(route_energy +" kWh");
+
+  setupGraph();
+}
+
+/**
+  * Initializes graph components.
   */
-  function updateSeries(name, values){
-    vizData.estimation = values;
-
-    route_energy = 0;
-    d3.sum(values, function(d){
-      route_energy += d.energy * d.distance/1000;
-    });
-
-    initEstimation();
-    window.setInterval(requestLoop, 100);
-
-  }
-
-function initEstimation(){
+function setupGraph(){
     x.domain([0, d3.max(vizData.estimation, function(d) { return d.distance; })]);
     y.domain(d3.extent(vizData.estimation, function(d) { return d.energy; }));
+    
     svg.selectAll("g").remove();
     svg.selectAll("path").remove();
-
-    /*
+    
     svg.append("g")
-      .attr("class", "x axis")
+      .attr("class", "y axis")
       .attr("transform", "translate(0," + height + ")")
       .call(xAxis)
       .append("text")
       .attr("y", 6)
-      .attr("dx", "-4em")
-      .attr("dy", "1.71em")
+      .attr("dx", "2em")
+      .attr("dy", "2em")
       .style("text-anchor", "start")
-      .text("Distance (km)");
-
+      .text("Distance (m)");
+    
     svg.append("g")
+      .attr("id", "yaxis")
       .attr("class", "y axis")
       .call(yAxis)
       .append("text")
@@ -107,7 +128,28 @@ function initEstimation(){
       .attr("dy", "-4.71em")
       .style("text-anchor", "end")
       .text("Energy consumption (kWh/km)");
-    */
+    
+    line = svg.append("path");
+
+    line
+      .datum(consum_limit_data)
+      .attr("class", "limit line")
+      .attr("id", "limit")
+      .attr("d", simple_line);
+
+    line_consum = svg.append("path");
+
+    line_consum
+      .datum(consum_current_data)
+      .attr("class", "limit curr line")
+      .attr("id", "limit")
+      .attr("d", simple_line);
+
+    svg.append("path")
+      .datum(consum_avg_data)
+      .attr("class", "limit avg line")
+      .attr("id", "avglimit")
+      .attr("d", simple_line);
 
     est_path = svg.append("path");
 
@@ -155,7 +197,6 @@ function initEstimation(){
 
 }
 
-var route_index = 0;
 /*
 
   Realtime update of energy consumption.
@@ -175,7 +216,7 @@ function incrementProgress(data){
   if (travelled_distance > current_step.overallDistance) {
     route_index++;
   }
-
+ 
   current_step = currentRoute[route_index];
   
   evenergy.reset();
@@ -185,7 +226,8 @@ function incrementProgress(data){
   if(isNumber(e)){
     var point = find_point_from_x(travelled_distance, est_path.node());
     var est_y = y.invert(point.y);
-  
+    // console.log("check: "+ travelled_distance +" m, "+e+" kwH/km, "+est_y+" kwH/km");
+    consumed_energy += e * dist/1000;
     currentProgress.push({distance: travelled_distance, energy: e, est_energy: est_y});
   
     svg.select("#progressLine")
