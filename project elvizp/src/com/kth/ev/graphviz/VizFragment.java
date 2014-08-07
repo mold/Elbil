@@ -46,11 +46,6 @@ public class VizFragment extends Fragment implements Observer {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		if (cd == null)
-			if (getActivity() instanceof ElvizpActivity) {
-				cd = ((ElvizpActivity) getActivity()).cd;
-				cd.addObserver(this);
-			}
 		if (t_rdf == null) {
 			if (((ElvizpActivity) getActivity()).isNetworkAvailable()) {
 				Log.d("ElvizFragment", "GET DATA");
@@ -62,7 +57,7 @@ public class VizFragment extends Fragment implements Observer {
 				postToast("This application requires internet."); 
 				Log.e(TAG, "Cannot start API call without internet access.");
 			}
-		}
+		}   
 		if (browser == null) {
 			browser = new WebView(getActivity());
 
@@ -76,8 +71,14 @@ public class VizFragment extends Fragment implements Observer {
 
 			browser.setWebChromeClient(new WebChromeClient());
 			browser.getSettings().setJavaScriptEnabled(true);
-			browser.loadUrl("file:///android_asset/viz.html");
+			
+			runBrowserCommand("file:///android_asset/viz.html");
 		}
+		if (cd == null)
+			if (getActivity() instanceof ElvizpActivity) {
+				cd = ((ElvizpActivity) getActivity()).cd;
+				cd.addObserver(this);
+			}
 		((ViewGroup) getView()).addView(browser);
 	}
 
@@ -92,25 +93,34 @@ public class VizFragment extends Fragment implements Observer {
 	 * 
 	 * @param data optional data from the observable.
 	 * @param observable The observable object.
-	 */
-	@Override
+	 */   
+	@Override      
 	public void update(Observable observable, Object data) {
 		if (observable instanceof RouteDataFetcher) {
 			RouteDataFetcher rdf = (RouteDataFetcher) observable;
 			if (rdf.data == null) {
 				postToast("Unsuccessful data fetch.");
-			}
+			} 
+			runBrowserCommand("file:///android_asset/viz.html");
+			reset();
 			setRoute(rdf.json_processed);
 			addEstimation(cd, (RouteDataFetcher) observable);
 		}
 		if (observable instanceof CarData) {
 			CarData cd = (CarData) observable;
-			updateProgress(cd);
-		}
+			updateProgress(cd);   
+		}     
+	} 
+	  
+	/**
+	 * Resets the visualization
+	 */
+	private void reset(){
+		runBrowserCommand("javascript:reset()");
 	}
 
 	/**
-	 * Updates visualisation with current CarData
+	 * Updates visualization with current CarData
 	 */
 	private void updateProgress(CarData cd) {
 		runBrowserCommand("javascript:updateData(" + cd.toJson(true) + ")");
@@ -127,7 +137,7 @@ public class VizFragment extends Fragment implements Observer {
 		if (!isValidJSON(json)) {
 			throw new IllegalArgumentException("Not a valid JSON string.");
 		} else {
-			runBrowserCommand("javascript:setRoute(" + json + ")");
+			runBrowserCommand("javascript:linechart.setRoute(" + json + ")");
 		}
 	}
 
@@ -148,10 +158,10 @@ public class VizFragment extends Fragment implements Observer {
 		int factors = 0;
 		factors |= CarData.SLOPE | CarData.TIME | CarData.SPEED;
 		final String consumption = cd.consumptionOnRouteJSON(rdf.data, factors);
-		runBrowserCommand("javascript:updateSeries(\"Estimated consumption\","
+		runBrowserCommand("javascript:linechart.setValues("
 				+ consumption + ")");
 	}
-
+ 
 	/**
 	 * Runs a browser command in the fragments WebView.
 	 * 
@@ -161,15 +171,15 @@ public class VizFragment extends Fragment implements Observer {
 	private void runBrowserCommand(final String c) {
 		if (browser == null || getActivity() == null)
 			return;
-
+   
 		getActivity().runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
 				browser.loadUrl(c);
-			}
-		});
-	}
-
+			}  
+		});   
+	} 
+            
 	private static final Gson gson = new Gson();
 
 	/**
@@ -186,7 +196,7 @@ public class VizFragment extends Fragment implements Observer {
 		} catch (com.google.gson.JsonSyntaxException ex) {
 			return false;
 		}
-	}
+	}      
 	
 	/**
 	 * Posts a toast message on the main UI thread.
