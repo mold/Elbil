@@ -11,7 +11,7 @@
 
     evenergy.config(vehicle);
 
-    var margin = {top: 10, right: 15, bottom: 35, left: 35},
+    var margin = {top: 10, right: 15, bottom: 35, left: 50},
     width = window.innerWidth - 15 - margin.left - margin.right,
     height = 0.9 * window.innerHeight - margin.top - margin.bottom;
     
@@ -151,6 +151,8 @@
       .transition()
       .duration(500)
       .attr("d", simple_line);
+
+    d3.select("p.start_message").remove();
       //.transition()
       //.duration(250)
 
@@ -216,8 +218,8 @@
         .append("text")
         .attr("transform", "rotate(-90)")
         .attr("y", 6)
-        .attr("dx", "-4em")
-        .attr("dy", "-4.71em")
+        .attr("dx", "-3em")
+        .attr("dy", "-3.71em")
         .style("text-anchor", "end")
         .text("Energy consumption (kWh/km)");
       

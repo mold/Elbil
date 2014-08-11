@@ -27,7 +27,6 @@ import android.widget.Toast;
 @SuppressLint("SetJavaScriptEnabled")
 public class VizFragment extends Fragment implements Observer {
 	private static final String TAG = "VizFragment";
-	private Thread t_rdf;
 	private CarData cd;
 	private WebView browser;
 
@@ -46,18 +45,6 @@ public class VizFragment extends Fragment implements Observer {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		if (t_rdf == null) {
-			if (((ElvizpActivity) getActivity()).isNetworkAvailable()) {
-				Log.d("ElvizFragment", "GET DATA");
-				RouteDataFetcher rdf = new RouteDataFetcher();
-				rdf.addObserver(this);
-				t_rdf = new Thread(rdf);
-				t_rdf.start();
-			} else {
-				postToast("This application requires internet."); 
-				Log.e(TAG, "Cannot start API call without internet access.");
-			}
-		}   
 		if (browser == null) {
 			browser = new WebView(getActivity());
 
@@ -73,7 +60,7 @@ public class VizFragment extends Fragment implements Observer {
 			browser.getSettings().setJavaScriptEnabled(true);
 			
 			runBrowserCommand("file:///android_asset/viz.html");
-		}
+		}   
 		if (cd == null)
 			if (getActivity() instanceof ElvizpActivity) {
 				cd = ((ElvizpActivity) getActivity()).cd;

@@ -80,7 +80,7 @@ public class ElvizpActivity extends FragmentActivity implements Observer {
 	 * 
 	 * @author marothon
 	 *
-	 */
+	 */               
     public static class ElvizpAdapter extends FragmentPagerAdapter {
     	CarData cd;
     	Context c;
@@ -133,6 +133,18 @@ public class ElvizpActivity extends FragmentActivity implements Observer {
     public void relayObservable(Observable o, int frag_id){
     	if(getFragmentByPosition(frag_id) instanceof Observer)
     		o.addObserver((Observer) getFragmentByPosition(frag_id));
+    }
+    
+    /**
+     * Adds all fragments (which are observers) as an observer
+     * to the given observable
+     */
+    public void relayObservable(Observable o){
+    	for(Fragment f :getSupportFragmentManager().getFragments()){
+    		if(f instanceof Observer){
+    			o.addObserver((Observer) f);
+    		}
+    	}
     }
     
     /**

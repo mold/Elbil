@@ -8,17 +8,20 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import se.kth.ev.gmapsviz.R;
-
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.InputType;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnKeyListener;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -53,10 +56,25 @@ public class RoutePickFragment extends Fragment {
 				.findViewById(R.id.from);
 		final AutoCompleteTextView to = (AutoCompleteTextView) getView()
 				.findViewById(R.id.to);
-
+ 
 		from.setText("Lindstedtsvägen 9, Stockholm, Sweden");
 		to.setText("Blackeberg, Sweden");
-
+		
+		OnKeyListener okl = new OnKeyListener() {
+			@Override
+			public boolean onKey(View v, int keyCode, KeyEvent event) {
+				if ((event.getAction() == KeyEvent.ACTION_DOWN)
+						&& (keyCode == KeyEvent.KEYCODE_ENTER)) {
+					InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(getActivity().INPUT_METHOD_SERVICE);
+					imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+					return true;
+				}
+				return false;
+			}
+		};
+		
+		from.setOnKeyListener(okl);
+		to.setOnKeyListener(okl);
 		from.setAdapter(new PlacesAutoCompleteAdapter(getActivity(),
 				android.R.layout.simple_dropdown_item_1line));
 		to.setAdapter(new PlacesAutoCompleteAdapter(getActivity(),
@@ -73,14 +91,13 @@ public class RoutePickFragment extends Fragment {
 						.findViewById(R.id.from);
 				AutoCompleteTextView to = (AutoCompleteTextView) getView()
 						.findViewById(R.id.to);
-				// Log.d(TAG,
+				// Log.d(TAG, 
 				// "Clicked for query "+from.getText().toString()+" to "+to.getText().toString());
 				RouteDataFetcher rdf = new RouteDataFetcher(from.getText()
 						.toString(), to.getText().toString());
 				ElvizpActivity a = (ElvizpActivity) getActivity();
 				if (a.isNetworkAvailable()) {
-					a.relayObservable(rdf, 0);
-					a.relayObservable(rdf, 2);
+					a.relayObservable(rdf);
 					Thread t_rdf = new Thread(rdf);
 					t_rdf.start();
 				} else {
@@ -105,7 +122,7 @@ public class RoutePickFragment extends Fragment {
 				String st = to.getText().toString();
 				st.replace(" ", "+");
 				ElvizpActivity a = (ElvizpActivity) getActivity();
- 				if (a.isNetworkAvailable()) {
+				if (a.isNetworkAvailable()) {
 					Intent intent = new Intent(
 							android.content.Intent.ACTION_VIEW, Uri
 									.parse("http://www.google.se/maps/dir/"

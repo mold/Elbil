@@ -2,7 +2,18 @@
   body {
     font: 10px sans-serif;
     background-color: lightgray;
+    margin: 0 0 0 0;
+    padding: 0 0 0 0;
   }
+
+p.start_message{
+  margin: 0 0 0 0;
+  padding: 0 0 0 0;
+  margin-top: 25%;
+  font-size: 5vw;
+  color: black;
+  text-align: center;
+}
 
 .axis path,
 .axis line {

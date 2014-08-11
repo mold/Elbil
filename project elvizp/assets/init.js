@@ -1,4 +1,3 @@
-
 d3.select("body").append("p");
 var t = Date.now();
 
@@ -13,6 +12,7 @@ function reset(){
  *  Method to update visualization with new CarData contained
  *  in the parameter cd.
  */
+
 function updateData(cd){
   if(linechart === undefined || !linechart.ready()){
     return;
