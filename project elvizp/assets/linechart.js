@@ -7,7 +7,7 @@
       cr:0.012,
       area:2.7435,
       mass:1521
-    }
+    };
 
     evenergy.config(vehicle);
 
@@ -38,17 +38,17 @@
       .orient("left");
 
     var simple_line = d3.svg.line()
-      .x(function(d) { return x(d.distance); })
-      .y(function(d) { return y(d.energy); }) 
+      .x(function(d) { return x(d.distance/1000); })
+      .y(function(d) { return y(d.energy); }); 
 
     var energy_curve = d3.svg.line()
-      .x(function(d) { return x(d.distance); })
+      .x(function(d) { return x(d.distance/1000); })
       .y(function(d) { return y(d.energy); }) 
       .interpolate("basis");
 
     var area = d3.svg.area()
       .interpolate("basis")
-      .x(function(d) { return x(d.distance); })
+      .x(function(d) { return x(d.distance/1000); })
       .y1(function(d) { return y(d.energy); });
 
     function LineChart(){
@@ -88,7 +88,7 @@
       consum_avg_data = [{energy: 0.5, distance: 0}, {energy: 0.5, distance: 12000}];
       consum_current_data = [{energy: 0, distance: 0}, {energy: 0, distance: 12000}];
       avg_est_consump = 0;
-    }
+    };
 
  /**
 
@@ -113,7 +113,7 @@
     consum_avg_data[1].distance = sofar;
     consum_current_data[1].distance = sofar;
     has_route = true;
-  }
+  };
 
   LineChart.prototype.updateLimits = function(cd){
     var energy_left = cd.soc/100 * cd.capacity;
@@ -152,7 +152,6 @@
       .duration(500)
       .attr("d", simple_line);
 
-    d3.select("p.start_message").remove();
       //.transition()
       //.duration(250)
 
@@ -160,7 +159,7 @@
     //console.log("avg_consump: "+ avg_consump);
     //console.log("curr_consump: "+ curr_consump);
     //console.log("x domain: "x.domain()[0]+", "+x.domain()[1]);
-  }
+  };
 
   /**
 
@@ -169,6 +168,7 @@
 
   */
   LineChart.prototype.setValues = function(values){
+  	d3.selectAll("p.greeting").remove();
     estimation = values;
     route_energy = d3.sum(estimation, function(d){
       return d.step/1000 * d.energy;
@@ -183,17 +183,17 @@
 
     setupGraph();
     has_data = true;
-  }
+  };
 
   LineChart.prototype.ready = function(){
     return has_data && has_route;
-  }
+  };
 
   /**
     * Initializes graph components.
     */
   function setupGraph(){
-      x.domain([0, d3.max(estimation, function(d) { return d.distance; })]);
+      x.domain([0, d3.max(estimation, function(d) { return d.distance/1000; })]);
       y.domain(d3.extent(estimation, function(d) { return d.energy; }));
       
       svg.selectAll("g").remove();
@@ -209,7 +209,7 @@
         .attr("dx", "2em")
         .attr("dy", "2em")
         .style("text-anchor", "start")
-        .text("Distance (m)");
+        .text("Distance (km)");
       
       svg.append("g")
         .attr("id", "yaxis")
@@ -323,7 +323,7 @@
       progress.push({distance: travelled_distance, energy: e, est_energy: est_y});
     
       svg.select("#progressLine")
-        .attr("d", energy_curve)
+        .attr("d", energy_curve);
      
       svg.select("#clip-below path")
          .attr("d", area.y0(height));
@@ -337,7 +337,7 @@
        svg.select(".area.below")
          .attr("d", area);
     }
-  }
+  };
 
   /*
 
@@ -348,7 +348,7 @@
 
   */
   function find_point_from_x(xval, path_node){
-    var target = x(xval);
+    var target = x(xval/1000);
     var start = 0;
     var end = path_node.getTotalLength();
     var pos = path_node.getPointAtLength((start + end)/2);

@@ -1,11 +1,10 @@
-d3.select("body").append("p");
 var t = Date.now();
 
-function reset(){
-  if(linechart === undefined)
-    return
+function reset(){ 
+  if(linechart === undefined) 
+    return;
   else
-    linechart.reset();
+  	linechart.reset();
 }
 
 /**
@@ -17,6 +16,7 @@ function updateData(cd){
   if(linechart === undefined || !linechart.ready()){
     return;
   }
+
   cd.time = (Date.now() - t) / 1000;
   cd.speed = 80;
   t = Date.now();
