@@ -1,15 +1,5 @@
 (function() {
-    /*
-      Vehicle information.
-    */
-    var vehicle = {
-      cd:0.29,
-      cr:0.012,
-      area:2.7435,
-      mass:1521
-    };
 
-    evenergy.config(vehicle);
 
     var margin = {top: 10, right: 15, bottom: 35, left: 50},
     width = window.innerWidth - 15 - margin.left - margin.right,
@@ -104,7 +94,7 @@
       travel_time = routeData[i].duration.value;
       elem = routeData[i];
       elem.overallDistance = sofar;
-      route.push(elem);
+      route.push(elem); 
     }
     current_step = route[0];
     route_distance = sofar;
@@ -290,6 +280,10 @@
         .attr("d", energy_curve);
   }
 
+  LineChart.prototype.getProgress = function(){
+    return progress;
+  };
+
   /*
 
     Realtime update of energy consumption.
@@ -320,7 +314,7 @@
       var est_y = y.invert(point.y);
       // console.log("check: "+ travelled_distance +" m, "+e+" kwH/km, "+est_y+" kwH/km");
       consumed_energy += e * dist/1000;
-      progress.push({distance: travelled_distance, energy: e, est_energy: est_y});
+      progress.push({distance: travelled_distance, energy: e, est_energy: est_y, speed: data.speed, climate: data.climate});
     
       svg.select("#progressLine")
         .attr("d", energy_curve);

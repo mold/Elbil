@@ -192,10 +192,6 @@ public class RoutePickFragment extends Fragment {
 						}
 						if (result != null) {
 							resultList = parseAutocomplete(result);
-
-							// Assign the data to the FilterResults
-							filterResults.values = resultList;
-							filterResults.count = resultList.size();
 						}
 					}
 					task = null;
@@ -226,6 +222,10 @@ public class RoutePickFragment extends Fragment {
 				@Override
 				protected void publishResults(CharSequence constraint,
 						FilterResults results) {
+					// Assign the data to the FilterResults
+					results.values = resultList;
+					results.count = resultList.size();
+					
 					if (results != null && results.count > 0) {
 						notifyDataSetChanged();
 					} else {

@@ -1,5 +1,5 @@
 package com.kth.ev.graphviz;
-
+         
 import java.util.List;
 
 import com.google.api.client.util.Key;
@@ -55,7 +55,7 @@ public class APIDataTypes {
 		@Key("value")
 		public double value;
 	}    
-    
+       
 	public static class OverviewPolyLine {
 		@Key("points")
 		public String points;
@@ -87,6 +87,9 @@ public class APIDataTypes {
 		
 		@Key("lng")
 		public double lng;
+		
+		@Key("elevation")
+		public double elevation;
 		
 		public String toString(){
 			return "("+lat+";"+lng+")";

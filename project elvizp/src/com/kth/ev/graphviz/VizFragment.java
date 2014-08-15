@@ -2,16 +2,20 @@ package com.kth.ev.graphviz;
 
 import java.util.Observable;
 import java.util.Observer;
+
 import se.kth.ev.gmapsviz.R;
 
 import com.google.gson.Gson;
 import com.kth.ev.differentiatedrange.CarData;
+
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
@@ -19,7 +23,7 @@ import android.widget.Toast;
 
 /**
  * Fragment that contains a WebView for rendering graphs using the d3.js
- * framework.
+ * framework. 
  * 
  * @author marothon
  * 
@@ -28,8 +32,8 @@ import android.widget.Toast;
 public class VizFragment extends Fragment implements Observer {
 	private static final String TAG = "VizFragment";
 	private CarData cd;
-	private WebView browser;
-
+	private WebView browser;  
+  
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
@@ -40,7 +44,7 @@ public class VizFragment extends Fragment implements Observer {
 			Bundle bundle) {
 		View v = inflater.inflate(R.layout.fragment_d3, container, false);
 		return v;
-	}
+	}    
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
@@ -50,7 +54,7 @@ public class VizFragment extends Fragment implements Observer {
 
 			browser.setVerticalScrollBarEnabled(false);
 			browser.setHorizontalScrollBarEnabled(false);
-
+ 
 			if (getActivity() instanceof ElvizpActivity) {
 				Log.d(TAG, "Adding javascript interface");
 				browser.addJavascriptInterface(cd, "CarData");
@@ -58,9 +62,17 @@ public class VizFragment extends Fragment implements Observer {
 
 			browser.setWebChromeClient(new WebChromeClient());
 			browser.getSettings().setJavaScriptEnabled(true);
-			
+ 
+			//Disable scrolling, but also disables javascript events!
+			browser.setOnTouchListener(new OnTouchListener() {
+				@Override
+				public boolean onTouch(View v, MotionEvent event) {
+					return (event.getAction() == MotionEvent.ACTION_MOVE);
+				}
+			});
+
 			runBrowserCommand("file:///android_asset/viz.html");
-		}   
+		}
 		if (cd == null)
 			if (getActivity() instanceof ElvizpActivity) {
 				cd = ((ElvizpActivity) getActivity()).cd;
@@ -78,31 +90,33 @@ public class VizFragment extends Fragment implements Observer {
 	/**
 	 * Listens for RouteDataFetchers and CarData objects.
 	 * 
-	 * @param data optional data from the observable.
-	 * @param observable The observable object.
-	 */   
-	@Override      
+	 * @param data 
+	 *            optional data from the observable.
+	 * @param observable
+	 *            The observable object.
+	 */                               
+	@Override
 	public void update(Observable observable, Object data) {
 		if (observable instanceof RouteDataFetcher) {
 			RouteDataFetcher rdf = (RouteDataFetcher) observable;
 			if (rdf.data == null) {
 				postToast("Unsuccessful data fetch.");
-			} 
+			}
 			runBrowserCommand("file:///android_asset/viz.html");
 			reset();
-			setRoute(rdf.json_processed);
-			addEstimation(cd, (RouteDataFetcher) observable);
+			updateRoute(rdf.json_processed);
+			updateEstimation(cd, (RouteDataFetcher) observable);
 		}
 		if (observable instanceof CarData) {
 			CarData cd = (CarData) observable;
-			updateProgress(cd);   
-		}     
-	} 
-	  
+			updateProgress(cd);
+		}
+	}
+
 	/**
 	 * Resets the visualization
 	 */
-	private void reset(){
+	private void reset() {
 		runBrowserCommand("javascript:reset()");
 	}
 
@@ -120,11 +134,11 @@ public class VizFragment extends Fragment implements Observer {
 	 * @param json
 	 *            JSON string with data.
 	 */
-	private void setRoute(String json) {
+	private void updateRoute(String json) {
 		if (!isValidJSON(json)) {
 			throw new IllegalArgumentException("Not a valid JSON string.");
 		} else {
-			runBrowserCommand("javascript:linechart.setRoute(" + json + ")");
+			runBrowserCommand("javascript:updateRoute(" + json + ")");
 		}
 	}
 
@@ -137,18 +151,17 @@ public class VizFragment extends Fragment implements Observer {
 	 * @param observable
 	 *            Thread which fetched the route data.
 	 */
-	private void addEstimation(CarData cd2, RouteDataFetcher observable) {
+	private void updateEstimation(CarData cd2, RouteDataFetcher observable) {
 		RouteDataFetcher rdf = (RouteDataFetcher) observable;
 		if (rdf.data == null || rdf.data.size() < 1 || browser == null)
 			return;
- 
+
 		int factors = 0;
 		factors |= CarData.SLOPE | CarData.TIME | CarData.SPEED;
 		final String consumption = cd.consumptionOnRouteJSON(rdf.data, factors);
-		runBrowserCommand("javascript:linechart.setValues("
-				+ consumption + ")");
+		runBrowserCommand("javascript:updateEstimation(" + consumption + ")");
 	}
- 
+
 	/**
 	 * Runs a browser command in the fragments WebView.
 	 * 
@@ -158,15 +171,15 @@ public class VizFragment extends Fragment implements Observer {
 	private void runBrowserCommand(final String c) {
 		if (browser == null || getActivity() == null)
 			return;
-   
+
 		getActivity().runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
 				browser.loadUrl(c);
-			}  
-		});   
-	} 
-            
+			}
+		});
+	}
+
 	private static final Gson gson = new Gson();
 
 	/**
@@ -183,22 +196,24 @@ public class VizFragment extends Fragment implements Observer {
 		} catch (com.google.gson.JsonSyntaxException ex) {
 			return false;
 		}
-	}      
-	
+	}
+
 	/**
 	 * Posts a toast message on the main UI thread.
 	 * 
-	 * @param cs Message to toast.
+	 * @param cs
+	 *            Message to toast.
 	 */
-	private void postToast(final CharSequence cs){
-		getActivity().runOnUiThread(new Runnable(){
-		@Override
-		public void run() {
-			Toast toast = Toast.makeText(getActivity()
-					.getApplicationContext(), cs, Toast.LENGTH_SHORT);
-			toast.show();  
+	private void postToast(final CharSequence cs) {
+		getActivity().runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				Toast toast = Toast.makeText(getActivity()
+						.getApplicationContext(), cs, Toast.LENGTH_SHORT);
+				toast.show();
 
-		}});
+			}
+		});
 	}
 
 }

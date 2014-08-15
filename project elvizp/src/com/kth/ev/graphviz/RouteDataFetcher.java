@@ -143,7 +143,9 @@ public class RouteDataFetcher extends Observable implements Runnable {
 					Step s = new Step();
 					s.start = new Location(); s.end = new Location();
 					s.start = ed_p.location; s.end = ed_c.location;
-					
+					s.start.elevation = ed_p.elevation;
+					s.end.elevation = ed_c.elevation;
+					 
 					elevation.add(new LatLng(s.start.lat, s.start.lng));
 					
 					s.distance = new Value(); s.duration = new Value();
@@ -165,7 +167,7 @@ public class RouteDataFetcher extends Observable implements Runnable {
 				json_processed = gson.toJson(ret);
 				//json_processed = gson.toJson(steps);
 				//Log.v(TAG, ret.size()+"");
-				//Log.v(TAG, json_processed);
+				Log.v(TAG, json_processed);
 				//Log.v(TAG, rawextra);
 			}
 		} catch (Exception e) {
