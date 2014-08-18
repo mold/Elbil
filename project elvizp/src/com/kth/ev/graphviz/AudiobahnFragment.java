@@ -47,8 +47,7 @@ public class AudiobahnFragment extends Fragment implements OnClickListener,
 	Button buttonReload;
 	TextView dataText;
 	SeekBar seekbar1;
-	SeekBar seekbar2;
-
+	SeekBar seekbar2; 
 	// PureData
 	Patch test;
 	Patch[] loadedPatches;
