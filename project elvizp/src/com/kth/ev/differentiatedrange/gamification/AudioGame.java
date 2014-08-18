@@ -107,7 +107,7 @@ public class AudioGame implements Observer {
 		if (ttsLoaded) {
 			Log.v("puredata", "speech");
 			//speech.speak(GAME_START, TextToSpeech.QUEUE_ADD, null);
-			readRecords();
+			//readRecords();
 		}
 	}
 
@@ -133,7 +133,7 @@ public class AudioGame implements Observer {
 	}
 
 	public DataGraph getAmpGraph() {
-		ampGraph = new DataGraph(context, "amp", -80, 80);
+		ampGraph = new DataGraph(context, "amp", -120, 80);
 		ampGraph.setColor(Color.CYAN);
 		return ampGraph;
 	}
@@ -199,14 +199,14 @@ public class AudioGame implements Observer {
 
 		if (smoothDrive > longestSmoothDrive) {
 			longestSmoothDrive = smoothDrive;
-			readRecords();
+			//readRecords();
 		}
 
 		smoothDriveTime = time;
 		
 		smoothDrivePoints--;
-		PdBase.sendFloat("drive_points", smoothDrivePoints);
-		PdBase.sendBang("drive_points_loss");
+		//PdBase.sendFloat("drive_points", smoothDrivePoints);
+		//PdBase.sendBang("drive_points_loss");
 		Log.v("pdgame", "Smooth drive points: " + smoothDrivePoints + " (-1)");
 	}
 
@@ -231,9 +231,10 @@ public class AudioGame implements Observer {
 			accData.pushData(acceleration);
 			double accelerationAvg = accData.getAverage();
 
-			PdBase.sendFloat("speed", (float) speed);
+			Log.v("pddebug", "speed: " + speed + ", amp: " + amp);
+			//PdBase.sendFloat("speed", (float) speed);
 			PdBase.sendFloat("amp", (float) amp);
-			PdBase.sendFloat("acceleration", (float) acceleration);
+			//PdBase.sendFloat("acceleration", (float) acceleration);
 
 			if (speedGraph != null) {
 				speedGraph.addDataPoint((float) speed);
@@ -252,10 +253,10 @@ public class AudioGame implements Observer {
 				ampStateGraph.addDataPoint(change);
 			}
 			if (change > 0 && prevAmpChange <= 0) {
-				PdBase.sendBang("amp_high");
+				//PdBase.sendBang("amp_high");
 			}
 			if (change < 0 && prevAmpChange >= 0) {
-				PdBase.sendBang("amp_low");
+				//PdBase.sendBang("amp_low");
 			}
 			prevAmpChange = change;
 
@@ -268,15 +269,15 @@ public class AudioGame implements Observer {
 			}
 
 			if (speed != 0.0) {
-				PdBase.sendFloat("amp_speed", (float) amp_speed);
+				//PdBase.sendFloat("amp_speed", (float) amp_speed);
 			} else {
-				PdBase.sendFloat("amp_speed", 0);
+				//PdBase.sendFloat("amp_speed", 0);
 			}
 
 			if (accelerationAvg != 0.0) {
-				PdBase.sendFloat("amp_acc", (float) (amp / acceleration));
+				//PdBase.sendFloat("amp_acc", (float) (amp / acceleration));
 			} else {
-				PdBase.sendFloat("amp_acc", 0);
+				//PdBase.sendFloat("amp_acc", 0);
 			}
 
 			if (ampAccGraph != null) {
@@ -297,24 +298,24 @@ public class AudioGame implements Observer {
 				if (ampState == 1) {
 					time = System.currentTimeMillis() - ampStartTime;
 					Log.v("pdgame", "gain streak: " + time);
-					PdBase.sendFloat("amp_gain_time", time);
+					//PdBase.sendFloat("amp_gain_time", time);
 				}
 				ampState = 0;
 			}
 
 			if (acceleration > 0) {
-				PdBase.sendFloat("acc_threshold",
-						(float) (acceleration / ACC_T));
+				//PdBase.sendFloat("acc_threshold",
+						//(float) (acceleration / ACC_T));
 			} else {
-				PdBase.sendFloat("acc_threshold",
-						(float) (acceleration / BRK_T));
+				//PdBase.sendFloat("acc_threshold",
+						//(float) (acceleration / BRK_T));
 			}
 			if (amp_speed > 0) {
-				PdBase.sendFloat("amp_speed_threshold",
-						(float) (amp_speed / AMP_BRK_T));
+				//PdBase.sendFloat("amp_speed_threshold",
+					//	(float) (amp_speed / AMP_BRK_T));
 			} else {
-				PdBase.sendFloat("amp_speed_threshold",
-						(float) (amp_speed / AMP_ACC_T));
+				//PdBase.sendFloat("amp_speed_threshold",
+					//	(float) (amp_speed / AMP_ACC_T));
 			}
 
 			if (gameRunning) {
@@ -352,7 +353,8 @@ public class AudioGame implements Observer {
 						brkThresholdCrossing = false;
 						time = System.currentTimeMillis() - brkThresholdTime;
 						if (time > BRK_D) {
-							interruptSmoothDrive();
+							// dont interrupt on breaks
+							//interruptSmoothDrive();
 						}
 						Log.v("pdgame", "Brk time: " + time);
 					}
@@ -385,8 +387,8 @@ public class AudioGame implements Observer {
 					}
 					// recieved points
 					if (newPoints > 0) {
-						PdBase.sendFloat("drive_points", smoothDrivePoints);
-						PdBase.sendBang("drive_points_gain");
+						//PdBase.sendFloat("drive_points", smoothDrivePoints);
+						//PdBase.sendBang("drive_points_gain");
 						Log.v("pdgame", "Smooth drive points: " + smoothDrivePoints + " (+" + newPoints + ")");
 					}
 					if (gain > ampGainMax) {
@@ -423,8 +425,8 @@ public class AudioGame implements Observer {
 							double currentConsumption = routeConsumptions[routeStepIndex - 1]
 									+ relativeDistance
 									* (routeConsumptions[routeStepIndex] - routeConsumptions[routeStepIndex - 1]);
-							PdBase.sendFloat("consumption",
-									(float) currentConsumption);
+							//PdBase.sendFloat("consumption",
+								//	(float) currentConsumption);
 							Log.v("pdgame", "consumption: "
 									+ currentConsumption);
 						}

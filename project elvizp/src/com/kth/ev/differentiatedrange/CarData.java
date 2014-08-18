@@ -34,7 +34,7 @@ public class CarData extends Observable {
 	public static final int SPEED = 1, SLOPE = 2, CLIMATE = 4,
 			ACCELERATION = 8, TIME = 16;
 	@SuppressWarnings("unused")
-	private static final String TAG = "CarData";
+	private static final String TAG = "cardata";
 
 	private double soc, speed, fan, climate, amp, acceleration;
 	private double socPrev, speedPrev, fanPrev, climatePrev, ampPrev, accelerationPrev;
@@ -362,11 +362,12 @@ public class CarData extends Observable {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			return;
+			Log.e(TAG, e.getMessage());
+			//return;
 		}
 
 		currentClimateConsumption = -10.0;
-		return;
+		//return;
 
 	}
 
@@ -523,7 +524,11 @@ public class CarData extends Observable {
 				element.put("distance", 0);
 				element.put("energy", 0);
 				ja.put(element);
-			} catch (JSONException e) {e.printStackTrace();}
+			} catch (JSONException e) {
+				e.printStackTrace();
+				Log.e(TAG, "oopsie!");
+		    	Log.e(TAG, e.toString());
+			}
 			
 			for (Step s : steps) {
 				element = new JSONObject();

@@ -50,8 +50,11 @@ public class CarDataFetcher implements Runnable{
 				carData.setSpeed(Double.parseDouble(getServerData("speed")));
 				carData.setSoc(Double.parseDouble(getServerData("soc")));
 				carData.setAmp(Double.parseDouble(getServerData("amp")));
-				carData.setClimate(Double.parseDouble(getServerData("heating0")));
-				carData.setFan(Double.parseDouble(getServerData("heating1")));
+				double speed = carData.getSpeed(false);
+				double amp = carData.getAmp(false);
+				Log.v("cardebug", "speed: " + speed + ", amp: " + amp);
+				//carData.setClimate(Double.parseDouble(getServerData("heating0")));
+				//carData.setFan(Double.parseDouble(getServerData("heating1")));
 				carData.calculate();
 				carData.notifyObservers();
 			} catch (NumberFormatException e) {
@@ -60,12 +63,16 @@ public class CarDataFetcher implements Runnable{
 				// Calculate and notify (because we probably got SOME data)
 				carData.calculate();
 				carData.notifyObservers();
+				Log.v("cardebug", "wrong value: " + e.getMessage());
+				Log.e("cardebug", "wrong value: " + e.getMessage());
 			} catch (HttpHostConnectException e) {
 				//Log.e("fetch", "Could not connect to server");
 			} catch (Exception e) {
 				// Auto-generated catch block
 				e.printStackTrace();
 				//Log.e("fetch", e.toString());
+				//Log.v("cardebug", "wrong value?: " + e.getMessage());
+				//Log.e("cardebug", "wrong value?: " + e.getMessage());
 			}
 		}
 	}
@@ -98,7 +105,7 @@ public class CarDataFetcher implements Runnable{
 		while(true){
 			fetchData();
 			try {
-				Thread.sleep(500);
+				Thread.sleep(50);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
