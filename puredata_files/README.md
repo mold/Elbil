@@ -9,7 +9,11 @@ När `amp` är positiv (batteriet laddas) hörs ett stigande arpeggio/crescendo 
 
 Värdet på `amp` påverkar arpeggiots tempo, och aktiverar ett ytterligare, ljusare, arpeggio vid höga värden. När `amp` stiger hörs även ett glissando som stiger proportionerligt.
 
-När `amp` är negativt spelas istället dissonanta ljud för att få förararen att köra bättre. Phasors och oscillatorer samverkar för att skapa en vibrerande och otrevlig ljudbild i takt med att `amp` blir lägre.
+När `amp` < 0 finns det två subpatchar att välja mellan, varav `pd amp_negative_smooth` används (2014-08-18):
+
+- `pd_amp_negative2`: När `amp` är negativt spelas istället dissonanta ljud för att få förararen att köra bättre. Phasors och oscillatorer samverkar för att skapa en vibrerande och otrevlig ljudbild i takt med att `amp` blir lägre.
+
+- `pd_amp_negative_smooth`: Fungerar som en inverterad version av den positiva arpeggion. En mindre harmonisk arpeggio stiger i takt med att `amp` sjunker. Vagt inspirerat av retro-futuristiska rymdskeppsljud.
 
 amp_reward.pd
 ---
