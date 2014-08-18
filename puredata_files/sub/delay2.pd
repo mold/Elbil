@@ -1,0 +1,7 @@
+#N canvas 498 342 292 125 10;
+#X obj 14 36 inlet~;
+#X obj 14 80 outlet~;
+#X obj 14 58 ./delay \$0-delay \$1 \$2;
+#X text 13 12 A delay that you don't have to name;
+#X connect 0 0 2 0;
+#X connect 2 0 1 0;
