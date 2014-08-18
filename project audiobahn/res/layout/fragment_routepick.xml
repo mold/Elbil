@@ -1,0 +1,45 @@
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:alignmentMode="alignBounds"
+    android:columnCount="1"
+    android:orientation="horizontal"
+    android:padding="16dp"
+    android:useDefaultMargins="true" >
+
+    <TextView
+        android:id="@+id/from_label"
+        android:text="@string/from"
+        android:textColor="?android:textColorSecondary" />
+
+    <AutoCompleteTextView
+        android:id="@+id/from"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:completionThreshold="3" />
+
+    <TextView
+        android:id="@+id/to_label"
+        android:text="@string/to"
+        android:textColor="?android:textColorSecondary" />
+
+    <AutoCompleteTextView
+        android:id="@+id/to"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:completionThreshold="3" />
+
+    <Button
+        android:id="@+id/load_directions"
+        android:text="@string/load_directions" />
+
+    <Button
+        android:id="@+id/show_gmaps"
+        android:layout_width="90dp"
+        android:layout_column="0"
+        android:layout_gravity="right|top"
+        android:layout_row="4"
+        android:text="@string/show_on_gmaps" />
+
+</GridLayout>

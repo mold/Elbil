@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+	android:layout_height="fill_parent" >
+	<LinearLayout
+	    android:id="@+id/container"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="vertical" >
+	
+	    <Button
+	        android:id="@+id/start_game"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:text="@string/start_game" />
+	    <Button
+	        android:id="@+id/toggle_sound"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:text="@string/start_sound" />
+	    <Button
+	        android:id="@+id/reload_folder"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:text="@string/reload_folder" />
+
+	    <TextView
+	        android:id="@+id/seekBar1Text"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content" />
+	    <SeekBar
+	        android:id="@+id/seekBar1"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:paddingLeft="20dp"
+	        android:paddingRight="20dp"
+	        android:max="1000" />
+
+	    <TextView
+	        android:id="@+id/seekBar2Text"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content" />
+	    <SeekBar
+	        android:id="@+id/seekBar2"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:paddingLeft="20dp"
+	        android:paddingRight="20dp"
+	        android:paddingBottom="20dp"
+	        android:max="1000" />
+	    
+	    <LinearLayout
+	      	android:id="@+id/patch_list"
+	       	android:layout_width="fill_parent"
+	    	android:layout_height="wrap_content"
+	    	android:orientation="vertical" >
+
+	    </LinearLayout>
+		    
+	</LinearLayout>
+</ScrollView>
