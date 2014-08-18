@@ -39,6 +39,7 @@ public class CarData extends Observable {
 
 	private double soc, speed, fan, climate, amp, acceleration;
 	private double socPrev, speedPrev, fanPrev, climatePrev, ampPrev, accelerationPrev;
+	private double totalConsumption;
 	private double capacity;
 	private double kmpKWh;
 	private EVEnergy evEnergy;
@@ -169,7 +170,9 @@ public class CarData extends Observable {
 		}
 
 		distanceTravelledPrev = distanceTravelled;
-		distanceTravelled += (speed / 3.6) * timeSinceLast;
+		distanceTravelled += (speed / 3.6) * timeSinceLast / 1000.0;
+		
+		totalConsumption += amp * timeSinceLast / 3600000.0;
 		
 		calculateClimatePower();
 		setChanged();
@@ -253,6 +256,10 @@ public class CarData extends Observable {
 		this.ampPrev = this.amp;
 		this.amp = amp;
 		setChanged();
+	}
+	
+	public double getTotalConsumption() {
+		return totalConsumption;
 	}
 	               
 	public double getAcceleration(boolean interpolate) {

@@ -222,7 +222,7 @@ public class AudiobahnFragment extends Fragment implements OnClickListener,
 	@Override
 	public void update(Observable observable, Object data) {
 		if (observable instanceof RouteDataFetcher) {
-			//audioGame.setRouteData((RouteDataFetcher) observable);
+			audioGame.setRouteData((RouteDataFetcher) observable);
 		}
 	}
 

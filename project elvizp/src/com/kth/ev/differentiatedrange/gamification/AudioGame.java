@@ -25,6 +25,7 @@ public class AudioGame implements Observer {
 	/* The distance travelled at the start of a route */
 	double distanceTravelledStart;
 	double routeDistanceTravelled;
+	double prevConsumption;
 	double[] routeConsumptions;
 	int routeStepIndex;
 	int smoothDrivePoints;
@@ -297,7 +298,7 @@ public class AudioGame implements Observer {
 			if (ampState != 0 && change != ampState) {
 				if (ampState == 1) {
 					time = System.currentTimeMillis() - ampStartTime;
-					Log.v("pdgame", "gain streak: " + time);
+					//Log.v("pdgame", "gain streak: " + time);
 					//PdBase.sendFloat("amp_gain_time", time);
 				}
 				ampState = 0;
@@ -370,7 +371,10 @@ public class AudioGame implements Observer {
 			} else {
 				if (ampGainTotal != 0.0) {
 					time = System.currentTimeMillis() - ampGainTimeStart;
-					double gain = ampGainTotal / (time / 1000);
+					double gain = 0;
+					if (time > 0) {
+						gain = ampGainTotal / (time / 1000);
+					}
 					int newPoints = 0;
 					Log.v("pdgame", "gain: " + gain);
 					ampGainLevelMeter += gain;
@@ -404,31 +408,42 @@ public class AudioGame implements Observer {
 				if (distanceTravelledStart == -1) {
 					distanceTravelledStart = distance;
 					routeConsumptions = carData.consumptionOnRoute(
-							routeData.data, CarData.SPEED & CarData.TIME);
-				} else {
+							routeData.data, CarData.SPEED | CarData.TIME | CarData.SLOPE | CarData.CLIMATE);
+					for(int i=0; i < routeConsumptions.length; i++) {
+						Log.v("pdgame", i+": "+routeConsumptions[i]);
+					}
+					prevConsumption = carData.getTotalConsumption();
+					Log.v("pdgame", "route started: " + routeData.data.size());
+				} else if(routeStepIndex < routeData.data.size()) {
 					Step step = routeData.data.get(routeStepIndex);
 					if (step != null) {
 						double distanceSum = routeDistanceTravelled
 								+ step.distance.value;
+						//Log.v("pdgame", "current step: " + distanceSum + "/" + (distance - distanceTravelledStart));
 						// get the next step
-						while (distance > distanceSum
+						//Log.v("pdgame", "distance travelled: " + (distance - distanceTravelledStart));
+						while (distance - distanceTravelledStart > distanceSum
 								&& routeStepIndex < routeData.data.size()) {
 							routeStepIndex++;
 							step = routeData.data.get(routeStepIndex);
+							routeDistanceTravelled = distanceSum;
 							distanceSum += step.distance.value;
+							prevConsumption = carData.getTotalConsumption();
+							Log.v("pdgame", "reached new step: " + routeDistanceTravelled + "/" + (distance - distanceTravelledStart));
 						}
 						if (routeStepIndex >= routeData.data.size() - 1) {
 							// interrupt drive
 						} else {
-							double relativeDistance = (distance - distanceTravelledStart)
+							double relativeDistance = (distance - routeDistanceTravelled)
 									/ step.distance.value;
 							double currentConsumption = routeConsumptions[routeStepIndex - 1]
 									+ relativeDistance
 									* (routeConsumptions[routeStepIndex] - routeConsumptions[routeStepIndex - 1]);
 							//PdBase.sendFloat("consumption",
 								//	(float) currentConsumption);
-							Log.v("pdgame", "consumption: "
-									+ currentConsumption);
+							double carConsumption = carData.getTotalConsumption() - prevConsumption;
+							Log.v("pdgame", "car consumption: " + carConsumption + ", consumption: "
+									+ currentConsumption + ", distance: " + relativeDistance);
 						}
 					}
 				}
