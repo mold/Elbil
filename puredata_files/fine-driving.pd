@@ -1,4 +1,4 @@
-#N canvas 466 121 1204 585 10;
+#N canvas 364 449 779 415 10;
 #X obj -159 47 cnv 15 300 300 empty empty empty 20 12 0 14 -261234
 -66577 0;
 #X obj 161 47 cnv 15 360 300 empty empty empty 20 12 0 14 -204786 -66577
@@ -7,7 +7,7 @@
 0;
 #X obj -153 141 cnv 15 90 30 empty empty empty 20 12 0 14 -258113 -66577
 0;
-#N canvas 137 50 709 1025 warning 1;
+#N canvas 818 78 709 1025 warning 1;
 #X obj 124 -134 inlet;
 #X obj -45 129 osc~ 200;
 #X obj -45 151 *~ 0.5;
@@ -78,7 +78,7 @@
 #X restore 180 624 graph;
 #X obj 76 840 outlet~;
 #X obj 483 467 metro 30;
-#X obj 124 -109 sub/clipscale 0 1 2000 0;
+#X obj 124 -109 sub/clipscale 0 1 2000 200;
 #X connect 0 0 59 0;
 #X connect 1 0 2 0;
 #X connect 2 0 4 1;
@@ -145,7 +145,7 @@
 #X obj 372 67 r c_transition_time;
 #X obj 372 292 dac~;
 #X obj 372 212 *~;
-#N canvas 373 83 326 241 encouragement 0;
+#N canvas 373 83 405 231 encouragement 1;
 #X obj 40 23 inlet;
 #X obj 44 157 outlet~;
 #X restore 372 153 pd encouragement;
@@ -153,6 +153,15 @@
 #X obj 170 120 r c_neg_bang;
 #X msg 170 164 0;
 #X msg 262 164 1;
+#X obj -28 -3 line;
+#X msg 39 -33 0;
+#X floatatom 131 -4 5 0 0 0 - - -, f 5;
+#X floatatom 64 53 5 0 0 0 - - -, f 5;
+#X msg -28 -33 1 10000;
+#X obj -28 21 expr 1-(ln($f1)/-6);
+#X obj 102 199 r c_state_bang;
+#X obj 135 242 line;
+#X msg 115 220 1 0 \, 0 200;
 #X connect 4 0 9 0;
 #X connect 5 0 11 0;
 #X connect 6 0 10 0;
@@ -169,3 +178,13 @@
 #X connect 17 0 18 0;
 #X connect 18 0 14 1;
 #X connect 19 0 14 1;
+#X connect 20 0 22 0;
+#X connect 20 0 25 0;
+#X connect 21 0 20 0;
+#X connect 23 0 4 0;
+#X connect 24 0 20 0;
+#X connect 25 0 23 0;
+#X connect 26 0 28 0;
+#X connect 27 0 9 1;
+#X connect 27 0 14 1;
+#X connect 28 0 27 0;
