@@ -12,6 +12,7 @@ import com.kth.ev.differentiatedrange.gamification.AudioGame;
 import com.kth.ev.differentiatedrange.puredata.Patch;
 import com.kth.ev.differentiatedrange.puredata.PureDataHandler;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -115,6 +116,7 @@ public class AudiobahnFragment extends Fragment implements OnClickListener,
 		container.addView(audioGame.getAmpSpeedGraph());
 		container.addView(audioGame.getAmpAccelerationGraph());
 		container.addView(audioGame.getAmpStateGraph());
+		container.addView(audioGame.getConsumptionGraph());
 
 		// DataGraph graph;
 		// graph = new DataGraph(getActivity(), carData, DataGraph.DATA.SPEED);
@@ -123,6 +125,8 @@ public class AudiobahnFragment extends Fragment implements OnClickListener,
 		// container.addView(graph);
 		// graph = new DataGraph(this, carData, DataGraph.DATA.SOC);
 		// container.addView(graph);
+	
+		container.addView(audioGame.fineDriver.getView(getActivity()));
 	}
 
 	/**

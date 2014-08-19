@@ -47,6 +47,8 @@ public class AudioGame implements Observer {
 	double ampGainMax = 10;
 	double ampGainLevelMeter;
 	double ampGainTotal;
+	
+	public FineDriver fineDriver;
 
 	/* game data */
 	long longestSmoothDrive;
@@ -61,6 +63,7 @@ public class AudioGame implements Observer {
 	DataGraph ampSpeedGraph;
 	DataGraph ampAccGraph;
 	DataGraph accGraph;
+	DataGraph consumptionGraph;
 	int prevAmpChange = 0;
 
 	TextToSpeech speech;
@@ -79,6 +82,8 @@ public class AudioGame implements Observer {
 
 		ttsLoaded = false;
 		gameRunning = false;
+		
+		fineDriver = new FineDriver();
 
 		speech = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
 			@Override
@@ -99,6 +104,7 @@ public class AudioGame implements Observer {
 	public void start() {
 		gameRunning = true;
 
+		fineDriver.reset();
 		smoothDriveTime = System.currentTimeMillis();
 		accThresholdTime = 0;
 		accThresholdCrossing = false;
@@ -161,6 +167,12 @@ public class AudioGame implements Observer {
 		ampAccGraph = new DataGraph(context, "amp/acc", -40, 40);
 		ampAccGraph.setColor(Color.RED);
 		return ampAccGraph;
+	}
+	
+	public DataGraph getConsumptionGraph() {
+		consumptionGraph = new DataGraph(context, "consumption diff", -1, 1);
+		consumptionGraph.setColor(Color.YELLOW);
+		return consumptionGraph;
 	}
 
 	private String getTimeString(long time) {
@@ -403,15 +415,14 @@ public class AudioGame implements Observer {
 			}
 
 			// RouteDataFetcher
+			//Log.v("pdgame", "routeData step index: " + routeStepIndex);
 			double distance = carData.getDistanceTravelled(false);
+			float consumptionDifference = 0;
 			if (routeData != null) {
 				if (distanceTravelledStart == -1) {
 					distanceTravelledStart = distance;
 					routeConsumptions = carData.consumptionOnRoute(
 							routeData.data, CarData.SPEED | CarData.TIME | CarData.SLOPE | CarData.CLIMATE);
-					for(int i=0; i < routeConsumptions.length; i++) {
-						Log.v("pdgame", i+": "+routeConsumptions[i]);
-					}
 					prevConsumption = carData.getTotalConsumption();
 					Log.v("pdgame", "route started: " + routeData.data.size());
 				} else if(routeStepIndex < routeData.data.size()) {
@@ -433,7 +444,7 @@ public class AudioGame implements Observer {
 						}
 						if (routeStepIndex >= routeData.data.size() - 1) {
 							// interrupt drive
-						} else {
+						} else if(routeStepIndex > 0) {
 							double relativeDistance = (distance - routeDistanceTravelled)
 									/ step.distance.value;
 							double currentConsumption = routeConsumptions[routeStepIndex - 1]
@@ -442,12 +453,19 @@ public class AudioGame implements Observer {
 							//PdBase.sendFloat("consumption",
 								//	(float) currentConsumption);
 							double carConsumption = carData.getTotalConsumption() - prevConsumption;
-							Log.v("pdgame", "car consumption: " + carConsumption + ", consumption: "
-									+ currentConsumption + ", distance: " + relativeDistance);
+							//Log.v("pdgame", "car consumption: " + carConsumption + ", consumption: "
+							//		+ currentConsumption + ", distance: " + relativeDistance);
+							consumptionDifference = (float) (carConsumption - currentConsumption);
 						}
 					}
 				}
 			}
+			
+			PdBase.sendFloat("consumption_diff", consumptionDifference);
+			if (consumptionGraph != null) {
+				consumptionGraph.addDataPoint(consumptionDifference);
+			}
+			fineDriver.setConsumptionDifference(consumptionDifference);
 		}
 	}
 
