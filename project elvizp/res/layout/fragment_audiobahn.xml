@@ -54,11 +54,23 @@
 		    	android:textColor="@color/black" />
 	        
 	        <TextView
+	            android:id="@+id/scoring_text"
+	            android:layout_width="wrap_content"
+		    	android:layout_height="wrap_content"
+		    	android:textColor="@color/black" />
+	        
+	        <TextView
+	            android:id="@+id/level_text"
+	            android:layout_width="wrap_content"
+		    	android:layout_height="wrap_content"
+		    	android:textSize="30sp"
+		    	android:textColor="@color/black" />
+	        
+	        <TextView
 	            android:id="@+id/points_text"
 	            android:layout_width="wrap_content"
 		    	android:layout_height="wrap_content"
 		    	android:textSize="30sp"
-		    	android:text="points"
 		    	android:textColor="@color/black" />
 	        
         </LinearLayout>
