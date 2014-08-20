@@ -1,9 +1,9 @@
-#N canvas 6 125 1902 880 10;
-#X obj 273 149 cnv 15 300 300 empty empty empty 20 12 0 14 -261234
+#N canvas -8 -8 1920 1128 10;
+#X obj 36 373 cnv 15 700 600 empty empty empty 20 12 0 14 -261234 -66577
+0;
+#X obj 1181 368 cnv 15 700 600 empty empty empty 20 12 0 14 -204786
 -66577 0;
-#X obj 1219 167 cnv 15 360 300 empty empty empty 20 12 0 14 -204786
--66577 0;
-#X obj 292 257 cnv 15 90 30 empty empty empty 20 12 0 14 -258113 -66577
+#X obj 54 516 cnv 15 90 30 empty empty empty 20 12 0 14 -258113 -66577
 0;
 #N canvas 971 53 709 1025 warning 0;
 #X obj 124 -134 inlet;
@@ -128,100 +128,54 @@
 #X connect 56 0 16 0;
 #X connect 57 0 45 0;
 #X connect 57 0 52 0;
-#X restore 299 259 pd warning;
-#X obj 125 13 line;
-#X msg 262 -50 0;
-#X floatatom 284 12 5 0 0 0 - - -, f 5;
-#X floatatom 385 60 5 0 0 0 - - -, f 5;
-#X obj 907 69 sel warn none encourage;
-#X obj 907 21 r state;
-#X obj 444 187 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+#X restore 61 522 pd warning;
+#X obj 888 307 sel warn none encourage;
+#X obj 337 418 bng 15 250 50 0 empty empty empty 17 7 0 10 -258113
+-261234 -1;
+#X obj 940 452 bng 15 250 50 0 empty empty empty 17 7 0 10 -191407
+-99865 -1;
+#X obj 242 418 s start_time;
+#X obj 61 699 *~;
+#X obj 137 647 line;
+#X obj 61 721 sub/delay oo_oo 0.6 50;
+#X obj 48 987 dac~;
+#X obj 298 565 spigot;
+#X msg 337 522 1;
+#X msg 374 522 0;
+#X msg 298 663 symbol none;
+#X obj 199 624 r mute;
+#X obj 971 500 s mute;
+#X obj 959 527 s reset_time;
+#X msg 137 624 1 2000;
+#X obj 350 565 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
 -1 -1;
-#X obj 959 145 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
--1 -1;
-#X obj 316 158 s start_time;
-#X obj 349 5 r start_time;
-#X obj 516 -4 r reset_time;
-#X obj 299 349 *~;
-#X obj 375 316 line;
-#X obj 299 371 sub/delay oo_oo 0.6 50;
-#X obj 287 422 dac~;
-#X obj 546 -59 r c_state_bang;
-#X msg 622 -68 symbol none;
-#X obj 536 302 spigot;
-#X msg 498 235 1;
-#X msg 533 233 0;
-#X msg 536 324 symbol none;
-#X obj 536 346 s state;
-#X obj 445 312 r mute;
-#X obj 981 199 s mute;
-#X obj 915 -86 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
--1 -1;
-#X obj 915 -66 s c_state_bang;
-#X obj 798 -82 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
--1 -1;
-#X obj 969 223 s reset_time;
-#X obj 798 -62 s c_neg_bang;
-#X msg 375 293 1 2000;
-#X obj 1056 -84 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
--1 -1;
-#X obj 1056 -64 s c_pos_bang;
-#X obj 592 303 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
--1 -1;
-#X obj 622 -46 s state;
-#X obj 946 370 spigot;
-#X msg 804 319 symbol encourage;
-#X obj 946 392 s state;
-#X msg 1006 280 1;
-#X msg 955 319 0;
-#X msg 830 246 symbol warn;
-#X obj 919 46 print;
-#X obj 1233 292 cnv 15 90 30 empty empty empty 20 12 0 14 -4034 -66577
+#X obj 901 717 spigot;
+#X msg 804 618 symbol encourage;
+#X msg 940 553 1;
+#X msg 970 591 0;
+#X msg 805 671 symbol warn;
+#X obj 900 284 print;
+#X obj 1203 561 cnv 15 130 22 empty empty empty 20 12 0 14 -4034 -66577
 0;
-#X obj 1389 204 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+#X obj 1514 417 bng 15 250 50 0 empty empty empty 17 7 0 10 -4034 -204786
+-1;
+#X obj 1536 416 s start_time;
+#X obj 1210 689 *~;
+#X obj 1311 639 line;
+#X obj 1199 983 dac~;
+#X obj 1437 540 spigot;
+#X msg 1514 499 1;
+#X msg 1476 499 0;
+#X msg 1437 662 symbol none;
+#X obj 1373 615 r mute;
+#X msg 1311 616 1 2000;
+#X obj 1493 541 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
 -1 -1;
-#X obj 1261 175 s start_time;
-#X obj 1244 366 *~;
-#X obj 1328 353 line;
-#X obj 1232 439 dac~;
-#X obj 1481 319 spigot;
-#X msg 1443 252 1;
-#X msg 1496 243 0;
-#X msg 1511 370 symbol none;
-#X obj 1511 392 s state;
-#X obj 1390 329 r mute;
-#X msg 1328 330 1 2000;
-#X obj 1537 320 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
--1 -1;
-#X obj 1481 73 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
--1 -1;
-#X obj 1244 388 sub/delay o_oo 0.6 50;
-#X obj 1254 13 t b b;
-#X obj 1387 292 r c_neg_bang2;
-#X obj 830 223 r c_neg_bang1;
-#X obj 1254 -12 r c_neg_bang;
-#X obj 1254 35 s c_neg_bang2;
-#X obj 1353 35 s c_neg_bang1;
-#X obj 804 297 r c_pos_bang1;
-#X obj 445 274 r c_pos_bang2;
-#X obj 1255 93 t b b;
-#X obj 1255 68 r c_pos_bang;
-#X obj 1255 115 s c_pos_bang2;
-#X obj 1355 115 s c_pos_bang1;
-#X obj 557 -90 loadbang;
-#X obj 52 124 r c_transition_time;
-#X obj 55 230 s c_transition_time_adjusted;
-#X obj 284 228 r c_transition_time_adjusted;
-#X msg 93 -30 1 5000;
-#X obj 125 59 s c_transition_time;
-#X floatatom 52 146 5 0 0 0 - - -, f 5;
-#X floatatom 68 204 5 0 0 0 - - -, f 5;
-#X obj 299 393 sub/dirty_limiter;
-#X obj 123 167 expr 1-(ln($f1)/-9);
-#X obj 469 394 metro 50;
-#X obj 469 372 loadbang;
-#X text 133 36 <- REMOVE THIS WHEN USING IN APP;
-#N canvas 142 103 1040 953 encouragement 1;
+#X obj 1210 711 sub/delay o_oo 0.6 50;
+#X obj 61 743 sub/dirty_limiter;
+#X obj 131 866 metro 50;
+#X obj 131 844 loadbang;
+#N canvas 142 103 1040 953 encouragement 0;
 #X obj 92 294 bng 15 250 50 0 empty empty empty 17 7 0 10 -261234 -1
 -1;
 #X floatatom 177 240 5 0 0 0 - - -, f 5;
@@ -355,171 +309,324 @@ MAY NOT BE UP TO DATE;
 #X connect 69 0 24 1;
 #X connect 70 0 14 0;
 #X connect 71 0 13 0;
-#X restore 1226 299 pd encouragement;
-#X floatatom 1156 328 5 0 0 0 - - -, f 5;
-#X obj 1186 260 sub/clipscale 0 1 7 50;
-#X obj 1244 410 sub/dirty_limiter;
-#X obj 786 549 cnv 15 295 135 empty empty empty 20 12 0 14 -159808
+#X restore 1209 563 pd encouragement;
+#X obj 1209 520 sub/clipscale 0 1 7 50;
+#X obj 1210 733 sub/dirty_limiter;
+#X obj 792 831 cnv 15 295 135 empty empty empty 20 12 0 14 -159808
 -66577 0;
-#X obj 802 536 cnv 15 295 135 empty empty empty 20 12 0 14 -260736
+#X obj 808 818 cnv 15 295 135 empty empty empty 20 12 0 14 -260736
 -66577 0;
-#X obj 792 542 cnv 15 297 137 empty empty empty 20 12 0 14 -232576
+#X obj 798 824 cnv 15 297 137 empty empty empty 20 12 0 14 -232576
 -66577 0;
 #N canvas 0 50 450 250 (subpatch) 0;
 #X array sound_out 1000 float 0;
 #X coords 0 1 999 -1 300 140 1 0 0;
-#X restore 791 540 graph;
-#X obj 1413 419 metro 50;
-#X obj 1413 397 loadbang;
-#X obj 1413 441 tabwrite~ sound_out;
-#X obj 469 415 tabwrite~ sound_out;
-#X obj 1167 221 r c_transition_time;
-#X floatatom 1140 260 5 0 0 0 - - -, f 5;
-#X msg 1390 351 0;
-#X msg 445 334 0;
-#X obj 298 654 dac~;
-#X msg 305 576 bang;
-#X obj 1598 344 sub/wav ../fd-wavs/statechangetopos.wav;
-#X obj 1611 297 spigot;
-#X obj 1667 298 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+#X restore 797 822 graph;
+#X obj 1283 886 metro 50;
+#X obj 1283 864 loadbang;
+#X obj 1283 908 tabwrite~ sound_out;
+#X obj 131 887 tabwrite~ sound_out;
+#X obj 1209 495 r c_transition_time;
+#X msg 1373 637 0;
+#X msg 199 646 0;
+#X obj 1421 -132 cnv 15 450 200 empty empty empty 20 12 0 14 -262130
+-66577 0;
+#X obj 1576 -24 line;
+#X msg 1676 -56 0;
+#X floatatom 1618 -24 5 0 0 0 - - -, f 5;
+#X obj 1576 -80 r start_time;
+#X obj 1676 -80 r reset_time;
+#X obj 1447 -29 bng 15 250 50 0 empty empty empty 17 7 0 10 -228856
+-99865 -1;
+#X obj 1447 -9 s c_state_bang;
+#X obj 1447 -74 bng 15 250 50 0 empty empty empty 17 7 0 10 -258113
+-261234 -1;
+#X obj 1447 -54 s c_neg_bang;
+#X obj 1448 15 bng 15 250 50 0 empty empty empty 17 7 0 10 -4034 -204786
+-1;
+#X obj 1448 35 s c_pos_bang;
+#X msg 1576 -57 1 5000;
+#X obj 1586 4 cnv 15 260 20 empty empty empty 20 12 0 14 -261304 -66577
+0;
+#X text 1588 5 <- DISCONNECT HERE WHEN USING IN APP;
+#X text 1477 -124 >>>>>>>>>> FOR TESTING/DEVELOPING <<<<<<<<<<<<<;
+#X text 1468 -76 warn;
+#X text 1467 14 encourage;
+#X text 1467 -31 none;
+#X obj 1045 99 cnv 15 450 160 empty empty empty 20 12 0 14 -233017
+-66577 0;
+#X obj 1272 215 cnv 15 100 20 empty empty empty 20 12 0 14 -109978
+-66577 0;
+#X obj 1372 215 cnv 15 100 20 empty empty empty 20 12 0 14 -216615
+-66577 0;
+#X obj 1061 214 cnv 15 100 20 empty empty empty 20 12 0 14 -260160
+-66577 0;
+#X obj 1162 213 cnv 15 100 20 empty empty empty 20 12 0 14 -232576
+-66577 0;
+#X obj 1061 193 t b b;
+#X obj 1061 168 r c_neg_bang;
+#X obj 1062 216 s c_neg_bang2;
+#X obj 1163 216 s c_neg_bang1;
+#X obj 1272 194 t b b;
+#X obj 1272 169 r c_pos_bang;
+#X obj 1272 216 s c_pos_bang2;
+#X obj 1376 215 s c_pos_bang1;
+#X text 1058 109 c_neg_bang and c_pos_bang are received here;
+#X text 1056 125 They need to be distributed to the patch in the right
+order for the state changes to work properly.;
+#X obj 298 486 cnv 15 100 20 empty empty empty 20 12 0 14 -109978 -66577
+0;
+#X obj 298 488 r c_pos_bang2;
+#X obj 803 594 cnv 15 100 20 empty empty empty 20 12 0 14 -216615 -66577
+0;
+#X obj 804 596 r c_pos_bang1;
+#X obj 1435 463 cnv 15 100 20 empty empty empty 20 12 0 14 -260160
+-66577 0;
+#X obj 805 648 cnv 15 100 20 empty empty empty 20 12 0 14 -232576 -66577
+0;
+#X obj 1437 465 r c_neg_bang2;
+#X obj 805 648 r c_neg_bang1;
+#X obj 519 101 cnv 15 270 180 empty empty empty 20 12 0 14 -233017
+-66577 0;
+#X floatatom 551 178 5 0 0 0 - - -, f 5;
+#X floatatom 550 225 5 0 0 0 - - -, f 5;
+#X obj 534 199 expr 1-(ln($f1)/-9);
+#X text 530 110 Time is received here and changed;
+#X text 530 124 to a logarithmic function (kind of);
+#X obj 806 100 cnv 15 220 130 empty empty empty 20 12 0 14 -233017
+-66577 0;
+#X obj 895 156 r c_state_bang;
+#X msg 853 182 symbol none;
+#X obj 853 205 s state;
+#X obj 853 134 loadbang;
+#X text 815 108 Set initial state to "none";
+#X obj 401 561 cnv 15 310 190 empty empty empty 20 12 0 14 -261819
+-66577 0;
+#X obj 411 627 spigot;
+#X obj 462 627 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
 -1 -1;
-#X obj 1612 256 r c_state_bang;
-#X obj 1629 424 dac~;
-#X obj 1740 274 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+#X obj 411 605 r c_state_bang;
+#X obj 411 718 dac~;
+#X obj 411 671 sub/delay OO779oo 0.3 120;
+#X obj 437 694 sub/delay OoOgOPP_w 0.3 100;
+#X obj 411 649 sub/wav ../fd-wavs/statechangetoneg.wav;
+#X text 409 568 Play a "disappointment" sound effect when;
+#X text 408 581 the driver loses a level.;
+#X obj 401 757 cnv 15 310 190 empty empty empty 20 12 0 14 -261819
+-66577 0;
+#X obj 416 904 dac~;
+#X obj 416 830 sub/delay OOddddoo 0.3 120;
+#X obj 468 864 sub/delay OoOoxxx 0.3 100;
+#X obj 416 808 sub/wav ../fd-wavs/stateavoidneg.wav;
+#X text 415 772 Play a "phew \, close!" sound effect when;
+#X text 414 785 the driver almost lost a level.;
+#X obj 183 382 cnv 15 400 20 empty empty empty 20 12 0 14 -261883 -66577
+0;
+#X text 220 383 >>>>>>>>>>>>>>>>>>> WARN <<<<<<<<<<<<<<<<<<<;
+#X text 1280 844 display sound graph;
+#X text 1324 598 Sets volume;
+#X text 147 521 <- the warning sound;
+#X text 403 486 <- positive bang in this state changes state;
+#X text 406 519 <- ... but should be ignored otherwise;
+#X text 1435 642 state :> none;
+#X text 1026 500 Mute all sound;
+#X text 1050 527 (dev);
+#X text 969 552 enable this state;
+#X text 356 417 <- activates state;
+#X text 1378 416 activates state ->;
+#X obj 1360 380 cnv 15 400 20 empty empty empty 20 12 0 14 -241659
+-66577 0;
+#X obj 1557 543 cnv 15 310 190 empty empty empty 20 12 0 14 -241659
+-66577 0;
+#X obj 1567 628 sub/wav ../fd-wavs/statechangetopos.wav;
+#X obj 1567 607 spigot;
+#X obj 1623 608 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
 -1 -1;
-#X obj 1681 404 sub/delay OoOoOoo-__w 0.3 100;
-#X obj 1619 383 sub/delay OOO--_oo 0.3 120;
-#X obj 1608 465 sub/wav ../fd-wavs/stateavoidpos.wav;
-#X obj 1599 593 dac~;
-#X obj 1599 519 sub/delay OO45O--_oo 0.3 120;
-#X obj 1650 553 sub/delay OoOoO66oo-__w 0.3 100;
-#X obj 636 340 spigot;
-#X obj 692 341 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
--1 -1;
-#X obj 636 314 r c_state_bang;
-#X obj 636 464 dac~;
-#X obj 636 390 sub/delay OO779oo 0.3 120;
-#X obj 687 424 sub/delay OoOgOPP_w 0.3 100;
-#X obj 636 368 sub/wav ../fd-wavs/statechangetoneg.wav;
-#X obj 498 592 dac~;
-#X obj 498 518 sub/delay OOddddoo 0.3 120;
-#X obj 550 552 sub/delay OoOoxxx 0.3 100;
-#X obj 498 496 sub/wav ../fd-wavs/stateavoidneg.wav;
-#X connect 3 0 15 0;
-#X connect 4 0 6 0;
-#X connect 4 0 78 0;
-#X connect 5 0 4 0;
+#X obj 1567 585 r c_state_bang;
+#X obj 1568 694 dac~;
+#X obj 1592 671 sub/delay OoOoOoo-__w 0.3 100;
+#X obj 1567 650 sub/delay OOO--_oo 0.3 120;
+#X text 1565 550 Play a "yay congrats" sound effect when;
+#X text 1564 563 the driver gains a level.;
+#X obj 1556 751 cnv 15 310 160 empty empty empty 20 12 0 14 -241659
+-66577 0;
+#X obj 1571 806 sub/wav ../fd-wavs/stateavoidpos.wav;
+#X obj 1572 875 dac~;
+#X obj 1572 829 sub/delay OO45O--_oo 0.3 120;
+#X obj 1596 852 sub/delay OoOoO66oo-__w 0.3 100;
+#X text 1570 766 Play an "aw \, too bad!" sound effect when;
+#X text 1569 779 the driver almost gained a level.;
+#X text 155 601 Sets volume;
+#X text 1214 544 Play happy sounds;
+#X text 295 642 state :> none;
+#X text 129 825 display sound graph;
+#X text 1545 497 <- ... but should be ignored otherwise;
+#X text 1542 464 <- negative bang in this state changes state;
+#X text 1397 381 >>>>>>>>>>>>>>>>> ENCOURAGE <<<<<<<<<<<<<<<<<;
+#X obj 797 380 cnv 15 300 20 empty empty empty 20 12 0 14 -233017 -66577
+0;
+#X text 804 382 >>>>>>>>>>>>>>>>> NONE <<<<<<<<<<<<<<<<<;
+#X obj 527 247 cnv 15 215 24 empty empty empty 20 12 0 14 -203904 -66577
+0;
+#X obj 534 250 s c_transition_time_adjusted;
+#X obj 58 484 cnv 15 215 24 empty empty empty 20 12 0 14 -203904 -66577
+0;
+#X obj 61 488 r c_transition_time_adjusted;
+#X obj 882 252 cnv 15 70 25 empty empty empty 20 12 0 14 -261549 -66577
+0;
+#X obj 888 256 r state;
+#X obj 894 736 cnv 15 70 25 empty empty empty 20 12 0 14 -261549 -66577
+0;
+#X obj 289 682 cnv 15 70 25 empty empty empty 20 12 0 14 -261549 -66577
+0;
+#X obj 901 739 s state;
+#X obj 298 685 s state;
+#X obj 1431 681 cnv 15 70 25 empty empty empty 20 12 0 14 -261549 -66577
+0;
+#X obj 1437 684 s state;
+#X obj 1085 -41 cnv 15 200 60 empty empty empty 20 12 0 14 -170036
+-66577 0;
+#X obj 1085 -16 cnv 15 200 60 empty empty empty 20 12 0 14 -231229
+-66577 0;
+#X obj 1085 -29 cnv 15 200 60 empty empty empty 20 12 0 14 -232576
+-66577 0;
+#X text 1102 -17 ==== FINE DRIVING ====;
+#X text 1167 1 2014;
+#X text 960 450 <- disable other states;
+#X obj 529 147 cnv 15 150 24 empty empty empty 20 12 0 14 -203904 -66577
+0;
+#X obj 534 150 r c_transition_time;
+#X obj 1572 31 cnv 15 150 24 empty empty empty 20 12 0 14 -203904 -66577
+0;
+#X obj 1576 35 s c_transition_time;
+#X obj 29 -66 cnv 15 920 140 empty empty empty 20 12 0 14 -262134 -66577
+0;
+#X text 48 -35 This patch is used with the "Fine Driver" game.;
+#X text 48 -18 It is basically a finite state machine with three states:
+"warn" \, "none" and "encourage". The state changes as the car is about
+to change mode in the Fine Driver game - e.g. going from "normal" to
+"bad" when using too much energy. As the state is about to change \,
+this patch produces sound to inform the driver of the potential state
+change.;
+#X text 533 -32 "warn": The driver's mode is about to change negatively
+\, i.e. good -> normal or normal -> bad.;
+#X text 530 -1 "none": The driver is not about to change mode \, i.e.
+uses the right amount of energy to stay in the current mode.;
+#X text 534 31 "encourage": The driver's mode is about to change positively
+\, i.e. bad -> normal or normal -> bad;
+#X text 48 -56 ======= DESCRIPTION;
+#X text 537 -50 ======= THE STATES;
+#X connect 3 0 8 0;
+#X connect 4 0 5 0;
+#X connect 4 1 6 0;
+#X connect 4 2 28 0;
+#X connect 5 0 7 0;
+#X connect 5 0 19 0;
+#X connect 5 0 13 0;
+#X connect 5 0 24 0;
+#X connect 6 0 17 0;
+#X connect 6 0 18 0;
+#X connect 6 0 23 0;
+#X connect 6 0 14 0;
+#X connect 6 0 35 0;
 #X connect 8 0 10 0;
-#X connect 8 1 11 0;
-#X connect 8 2 46 0;
-#X connect 9 0 8 0;
-#X connect 9 0 44 0;
-#X connect 10 0 12 0;
-#X connect 10 0 33 0;
-#X connect 10 0 22 0;
-#X connect 10 0 42 0;
-#X connect 11 0 27 0;
-#X connect 11 0 31 0;
-#X connect 11 0 41 0;
-#X connect 11 0 23 0;
-#X connect 11 0 53 0;
-#X connect 13 0 77 0;
-#X connect 14 0 5 0;
-#X connect 15 0 17 0;
-#X connect 16 0 15 1;
-#X connect 17 0 81 0;
-#X connect 19 0 20 0;
-#X connect 20 0 37 0;
-#X connect 21 0 24 0;
-#X connect 21 0 36 0;
-#X connect 21 0 126 0;
-#X connect 22 0 21 1;
-#X connect 22 0 116 1;
+#X connect 9 0 8 1;
+#X connect 10 0 41 0;
+#X connect 12 0 15 0;
+#X connect 12 0 20 0;
+#X connect 12 0 126 0;
+#X connect 13 0 12 1;
+#X connect 13 0 113 1;
+#X connect 14 0 12 1;
+#X connect 14 0 113 1;
+#X connect 15 0 178 0;
+#X connect 16 0 57 0;
+#X connect 19 0 9 0;
+#X connect 21 0 177 0;
+#X connect 22 0 21 0;
 #X connect 23 0 21 1;
-#X connect 23 0 116 1;
-#X connect 24 0 25 0;
-#X connect 26 0 101 0;
+#X connect 24 0 21 1;
+#X connect 25 0 21 0;
 #X connect 28 0 29 0;
-#X connect 30 0 32 0;
-#X connect 33 0 16 0;
-#X connect 34 0 35 0;
-#X connect 38 0 40 0;
-#X connect 39 0 38 0;
-#X connect 41 0 38 1;
-#X connect 42 0 38 1;
-#X connect 43 0 38 0;
-#X connect 46 0 47 0;
-#X connect 46 0 57 0;
-#X connect 46 0 52 0;
-#X connect 46 0 42 0;
-#X connect 48 0 60 0;
-#X connect 49 0 48 1;
-#X connect 51 0 54 0;
-#X connect 51 0 58 0;
-#X connect 51 0 112 0;
-#X connect 52 0 51 1;
-#X connect 52 0 105 1;
-#X connect 53 0 51 1;
-#X connect 53 0 105 1;
-#X connect 54 0 55 0;
-#X connect 56 0 100 0;
-#X connect 57 0 49 0;
-#X connect 59 0 51 0;
-#X connect 60 0 89 0;
-#X connect 61 0 65 0;
-#X connect 61 1 66 0;
-#X connect 62 0 51 0;
-#X connect 63 0 43 0;
-#X connect 64 0 61 0;
-#X connect 67 0 39 0;
-#X connect 68 0 21 0;
-#X connect 69 0 71 0;
-#X connect 69 1 72 0;
-#X connect 70 0 69 0;
-#X connect 73 0 20 0;
-#X connect 74 0 79 0;
-#X connect 74 0 82 0;
-#X connect 76 0 3 0;
-#X connect 77 0 4 0;
-#X connect 81 0 18 0;
-#X connect 81 0 18 1;
-#X connect 81 0 97 0;
-#X connect 82 0 75 0;
-#X connect 82 0 80 0;
-#X connect 83 0 97 0;
-#X connect 84 0 83 0;
-#X connect 86 0 48 0;
-#X connect 88 0 86 0;
-#X connect 88 0 87 0;
-#X connect 89 0 50 0;
-#X connect 89 0 50 1;
-#X connect 89 0 96 0;
-#X connect 94 0 96 0;
-#X connect 95 0 94 0;
-#X connect 98 0 88 0;
-#X connect 98 0 99 0;
-#X connect 100 0 49 0;
-#X connect 101 0 16 0;
-#X connect 104 0 111 0;
-#X connect 104 1 110 0;
-#X connect 105 0 106 0;
-#X connect 105 0 104 0;
-#X connect 107 0 105 0;
-#X connect 109 0 104 0;
-#X connect 110 0 108 1;
-#X connect 111 0 108 0;
-#X connect 112 0 114 0;
-#X connect 112 0 115 0;
-#X connect 114 0 113 0;
-#X connect 115 0 113 1;
-#X connect 116 0 117 0;
-#X connect 116 0 122 0;
-#X connect 118 0 116 0;
-#X connect 120 0 119 0;
-#X connect 121 0 119 1;
-#X connect 122 0 120 0;
-#X connect 122 1 121 0;
+#X connect 28 0 38 0;
+#X connect 28 0 34 0;
+#X connect 28 0 24 0;
+#X connect 30 0 40 0;
+#X connect 31 0 30 1;
+#X connect 33 0 36 0;
+#X connect 33 0 39 0;
+#X connect 33 0 154 0;
+#X connect 34 0 33 1;
+#X connect 34 0 145 1;
+#X connect 35 0 33 1;
+#X connect 35 0 145 1;
+#X connect 36 0 180 0;
+#X connect 37 0 56 0;
+#X connect 38 0 31 0;
+#X connect 40 0 46 0;
+#X connect 41 0 11 0;
+#X connect 41 0 11 1;
+#X connect 41 0 54 0;
+#X connect 42 0 54 0;
+#X connect 43 0 42 0;
+#X connect 44 0 30 0;
+#X connect 45 0 44 0;
+#X connect 46 0 32 0;
+#X connect 46 0 32 1;
+#X connect 46 0 53 0;
+#X connect 51 0 53 0;
+#X connect 52 0 51 0;
+#X connect 55 0 45 0;
+#X connect 56 0 31 0;
+#X connect 57 0 9 0;
+#X connect 59 0 61 0;
+#X connect 59 0 190 0;
+#X connect 60 0 59 0;
+#X connect 62 0 70 0;
+#X connect 63 0 60 0;
+#X connect 64 0 65 0;
+#X connect 66 0 67 0;
+#X connect 68 0 69 0;
+#X connect 70 0 59 0;
+#X connect 82 0 84 0;
+#X connect 82 1 85 0;
+#X connect 83 0 82 0;
+#X connect 86 0 88 0;
+#X connect 86 1 89 0;
+#X connect 87 0 86 0;
+#X connect 93 0 12 0;
+#X connect 95 0 22 0;
+#X connect 98 0 33 0;
+#X connect 99 0 25 0;
+#X connect 103 0 102 0;
+#X connect 103 0 170 0;
+#X connect 107 0 108 0;
+#X connect 108 0 109 0;
+#X connect 110 0 108 0;
+#X connect 113 0 114 0;
+#X connect 113 0 119 0;
+#X connect 115 0 113 0;
+#X connect 117 0 116 0;
+#X connect 118 0 116 1;
+#X connect 119 0 117 0;
+#X connect 119 1 118 0;
 #X connect 124 0 123 0;
 #X connect 125 0 123 1;
 #X connect 126 0 124 0;
 #X connect 126 1 125 0;
+#X connect 144 0 150 0;
+#X connect 144 1 149 0;
+#X connect 145 0 146 0;
+#X connect 145 0 144 0;
+#X connect 147 0 145 0;
+#X connect 149 0 148 1;
+#X connect 150 0 148 0;
+#X connect 154 0 156 0;
+#X connect 154 0 157 0;
+#X connect 156 0 155 0;
+#X connect 157 0 155 1;
+#X connect 172 0 3 0;
+#X connect 174 0 4 0;
+#X connect 174 0 26 0;
+#X connect 188 0 101 0;
+#X connect 188 0 103 0;
