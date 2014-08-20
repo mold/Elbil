@@ -20,12 +20,7 @@
 	        android:layout_width="fill_parent"
 	        android:layout_height="wrap_content"
 	        android:text="@string/start_sound" />
-	    <Button
-	        android:id="@+id/reload_folder"
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
-	        android:text="@string/reload_folder" />
-
+	    
 	    <SeekBar
 	        android:id="@+id/seekBar1"
 	        android:layout_width="match_parent"
@@ -37,6 +32,12 @@
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
 	        android:max="1000" />
+	    
+	    <Button
+	        android:id="@+id/reload_folder"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:text="@string/reload_folder" />
 	    
 	    <LinearLayout
 	      	android:id="@+id/patch_list"
