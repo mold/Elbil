@@ -1,9 +1,9 @@
-#N canvas 79 159 1720 880 10;
-#X obj 347 122 cnv 15 300 300 empty empty empty 20 12 0 14 -261234
+#N canvas 6 125 1902 880 10;
+#X obj 273 149 cnv 15 300 300 empty empty empty 20 12 0 14 -261234
 -66577 0;
 #X obj 1219 167 cnv 15 360 300 empty empty empty 20 12 0 14 -204786
 -66577 0;
-#X obj 366 230 cnv 15 90 30 empty empty empty 20 12 0 14 -258113 -66577
+#X obj 292 257 cnv 15 90 30 empty empty empty 20 12 0 14 -258113 -66577
 0;
 #N canvas 971 53 709 1025 warning 0;
 #X obj 124 -134 inlet;
@@ -128,32 +128,32 @@
 #X connect 56 0 16 0;
 #X connect 57 0 45 0;
 #X connect 57 0 52 0;
-#X restore 373 232 pd warning;
+#X restore 299 259 pd warning;
 #X obj 125 13 line;
 #X msg 262 -50 0;
 #X floatatom 284 12 5 0 0 0 - - -, f 5;
 #X floatatom 385 60 5 0 0 0 - - -, f 5;
 #X obj 907 69 sel warn none encourage;
 #X obj 907 21 r state;
-#X obj 518 160 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+#X obj 444 187 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
 -1 -1;
 #X obj 959 145 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
 -1 -1;
-#X obj 390 131 s start_time;
+#X obj 316 158 s start_time;
 #X obj 349 5 r start_time;
 #X obj 516 -4 r reset_time;
-#X obj 373 322 *~;
-#X obj 449 289 line;
-#X obj 373 344 sub/delay oo_oo 0.6 50;
-#X obj 361 395 dac~;
-#X obj 622 -90 r c_state_bang;
+#X obj 299 349 *~;
+#X obj 375 316 line;
+#X obj 299 371 sub/delay oo_oo 0.6 50;
+#X obj 287 422 dac~;
+#X obj 546 -59 r c_state_bang;
 #X msg 622 -68 symbol none;
-#X obj 610 275 spigot;
-#X msg 572 208 1;
-#X msg 607 206 0;
-#X msg 610 297 symbol none;
-#X obj 610 319 s state;
-#X obj 519 285 r mute;
+#X obj 536 302 spigot;
+#X msg 498 235 1;
+#X msg 533 233 0;
+#X msg 536 324 symbol none;
+#X obj 536 346 s state;
+#X obj 445 312 r mute;
 #X obj 981 199 s mute;
 #X obj 915 -86 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
 -1 -1;
@@ -162,11 +162,11 @@
 -1 -1;
 #X obj 969 223 s reset_time;
 #X obj 798 -62 s c_neg_bang;
-#X msg 449 266 1 2000;
+#X msg 375 293 1 2000;
 #X obj 1056 -84 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
 -1 -1;
 #X obj 1056 -64 s c_pos_bang;
-#X obj 666 276 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+#X obj 592 303 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
 -1 -1;
 #X obj 622 -46 s state;
 #X obj 946 370 spigot;
@@ -186,9 +186,9 @@
 #X obj 1232 439 dac~;
 #X obj 1481 319 spigot;
 #X msg 1443 252 1;
-#X msg 1478 250 0;
-#X msg 1481 341 symbol none;
-#X obj 1481 363 s state;
+#X msg 1496 243 0;
+#X msg 1511 370 symbol none;
+#X obj 1511 392 s state;
 #X obj 1390 329 r mute;
 #X msg 1328 330 1 2000;
 #X obj 1537 320 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
@@ -203,7 +203,7 @@
 #X obj 1254 35 s c_neg_bang2;
 #X obj 1353 35 s c_neg_bang1;
 #X obj 804 297 r c_pos_bang1;
-#X obj 519 247 r c_pos_bang2;
+#X obj 445 274 r c_pos_bang2;
 #X obj 1255 93 t b b;
 #X obj 1255 68 r c_pos_bang;
 #X obj 1255 115 s c_pos_bang2;
@@ -211,15 +211,15 @@
 #X obj 557 -90 loadbang;
 #X obj 52 124 r c_transition_time;
 #X obj 55 230 s c_transition_time_adjusted;
-#X obj 358 201 r c_transition_time_adjusted;
+#X obj 284 228 r c_transition_time_adjusted;
 #X msg 93 -30 1 5000;
 #X obj 125 59 s c_transition_time;
 #X floatatom 52 146 5 0 0 0 - - -, f 5;
 #X floatatom 68 204 5 0 0 0 - - -, f 5;
-#X obj 373 366 sub/dirty_limiter;
+#X obj 299 393 sub/dirty_limiter;
 #X obj 123 167 expr 1-(ln($f1)/-9);
-#X obj 543 367 metro 50;
-#X obj 543 345 loadbang;
+#X obj 469 394 metro 50;
+#X obj 469 372 loadbang;
 #X text 133 36 <- REMOVE THIS WHEN USING IN APP;
 #N canvas 142 103 1040 953 encouragement 1;
 #X obj 92 294 bng 15 250 50 0 empty empty empty 17 7 0 10 -261234 -1
@@ -359,24 +359,52 @@ MAY NOT BE UP TO DATE;
 #X floatatom 1156 328 5 0 0 0 - - -, f 5;
 #X obj 1186 260 sub/clipscale 0 1 7 50;
 #X obj 1244 410 sub/dirty_limiter;
-#X obj 759 507 cnv 15 295 135 empty empty empty 20 12 0 14 -159808
+#X obj 786 549 cnv 15 295 135 empty empty empty 20 12 0 14 -159808
 -66577 0;
-#X obj 775 494 cnv 15 295 135 empty empty empty 20 12 0 14 -260736
+#X obj 802 536 cnv 15 295 135 empty empty empty 20 12 0 14 -260736
 -66577 0;
-#X obj 765 500 cnv 15 297 137 empty empty empty 20 12 0 14 -232576
+#X obj 792 542 cnv 15 297 137 empty empty empty 20 12 0 14 -232576
 -66577 0;
 #N canvas 0 50 450 250 (subpatch) 0;
 #X array sound_out 1000 float 0;
 #X coords 0 1 999 -1 300 140 1 0 0;
-#X restore 764 498 graph;
+#X restore 791 540 graph;
 #X obj 1413 419 metro 50;
 #X obj 1413 397 loadbang;
 #X obj 1413 441 tabwrite~ sound_out;
-#X obj 543 388 tabwrite~ sound_out;
+#X obj 469 415 tabwrite~ sound_out;
 #X obj 1167 221 r c_transition_time;
 #X floatatom 1140 260 5 0 0 0 - - -, f 5;
 #X msg 1390 351 0;
-#X msg 519 307 0;
+#X msg 445 334 0;
+#X obj 298 654 dac~;
+#X msg 305 576 bang;
+#X obj 1598 344 sub/wav ../fd-wavs/statechangetopos.wav;
+#X obj 1611 297 spigot;
+#X obj 1667 298 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X obj 1612 256 r c_state_bang;
+#X obj 1629 424 dac~;
+#X obj 1740 274 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X obj 1681 404 sub/delay OoOoOoo-__w 0.3 100;
+#X obj 1619 383 sub/delay OOO--_oo 0.3 120;
+#X obj 1608 465 sub/wav ../fd-wavs/stateavoidpos.wav;
+#X obj 1599 593 dac~;
+#X obj 1599 519 sub/delay OO45O--_oo 0.3 120;
+#X obj 1650 553 sub/delay OoOoO66oo-__w 0.3 100;
+#X obj 636 340 spigot;
+#X obj 692 341 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X obj 636 314 r c_state_bang;
+#X obj 636 464 dac~;
+#X obj 636 390 sub/delay OO779oo 0.3 120;
+#X obj 687 424 sub/delay OoOgOPP_w 0.3 100;
+#X obj 636 368 sub/wav ../fd-wavs/statechangetoneg.wav;
+#X obj 498 592 dac~;
+#X obj 498 518 sub/delay OOddddoo 0.3 120;
+#X obj 550 552 sub/delay OoOoxxx 0.3 100;
+#X obj 498 496 sub/wav ../fd-wavs/stateavoidneg.wav;
 #X connect 3 0 15 0;
 #X connect 4 0 6 0;
 #X connect 4 0 78 0;
@@ -404,8 +432,11 @@ MAY NOT BE UP TO DATE;
 #X connect 20 0 37 0;
 #X connect 21 0 24 0;
 #X connect 21 0 36 0;
+#X connect 21 0 126 0;
 #X connect 22 0 21 1;
+#X connect 22 0 116 1;
 #X connect 23 0 21 1;
+#X connect 23 0 116 1;
 #X connect 24 0 25 0;
 #X connect 26 0 101 0;
 #X connect 28 0 29 0;
@@ -425,8 +456,11 @@ MAY NOT BE UP TO DATE;
 #X connect 49 0 48 1;
 #X connect 51 0 54 0;
 #X connect 51 0 58 0;
+#X connect 51 0 112 0;
 #X connect 52 0 51 1;
+#X connect 52 0 105 1;
 #X connect 53 0 51 1;
+#X connect 53 0 105 1;
 #X connect 54 0 55 0;
 #X connect 56 0 100 0;
 #X connect 57 0 49 0;
@@ -464,5 +498,28 @@ MAY NOT BE UP TO DATE;
 #X connect 95 0 94 0;
 #X connect 98 0 88 0;
 #X connect 98 0 99 0;
-#X connect 100 0 48 1;
+#X connect 100 0 49 0;
 #X connect 101 0 16 0;
+#X connect 104 0 111 0;
+#X connect 104 1 110 0;
+#X connect 105 0 106 0;
+#X connect 105 0 104 0;
+#X connect 107 0 105 0;
+#X connect 109 0 104 0;
+#X connect 110 0 108 1;
+#X connect 111 0 108 0;
+#X connect 112 0 114 0;
+#X connect 112 0 115 0;
+#X connect 114 0 113 0;
+#X connect 115 0 113 1;
+#X connect 116 0 117 0;
+#X connect 116 0 122 0;
+#X connect 118 0 116 0;
+#X connect 120 0 119 0;
+#X connect 121 0 119 1;
+#X connect 122 0 120 0;
+#X connect 122 1 121 0;
+#X connect 124 0 123 0;
+#X connect 125 0 123 1;
+#X connect 126 0 124 0;
+#X connect 126 1 125 0;
