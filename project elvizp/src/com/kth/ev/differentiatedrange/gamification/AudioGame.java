@@ -8,6 +8,7 @@ import org.puredata.core.PdBase;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Handler;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
 
@@ -76,6 +77,7 @@ public class AudioGame implements Observer {
 
 	public AudioGame(Context context) {
 		this.context = context;
+		
 		speedData = new DataAnalyzer(2, 0);
 		ampData = new DataAnalyzer(2, 0.5);
 		accData = new DataAnalyzer(2, 0);
@@ -444,12 +446,16 @@ public class AudioGame implements Observer {
 						}
 						if (routeStepIndex >= routeData.data.size() - 1) {
 							// interrupt drive
-						} else if(routeStepIndex > 0) {
+						} else if(routeStepIndex >= 0) {
+							double prevRouteConsumption = 0;
+							if (routeStepIndex > 0) {
+								prevRouteConsumption = routeConsumptions[routeStepIndex - 1];
+							}
 							double relativeDistance = (distance - routeDistanceTravelled)
 									/ step.distance.value;
-							double currentConsumption = routeConsumptions[routeStepIndex - 1]
+							double currentConsumption = prevRouteConsumption
 									+ relativeDistance
-									* (routeConsumptions[routeStepIndex] - routeConsumptions[routeStepIndex - 1]);
+									* (routeConsumptions[routeStepIndex] - prevRouteConsumption);
 							//PdBase.sendFloat("consumption",
 								//	(float) currentConsumption);
 							double carConsumption = carData.getTotalConsumption() - prevConsumption;

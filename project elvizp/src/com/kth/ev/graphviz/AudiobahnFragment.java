@@ -48,7 +48,12 @@ public class AudiobahnFragment extends Fragment implements OnClickListener,
 	Button buttonReload;
 	TextView dataText;
 	SeekBar seekbar1;
-	SeekBar seekbar2; 
+	SeekBar seekbar2;
+	TextView seekbar1Text;
+	TextView seekbar2Text;
+	float lastSeekbar1;
+	float lastSeekbar2;
+
 	// PureData
 	Patch test;
 	Patch[] loadedPatches;
@@ -95,16 +100,19 @@ public class AudiobahnFragment extends Fragment implements OnClickListener,
 	private void initView() {
 		LinearLayout container = (LinearLayout) getView().findViewById(
 				R.id.container);
-		startGame = (Button) getView().findViewById(R.id.start_game);
+		View v = getView();
+		startGame = (Button) v.findViewById(R.id.start_game);
 		startGame.setOnClickListener(this);
-		soundToggle = (Button) getView().findViewById(R.id.toggle_sound);
+		soundToggle = (Button) v.findViewById(R.id.toggle_sound);
 		soundToggle.setOnClickListener(this);
-		buttonReload = (Button) getView().findViewById(R.id.reload_folder);
+		buttonReload = (Button) v.findViewById(R.id.reload_folder);
 		buttonReload.setOnClickListener(this);
-		seekbar1 = (SeekBar) getView().findViewById(R.id.seekBar1);
+		seekbar1 = (SeekBar) v.findViewById(R.id.seekBar1);
 		seekbar1.setOnSeekBarChangeListener(this);
-		seekbar2 = (SeekBar) getView().findViewById(R.id.seekBar2);
+		seekbar2 = (SeekBar) v.findViewById(R.id.seekBar2);
 		seekbar2.setOnSeekBarChangeListener(this);
+		seekbar1Text = (TextView) v.findViewById(R.id.seekBar1Text);
+		seekbar2Text = (TextView) v.findViewById(R.id.seekBar2Text);
 
 		// load the patches and init the patch list view
 		loadPatches();
@@ -125,8 +133,8 @@ public class AudiobahnFragment extends Fragment implements OnClickListener,
 		// container.addView(graph);
 		// graph = new DataGraph(this, carData, DataGraph.DATA.SOC);
 		// container.addView(graph);
-	
-		container.addView(audioGame.fineDriver.getView(getActivity()));
+		
+		audioGame.fineDriver.initView(v);
 	}
 
 	/**
@@ -160,6 +168,13 @@ public class AudiobahnFragment extends Fragment implements OnClickListener,
 			item.setPadding(10, 10, 10, 10);
 			list.addView(item);
 		}
+	}
+	
+	private void updateSliderValues() {
+		seekbar1Text.setText("slider1: " + lastSeekbar1);
+		PdBase.sendFloat("slider1", lastSeekbar1);
+		seekbar2Text.setText("slider2: " + lastSeekbar2);
+		PdBase.sendFloat("slider2", lastSeekbar2);
 	}
 
 	@Override
@@ -234,10 +249,11 @@ public class AudiobahnFragment extends Fragment implements OnClickListener,
 	public void onProgressChanged(SeekBar seekBar, int progress,
 			boolean fromUser) {
 		if (seekBar == seekbar1) {
-			PdBase.sendFloat("slider1", progress / 1000);
+			lastSeekbar1 = progress / 1000.0f;
 		} else if (seekBar == seekbar2) {
-			PdBase.sendFloat("slider2", progress / 1000);
+			lastSeekbar2 = progress / 1000.0f;
 		}
+		updateSliderValues();
 	}
 
 	@Override
@@ -251,4 +267,5 @@ public class AudiobahnFragment extends Fragment implements OnClickListener,
 		// TODO Auto-generated method stub
 		
 	}
+
 }

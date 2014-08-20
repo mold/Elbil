@@ -4,21 +4,26 @@ import org.puredata.core.PdBase;
 
 import se.kth.ev.gmapsviz.R;
 
-import android.app.Activity;
-import android.content.Context;
+import android.content.res.Resources;
 import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup.LayoutParams;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class FineDriver {
 
 	private enum Mode {
-		NORMAL, GOOD, BAD
+		NORMAL("NORMAL"), GOOD("GOOD"), BAD("BAD");
+
+		private final String name;
+
+		private Mode(String s) {
+			name = s;
+		}
+
+		public String toString() {
+			return name;
+		}
 	}
 
 	private final String TAG = "finedriver";
@@ -48,27 +53,40 @@ public class FineDriver {
 	private long modeTimeStamp;
 	private long pointsTimeStamp;
 	private double consumptionDifference;
+	private double consumptionOverflow;
 	private Mode mode;
+	private Mode currentMode;
 	private int points;
+	private double transitionTime;
 
 	// View
-	LinearLayout view;
 	TextView pointsText;
+	TextView consumptionText;
+	TextView modeText;
+	TextView debugText;
+	Handler uiHandler;
+	Resources resources;
+	boolean viewInitialized;
 
 	public FineDriver() {
-
+		uiHandler = new Handler();
+		viewInitialized = false;
 	}
 
 	public void reset() {
 		consumptionDifference = 0;
 		points = 0;
 		mode = Mode.NORMAL;
+		currentMode = Mode.NORMAL;
 	}
 
 	public void setConsumptionDifference(double difference) {
 		long time = System.currentTimeMillis();
 
 		if (difference >= POSITIVE_LIMIT) {
+			if (currentMode != Mode.GOOD) {
+				currentMode = Mode.GOOD;
+			}
 			// check if the consumption just passed the limit
 			if (consumptionDifference < POSITIVE_LIMIT) {
 				modeTimeStamp = time;
@@ -80,9 +98,15 @@ public class FineDriver {
 					Log.v(TAG, "Switched to GOOD mode");
 					PdBase.sendBang(R_GOOD_BANG);
 					PdBase.sendBang(R_STATE_BANG);
+				} else {
+					transitionTime = (time - modeTimeStamp) / (float) ACTIVATION_TIME;
+					PdBase.sendFloat(R_TRANSITION, (float) transitionTime);
 				}
 			}
 		} else if (difference <= NEGATIVE_LIMIT) {
+			if (currentMode != Mode.BAD) {
+				currentMode = Mode.BAD;
+			}
 			// check if the consumption just passed the limit
 			if (consumptionDifference > NEGATIVE_LIMIT) {
 				modeTimeStamp = time;
@@ -94,9 +118,15 @@ public class FineDriver {
 					Log.v(TAG, "Switched to BAD mode");
 					PdBase.sendBang(R_BAD_BANG);
 					PdBase.sendBang(R_STATE_BANG);
+				} else {
+					transitionTime = (time - modeTimeStamp) / (float) ACTIVATION_TIME;
+					PdBase.sendFloat(R_TRANSITION, (float) transitionTime);
 				}
 			}
 		} else {
+			if (currentMode != Mode.NORMAL) {
+				currentMode = Mode.NORMAL;
+			}
 			if (mode != Mode.NORMAL) {
 				// check if the consumption just passed a limit
 				if (consumptionDifference <= NEGATIVE_LIMIT
@@ -119,76 +149,90 @@ public class FineDriver {
 					PdBase.sendBang(R_NORMAL_BANG);
 					PdBase.sendBang(R_STATE_BANG);
 				} else {
-					float transitionTime = (float) ((time - modeTimeStamp) / DEACTIVATION_TIME);
-					PdBase.sendFloat(R_TRANSITION, transitionTime);
+					transitionTime = (time - modeTimeStamp) / (float) DEACTIVATION_TIME;
+					PdBase.sendFloat(R_TRANSITION, (float) transitionTime);
 				}
 			}
 		}
 
 		// calculate points
-		float rConsumption;
 		switch (mode) {
 		case NORMAL:
 			if (time - pointsTimeStamp > NORMAL_POINTS_INTERVAL) {
 				points -= 1;
 				Log.v(TAG, "points: " + points);
 				pointsTimeStamp = time;
-				updateView();
 			}
 			break;
 		case GOOD:
 			if (time - pointsTimeStamp > GOOD_POINTS_INTERVAL) {
 				points += 1;
 				pointsTimeStamp = time;
-				updateView();
 			}
-			rConsumption = (float) (difference - POSITIVE_LIMIT);
-			PdBase.sendFloat(R_CONSUMPTION, rConsumption < 0 ? 0 : rConsumption);
+			consumptionOverflow = (float) (difference - POSITIVE_LIMIT);
+			consumptionOverflow = consumptionOverflow < 0 ? 0
+					: consumptionOverflow;
+			PdBase.sendFloat(R_CONSUMPTION, (float) consumptionOverflow);
 			break;
 		case BAD:
 			if (time - pointsTimeStamp > BAD_POINTS_INTERVAL) {
 				points -= 1;
 				pointsTimeStamp = time;
-				updateView();
 			}
-			rConsumption = (float) (difference - NEGATIVE_LIMIT);
-			PdBase.sendFloat(R_CONSUMPTION, rConsumption > 0 ? 0 : rConsumption);
+			consumptionOverflow = (float) (difference - NEGATIVE_LIMIT);
+			consumptionOverflow = consumptionOverflow > 0 ? 0
+					: consumptionOverflow;
+			PdBase.sendFloat(R_CONSUMPTION, (float) consumptionOverflow);
 			break;
 		}
+
+		updateView();
 
 		consumptionDifference = difference;
 	}
 
-	public View getView(Activity activity) {
-		LayoutInflater inflater = activity.getLayoutInflater();
-		view = (LinearLayout) inflater.inflate(R.layout.fine_driver, null);
-		pointsText = (TextView) view.findViewById(R.id.points_text);
-		/*
-		LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT,
-				LayoutParams.WRAP_CONTENT);
-		view = new LinearLayout(context);
-		view.setLayoutParams(params);
-		pointsText = new TextView(context);
-		pointsText.setLayoutParams(params);
-		view.addView(pointsText);
-		*/
+	public void initView(View v) {
+		resources = v.getResources();
+		pointsText = (TextView) v.findViewById(R.id.points_text);
+		consumptionText = (TextView) v.findViewById(R.id.consumption_text);
+		modeText = (TextView) v.findViewById(R.id.mode_text);
+		debugText = (TextView) v.findViewById(R.id.debug_text);
+
+		viewInitialized = true;
+
 		updateView();
-		return view;
 	}
-	
-	private class ViewThread implements Runnable {
+
+	private class UIThread implements Runnable {
 
 		@Override
 		public void run() {
 			pointsText.setText("Points: " + points);
+			consumptionText.setText("Consumption overflow: "
+					+ Math.round(consumptionOverflow * 1000) / 1000.0
+					+ " (consumption difference: "
+					+ Math.round(consumptionDifference * 1000) / 1000.0 + ")");
+			modeText.setText(mode.toString() + " mode (current state: " + currentMode.toString() + ")");
+			switch(mode) {
+			case NORMAL:
+				modeText.setTextColor(resources.getColor(R.color.black));
+				break;
+			case GOOD:
+				modeText.setTextColor(resources.getColor(R.color.green));
+				break;
+			case BAD:
+				modeText.setTextColor(resources.getColor(R.color.red));
+				break;
+			}
+			debugText.setText("Transition time: " + Math.round(1000*transitionTime) / 1000.0);
 		}
-		
+
 	}
 
 	private void updateView() {
-		if (view != null) {
-			//Looper.prepare();
-			//new Handler().post(new ViewThread());
+		if (viewInitialized) {
+			uiHandler.post(new UIThread());
 		}
 	}
+
 }

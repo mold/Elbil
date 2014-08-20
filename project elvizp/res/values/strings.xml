@@ -13,6 +13,6 @@
 	<string name="reload_folder">Reload patch folder</string>
 	<string name="start_game">Start audio game</string><string name="stop_game">Stop audio game</string>
 	<string name="show_on_gmaps">Show on Google Maps</string>
-	
+	<string name="fine_driver_title">FINE DRIVER</string>
 	
 </resources>
