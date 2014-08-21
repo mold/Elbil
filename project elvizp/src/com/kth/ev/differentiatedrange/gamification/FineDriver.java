@@ -241,6 +241,7 @@ public class FineDriver {
 			level += 1;
 			prevLevelPoints = nextLevelPoints;
 			nextLevelPoints *= 2;
+			PdBase.sendBang("fine_driving");
 		}
 	}
 

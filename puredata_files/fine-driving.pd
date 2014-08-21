@@ -1,4 +1,4 @@
-#N canvas 0 50 1920 1128 10;
+#N canvas 0 0 1354 683 10;
 #X obj 36 373 cnv 15 700 600 empty empty empty 20 12 0 14 -261234 -66577
 0;
 #X obj 1181 368 cnv 15 700 600 empty empty empty 20 12 0 14 -204786
@@ -20,11 +20,11 @@
 -1 -1;
 #X obj 411 426 vline~;
 #X obj 483 489 snapshot~;
-#X floatatom 483 510 5 0 0 0 - - -, f 5;
+#X floatatom 483 510 5 0 0 0 - - -;
 #X obj 483 447 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
 -1 -1;
 #X obj 411 102 metro 1000;
-#X floatatom 467 201 5 0 0 0 - - -, f 5;
+#X floatatom 467 201 5 0 0 0 - - -;
 #X obj 467 223 sub/only_one_bang_please;
 #X obj 411 257 f;
 #X obj 389 77 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
@@ -43,7 +43,7 @@
 #X obj -46 178 osc~ 800;
 #X text 410 27 make it periodic;
 #X obj 212 178 osc~;
-#X floatatom 253 179 5 0 0 0 - - -, f 5;
+#X floatatom 253 179 5 0 0 0 - - -;
 #X obj 483 426 loadbang;
 #X obj 105 327 +~;
 #X obj 212 200 *~ 0.3;
@@ -71,7 +71,7 @@
 #X restore 180 624 graph;
 #X obj 76 840 outlet~;
 #X obj 483 467 metro 30;
-#X obj 411 283 / 4, f 4;
+#X obj 411 283 / 4;
 #X msg 467 75 1500;
 #X obj 124 -109 sub/clipscale 0 1 1000 100;
 #X obj 75 488 -~ 0.2;
@@ -178,19 +178,19 @@
 #N canvas 142 103 1040 953 encouragement 0;
 #X obj 92 294 bng 15 250 50 0 empty empty empty 17 7 0 10 -261234 -1
 -1;
-#X floatatom 177 240 5 0 0 0 - - -, f 5;
-#X floatatom 131 124 5 0 0 0 - - -, f 5;
-#X floatatom 221 240 5 0 0 0 - - -, f 5;
+#X floatatom 177 240 5 0 0 0 - - -;
+#X floatatom 131 124 5 0 0 0 - - -;
+#X floatatom 221 240 5 0 0 0 - - -;
 #X obj 65 253 loadbang;
-#X floatatom 452 64 5 0 0 0 - - -, f 5;
-#X floatatom 452 112 5 0 0 0 - - -, f 5;
+#X floatatom 452 64 5 0 0 0 - - -;
+#X floatatom 452 112 5 0 0 0 - - -;
 #X obj 293 335 vsl 15 70 0 1 0 0 empty empty empty 0 -9 0 10 -262130
--1 -1 307 1;
+-1 -1 0 1;
 #X text 131 103 tempo;
 #X text 452 43 pitch/transpose;
-#X floatatom 302 273 5 0 0 0 - - -, f 5;
+#X floatatom 302 273 5 0 0 0 - - -;
 #X text 59 181 floor -->;
-#X floatatom 92 319 5 0 0 0 - - -, f 5;
+#X floatatom 92 319 5 0 0 0 - - -;
 #X obj 276 740 hip~ 600;
 #X obj 95 739 hip~ 600;
 #X obj 131 176 expr $f1 \; if ($f1 > 50 \, $f1 \, 50) \;;
@@ -333,7 +333,7 @@ MAY NOT BE UP TO DATE;
 -66577 0;
 #X obj 1576 -24 line;
 #X msg 1676 -56 0;
-#X floatatom 1618 -24 5 0 0 0 - - -, f 5;
+#X floatatom 1618 -24 5 0 0 0 - - -;
 #X obj 1576 -80 r start_time;
 #X obj 1676 -80 r reset_time;
 #X obj 1447 -29 bng 15 250 50 0 empty empty empty 17 7 0 10 -228856
@@ -388,8 +388,8 @@ order for the state changes to work properly.;
 #X obj 805 648 r c_neg_bang1;
 #X obj 519 101 cnv 15 270 180 empty empty empty 20 12 0 14 -233017
 -66577 0;
-#X floatatom 551 178 5 0 0 0 - - -, f 5;
-#X floatatom 550 225 5 0 0 0 - - -, f 5;
+#X floatatom 551 178 5 0 0 0 - - -;
+#X floatatom 550 225 5 0 0 0 - - -;
 #X obj 534 199 expr 1-(ln($f1)/-9);
 #X text 530 110 Time is received here and changed;
 #X text 530 124 to a logarithmic function (kind of);
@@ -516,6 +516,11 @@ uses the right amount of energy to stay in the current mode.;
 \, i.e. bad -> normal or normal -> bad;
 #X text 48 -56 ======= DESCRIPTION;
 #X text 537 -50 ======= THE STATES;
+#X obj 111 138 r fine_driving;
+#X obj 111 162 sub/wav ../wav/fine-driving.wav;
+#X obj 110 189 dac~;
+#X obj 231 136 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
 #X connect 3 0 8 0;
 #X connect 4 0 5 0;
 #X connect 4 1 6 0;
@@ -629,3 +634,7 @@ uses the right amount of energy to stay in the current mode.;
 #X connect 174 0 26 0;
 #X connect 188 0 101 0;
 #X connect 188 0 103 0;
+#X connect 199 0 200 0;
+#X connect 200 0 201 0;
+#X connect 200 1 201 1;
+#X connect 202 0 200 0;
