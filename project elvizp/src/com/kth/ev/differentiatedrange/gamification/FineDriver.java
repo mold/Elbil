@@ -50,7 +50,7 @@ public class FineDriver {
 	private final long GOOD_POINTS_INTERVAL = 2000;
 	private final long BAD_POINTS_INTERVAL = 2000;
 	// a value to see how long time is spent in a mode
-	private final long MODE_OVERRIDE_TIME = 30000;
+	private final long MODE_OVERRIDE_TIME = 60000;
 
 	private long modeStartTimeStamp;
 	private long modeTimeStamp;
@@ -72,7 +72,7 @@ public class FineDriver {
 	Handler uiHandler;
 	Resources resources;
 	boolean viewInitialized;
-	
+
 	// scoring
 	private int points;
 	private int level;
@@ -117,7 +117,8 @@ public class FineDriver {
 					PdBase.sendBang(R_GOOD_BANG);
 					PdBase.sendBang(R_STATE_BANG);
 				} else {
-					transitionTime = (time - modeTimeStamp) / (float) ACTIVATION_TIME;
+					transitionTime = (time - modeTimeStamp)
+							/ (float) ACTIVATION_TIME;
 					PdBase.sendFloat(R_TRANSITION, (float) transitionTime);
 				}
 			}
@@ -138,7 +139,8 @@ public class FineDriver {
 					PdBase.sendBang(R_BAD_BANG);
 					PdBase.sendBang(R_STATE_BANG);
 				} else {
-					transitionTime = (time - modeTimeStamp) / (float) ACTIVATION_TIME;
+					transitionTime = (time - modeTimeStamp)
+							/ (float) ACTIVATION_TIME;
 					PdBase.sendFloat(R_TRANSITION, (float) transitionTime);
 				}
 			}
@@ -169,18 +171,21 @@ public class FineDriver {
 					PdBase.sendBang(R_NORMAL_BANG);
 					PdBase.sendBang(R_STATE_BANG);
 				} else {
-					transitionTime = (time - modeTimeStamp) / (float) DEACTIVATION_TIME;
+					transitionTime = (time - modeTimeStamp)
+							/ (float) DEACTIVATION_TIME;
 					PdBase.sendFloat(R_TRANSITION, (float) transitionTime);
 				}
 			}
 		}
 
 		// calculate points
-		modeOverrideTime = (time - modeStartTimeStamp) / (double) MODE_OVERRIDE_TIME;
+		modeOverrideTime = (time - modeStartTimeStamp)
+				/ (double) MODE_OVERRIDE_TIME;
 		modeOverrideTime = modeOverrideTime > 1 ? 1 : modeOverrideTime;
 		switch (mode) {
 		case NORMAL:
-			if (time - pointsTimeStamp > NORMAL_POINTS_INTERVAL * (1 - modeOverrideTime * 0.5)) {
+			if (time - pointsTimeStamp > NORMAL_POINTS_INTERVAL
+					* (1 - modeOverrideTime * 0.5)) {
 				points -= 1;
 				managePoints();
 				Log.v(TAG, "points: " + points);
@@ -188,7 +193,8 @@ public class FineDriver {
 			}
 			break;
 		case GOOD:
-			if (time - pointsTimeStamp > GOOD_POINTS_INTERVAL * (1 - modeOverrideTime * 0.8)) {
+			if (time - pointsTimeStamp > GOOD_POINTS_INTERVAL
+					* (1 - modeOverrideTime * 0.8)) {
 				points += 1;
 				managePoints();
 				pointsTimeStamp = time;
@@ -199,7 +205,8 @@ public class FineDriver {
 			PdBase.sendFloat(R_CONSUMPTION, (float) consumptionOverflow);
 			break;
 		case BAD:
-			if (time - pointsTimeStamp > BAD_POINTS_INTERVAL * (1 - modeOverrideTime * 0.8)) {
+			if (time - pointsTimeStamp > BAD_POINTS_INTERVAL
+					* (1 - modeOverrideTime * 0.8)) {
 				points -= 1;
 				managePoints();
 				pointsTimeStamp = time;
@@ -229,13 +236,14 @@ public class FineDriver {
 
 		updateView();
 	}
-	
+
 	private void managePoints() {
 		if (points > 0 && points <= prevLevelPoints * LOOSE_LEVEL_LIMIT) {
 			if (level > 0) {
 				level -= 1;
 				nextLevelPoints = prevLevelPoints;
 				prevLevelPoints /= 2;
+				PdBase.sendBang("foul_driving");
 			}
 		} else if (points >= nextLevelPoints) {
 			level += 1;
@@ -255,8 +263,9 @@ public class FineDriver {
 					+ Math.round(consumptionOverflow * 1000) / 1000.0
 					+ " (consumption difference: "
 					+ Math.round(consumptionDifference * 1000) / 1000.0 + ")");
-			modeText.setText(mode.toString() + " mode (current state: " + currentMode.toString() + ")");
-			switch(mode) {
+			modeText.setText(mode.toString() + " mode (current state: "
+					+ currentMode.toString() + ")");
+			switch (mode) {
 			case NORMAL:
 				modeText.setTextColor(resources.getColor(R.color.black));
 				break;
@@ -267,8 +276,13 @@ public class FineDriver {
 				modeText.setTextColor(resources.getColor(R.color.red));
 				break;
 			}
-			debugText.setText("Transition time: " + Math.round(1000*transitionTime) / 1000.0 + ", Mode override time: " + modeOverrideTime);
-			scoringText.setText("Next level: " + nextLevelPoints + " (previous level: " + Math.round(prevLevelPoints * LOOSE_LEVEL_LIMIT) + ")");
+			debugText.setText("Transition time: "
+					+ Math.round(1000 * transitionTime) / 1000.0
+					+ ", Mode override time: "
+					+ Math.round(1000 * modeOverrideTime) / 1000.0);
+			scoringText.setText("Next level: " + nextLevelPoints
+					+ " (previous level: "
+					+ Math.round(prevLevelPoints * LOOSE_LEVEL_LIMIT) + ")");
 		}
 
 	}

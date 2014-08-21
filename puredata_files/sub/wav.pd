@@ -8,11 +8,12 @@
 #X text 0 8 play bang;
 #X text 142 9 loop toggle;
 #X obj 97 11 inlet;
-#X obj 58 182 spigot;
+#X obj 58 178 spigot;
 #X obj 58 55 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
 -1;
 #X obj -46 161 readsf~ 2;
 #X obj -17 219 outlet~;
+#X obj 14 251 outlet;
 #X connect 1 0 4 0;
 #X connect 2 0 11 0;
 #X connect 3 0 2 0;
@@ -25,3 +26,4 @@
 #X connect 11 0 0 0;
 #X connect 11 1 12 0;
 #X connect 11 2 9 0;
+#X connect 11 2 13 0;

@@ -134,6 +134,8 @@ public class AudiobahnFragment extends Fragment implements OnClickListener,
 		// graph = new DataGraph(this, carData, DataGraph.DATA.SOC);
 		// container.addView(graph);
 		
+		updateSliderValues();
+		
 		audioGame.fineDriver.initView(v);
 	}
 
