@@ -30,6 +30,11 @@ import android.util.Log;
 
 public class PureDataHandler implements Runnable {
 	
+	private final int SAMPLE_RATE = 11025;
+	private final int INPUT_CHANNELS = 1;
+	private final int OUTPUT_CHANNELS = 1;
+	private final int BUFFER_SIZE = 512;
+	
 	private final String TAG = "puredata";
 	private final int THREAD_SLEEP = 50;
 	private final String PATCH_DIRECTORY = Environment.getExternalStorageDirectory() + "/puredata/";
@@ -161,7 +166,8 @@ public class PureDataHandler implements Runnable {
 	public void startAudio() {
 		try {
 			// negative values will be replaced with defaults/preferences
-			pdService.initAudio(-1, -1, -1, -1);
+			//pdService.initAudio(-1, -1, -1, -1);
+			pdService.initAudio(SAMPLE_RATE, INPUT_CHANNELS, OUTPUT_CHANNELS, BUFFER_SIZE);
 			Log.v(TAG, "start audio");
 			pdService.startAudio();
 		} catch (IOException e) {

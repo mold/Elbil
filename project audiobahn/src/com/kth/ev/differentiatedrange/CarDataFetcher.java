@@ -47,12 +47,15 @@ public class CarDataFetcher implements Runnable{
 			// TODO: Implement
 		} else { // Get data from server
 			try {
+				String data = getServerData("all");
+				Log.v("cardebug", data);
 				carData.setSpeed(Double.parseDouble(getServerData("speed")));
 				carData.setSoc(Double.parseDouble(getServerData("soc")));
 				carData.setAmp(Double.parseDouble(getServerData("amp")));
-				double speed = carData.getSpeed(false);
-				double amp = carData.getAmp(false);
-				Log.v("cardebug", "speed: " + speed + ", amp: " + amp);
+				
+				//double speed = carData.getSpeed(false);
+				//double amp = carData.getAmp(false);
+				//Log.v("cardebug", "speed: " + speed + ", amp: " + amp);
 				//carData.setClimate(Double.parseDouble(getServerData("heating0")));
 				//carData.setFan(Double.parseDouble(getServerData("heating1")));
 				carData.calculate();
@@ -81,6 +84,7 @@ public class CarDataFetcher implements Runnable{
 		HttpGet request = new HttpGet();
 		request.setURI(new URI(baseUrl + type));
 		HttpResponse response = client.execute(request);
+		Log.v("cardebug", "request executed");
 		in = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
 		StringBuffer sb = new StringBuffer("");
 		String l = "";
@@ -103,11 +107,14 @@ public class CarDataFetcher implements Runnable{
 	@Override
 	public void run() {
 		while(true){
+			Log.v("cardebug", "before fetch");
 			fetchData();
+			Log.v("cardebug", "after fetch");
 			try {
-				Thread.sleep(50);
+				Thread.sleep(500);
+				Log.v("cardebug", "after sleep");
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				e.getMessage();
 			}
 		}
 	}
