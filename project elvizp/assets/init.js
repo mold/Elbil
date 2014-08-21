@@ -56,7 +56,7 @@ function updateData(cd){
   }
 
   cd.time = (Date.now() - t) / 1000;
-  cd.speed = 30;
+  //cd.speed = 30;
   t = Date.now();
   d3.select("body p").html(cd.speed +" km/h, "+cd.soc+"%, "+cd.capacity+" kWh, "+ cd.time +" s");
   //alert(cd.time);

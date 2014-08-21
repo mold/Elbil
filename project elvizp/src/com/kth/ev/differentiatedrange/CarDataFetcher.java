@@ -6,6 +6,7 @@ package com.kth.ev.differentiatedrange;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URI;
+import java.util.Scanner;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -47,9 +48,29 @@ public class CarDataFetcher implements Runnable{
 			// TODO: Implement
 		} else { // Get data from server
 			try {
-				carData.setSpeed(Double.parseDouble(getServerData("speed")));
+				String data = getServerData("all");
+				Scanner scanner = new Scanner(data);
+				scanner.useDelimiter("(</h1>)?<h1>");
+				String d;
+				while (scanner.hasNext()) {
+					//Log.v("serverdata", d);
+					d = scanner.next();
+					if (d.startsWith("speed:")) {
+						carData.setSpeed(Double.parseDouble(d.substring(6)));
+					} else if (d.startsWith("soc:")) {
+						carData.setSoc(Double.parseDouble(d.substring(4)));
+					} else if (d.startsWith("amp:")) {
+						carData.setAmp(Double.parseDouble(d.substring(4)));
+					} else if (d.startsWith("volt:")) {
+						carData.setVolt(Double.parseDouble(d.substring(5)));
+					}
+				}
+				scanner.close();
+				
+				/*carData.setSpeed(Double.parseDouble(getServerData("speed")));
 				carData.setSoc(Double.parseDouble(getServerData("soc")));
 				carData.setAmp(Double.parseDouble(getServerData("amp")));
+				carData.setVolt(Double.parseDouble(getServerData("volt")));*/
 				double speed = carData.getSpeed(false);
 				double amp = carData.getAmp(false);
 				Log.v("cardebug", "speed: " + speed + ", amp: " + amp);
@@ -72,7 +93,7 @@ public class CarDataFetcher implements Runnable{
 				e.printStackTrace();
 				//Log.e("fetch", e.toString());
 				//Log.v("cardebug", "wrong value?: " + e.getMessage());
-				//Log.e("cardebug", "wrong value?: " + e.getMessage());
+				Log.e("cardebug", "wrong value?: " + e.toString());
 			}
 		}
 	}
@@ -105,7 +126,7 @@ public class CarDataFetcher implements Runnable{
 		while(true){
 			fetchData();
 			try {
-				Thread.sleep(50);
+				Thread.sleep(200);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

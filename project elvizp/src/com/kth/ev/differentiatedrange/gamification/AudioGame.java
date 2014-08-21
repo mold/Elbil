@@ -468,8 +468,10 @@ public class AudioGame implements Observer {
 			}
 			
 			PdBase.sendFloat("consumption_diff", consumptionDifference);
+			Log.v("consumption", ""+carData.getConsumption(false));
 			if (consumptionGraph != null) {
-				consumptionGraph.addDataPoint(consumptionDifference);
+				//consumptionGraph.addDataPoint(consumptionDifference);
+				consumptionGraph.addDataPoint((float) carData.getConsumption(false));
 			}
 			fineDriver.setConsumptionDifference(consumptionDifference);
 		}

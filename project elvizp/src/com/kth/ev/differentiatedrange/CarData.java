@@ -37,8 +37,8 @@ public class CarData extends Observable {
 	@SuppressWarnings("unused")
 	private static final String TAG = "cardata";
 
-	private double soc, speed, fan, climate, amp, acceleration;
-	private double socPrev, speedPrev, fanPrev, climatePrev, ampPrev, accelerationPrev;
+	private double soc, speed, fan, climate, amp, acceleration, volt, consumption;
+	private double socPrev, speedPrev, fanPrev, climatePrev, ampPrev, accelerationPrev, voltPrev, consumptionPrev;
 	private double totalConsumption;
 	private double capacity;
 	private double kmpKWh;
@@ -174,6 +174,12 @@ public class CarData extends Observable {
 		
 		totalConsumption += amp * timeSinceLast / 3600000.0;
 		
+		if (speed != 0) {
+			consumption = (amp * volt / 1000.0) / speed;
+		} else {
+			consumption = 0;
+		}
+		
 		calculateClimatePower();
 		setChanged();
 	}
@@ -256,6 +262,19 @@ public class CarData extends Observable {
 		this.ampPrev = this.amp;
 		this.amp = amp;
 		setChanged();
+	}
+	
+	public void setVolt(double volt) {
+		this.voltPrev = this.volt;
+		this.volt = volt;
+		setChanged();
+	}
+	
+	public double getConsumption(boolean interpolate) {
+		if (interpolate) {
+			return lerp(consumptionPrev, consumption);
+		}
+		return consumption;
 	}
 	
 	public double getTotalConsumption() {
@@ -499,6 +518,7 @@ public class CarData extends Observable {
 	    	jo.put("amp", String.valueOf(getAmp(interpolate)));
 	    	jo.put("climate", String.valueOf(getCurrentClimateConsumption(interpolate)));
 	    	jo.put("capacity", String.valueOf(capacity));
+	    	jo.put("consumption", String.valueOf(consumption));
 	    } catch (JSONException e) {  
 	    	Log.e(TAG, e.toString());
 		}
