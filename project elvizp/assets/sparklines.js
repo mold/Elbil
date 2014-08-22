@@ -49,11 +49,7 @@
       .interpolate("basis");
 
 
-    var elevation_curve = d3.svg.line()
-      .x(function(d) { return x(d.distance/1000); })
-      .y(function(d) { return y_elevation(d.elevation); })
-      .interpolate("basis");
-
+  
 
     var progress = [];
     var isReady = false;
@@ -86,7 +82,7 @@
 
 		line_speed
         	.datum(progress)
-        	.attr("class", "progressLine")
+        	.attr("class", "speedLine")
         	.attr("id", "limit")
         	.attr("d", speed_curve);
 
@@ -138,14 +134,14 @@
         //Speed est.
     	svg.append("path")
         	.datum(data)
-        	.attr("class", "limit curr line")
+        	.attr("class", "speed est line")
         	.attr("id", "speed_est")
         	.attr("d", speed_curve);
 
         //Elevation est.
        svg.append("path")
         	.datum(data)
-        	.attr("class", "limit avg line")
+        	.attr("class", "elev line")
         	.attr("id", "elev_est")
         	.attr("d", elevation_curve);
 
