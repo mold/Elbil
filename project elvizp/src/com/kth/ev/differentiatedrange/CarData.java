@@ -175,7 +175,7 @@ public class CarData extends Observable {
 		totalConsumption += amp * timeSinceLast / 3600000.0;
 		
 		if (speed != 0) {
-			consumption = (amp * volt / 1000.0) / speed;
+			consumption = (-amp * volt / 1000.0) / speed;
 		} else {
 			consumption = 0;
 		}
