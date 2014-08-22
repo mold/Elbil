@@ -315,7 +315,7 @@
       var est_y = y.invert(point.y);
       // console.log("check: "+ travelled_distance +" m, "+e+" kwH/km, "+est_y+" kwH/km");
       consumed_energy += e * dist/1000;
-      progress.push({distance: travelled_distance, energy: e, est_energy: est_y, speed: data.speed, climate: data.climate, consumption: data.consumption});
+      progress.push({distance: travelled_distance, energy: data.consumption, est_energy: est_y, speed: data.speed, climate: data.climate});
     
       svg.select("#progressLine")
         .attr("d", energy_curve);
