@@ -5,6 +5,7 @@ package com.kth.ev.differentiatedrange;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.util.Scanner;
 
@@ -13,6 +14,9 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 
 import android.util.Log;
 
@@ -26,6 +30,7 @@ public class CarDataFetcher implements Runnable{
 
 	// For server data getting
 	private HttpClient client;
+	private HttpResponse httpResponse;
 	private String baseUrl = "http://localhost:8080/";
 	private BufferedReader in;
 
@@ -36,7 +41,17 @@ public class CarDataFetcher implements Runnable{
 		if (fromCar) { // Gonna get data from car, not from server
 			// TODO: Implement
 		} else { // Gonna get data from server
-			client = new DefaultHttpClient();
+			HttpParams httpParameters = new BasicHttpParams();
+			// Set the timeout in milliseconds until a connection is established.
+			// The default value is zero, that means the timeout is not used. 
+			int timeoutConnection = 3000;
+			HttpConnectionParams.setConnectionTimeout(httpParameters, timeoutConnection);
+			// Set the default socket timeout (SO_TIMEOUT) 
+			// in milliseconds which is the timeout for waiting for data.
+			int timeoutSocket = 3000;
+			HttpConnectionParams.setSoTimeout(httpParameters, timeoutSocket);
+
+			client = new DefaultHttpClient(httpParameters);
 		}
 	}
 
@@ -77,7 +92,9 @@ public class CarDataFetcher implements Runnable{
 				//carData.setClimate(Double.parseDouble(getServerData("heating0")));
 				//carData.setFan(Double.parseDouble(getServerData("heating1")));
 				carData.calculate();
+				Log.v("cardebug", "calculated");
 				carData.notifyObservers();
+				Log.v("cardebug", "notify");
 			} catch (NumberFormatException e) {
 				// Got null values or something
 				//Log.i("fetch", "Got null from server for some parameter");
@@ -88,6 +105,10 @@ public class CarDataFetcher implements Runnable{
 				Log.e("cardebug", "wrong value: " + e.getMessage());
 			} catch (HttpHostConnectException e) {
 				//Log.e("fetch", "Could not connect to server");
+				Log.v("cardebug", "http exception" + e.toString());
+				
+			} catch (SocketTimeoutException e) {
+				Log.e("cardebug", "socket timeout: " + e.toString());
 			} catch (Exception e) {
 				// Auto-generated catch block
 				e.printStackTrace();
@@ -101,8 +122,8 @@ public class CarDataFetcher implements Runnable{
 	private String getServerData(String type) throws Exception {
 		HttpGet request = new HttpGet();
 		request.setURI(new URI(baseUrl + type));
-		HttpResponse response = client.execute(request);
-		in = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+		httpResponse = client.execute(request);
+		in = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent()));
 		StringBuffer sb = new StringBuffer("");
 		String l = "";
 		String nl = System.getProperty("line.separator");
@@ -124,9 +145,12 @@ public class CarDataFetcher implements Runnable{
 	@Override
 	public void run() {
 		while(true){
+			Log.v("cardebug", "before fetch");
 			fetchData();
+			Log.v("cardebug", "after fetch");
 			try {
-				Thread.sleep(200);
+				Thread.sleep(50);
+				Log.v("cardebug", "after sleep");
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

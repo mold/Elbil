@@ -102,6 +102,7 @@ public class VizFragment extends Fragment implements Observer {
 			if (rdf.data == null) {
 				postToast("Unsuccessful data fetch.");
 			}
+			//runBrowserCommand("file:///sdcard/elvizp/viz.html");
 			runBrowserCommand("file:///android_asset/viz.html");
 			reset();
 			updateRoute(rdf.json_processed);
@@ -110,6 +111,7 @@ public class VizFragment extends Fragment implements Observer {
 		if (observable instanceof CarData) {
 			CarData cd = (CarData) observable;
 			updateProgress(cd);
+			Log.v("cardebug", "update vizfragment");
 		}
 	}
 

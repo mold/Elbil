@@ -227,6 +227,7 @@ public class PureDataHandler implements Runnable {
 			PdBase.sendFloat("amp", (float) carData.getAmp(true));
 			
 			try {
+				//Log.v("cardebug", "update pdhandler");
 				Thread.sleep(THREAD_SLEEP);
 			} catch (InterruptedException e) {
 				Log.e(TAG, e.getMessage());

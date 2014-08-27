@@ -72,6 +72,7 @@ public class ElvizpActivity extends FragmentActivity implements Observer {
 			CarData cd = (CarData) observable;
 			String battery = String.valueOf(cd.getSoc(true));
 			Log.d(TAG, battery);
+			Log.v("cardebug", "update elvizp activity");
 		}
 	}
 	

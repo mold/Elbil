@@ -8,7 +8,7 @@ import org.puredata.core.PdBase;
 import se.kth.ev.gmapsviz.R;
 
 import com.kth.ev.differentiatedrange.CarData;
-import com.kth.ev.differentiatedrange.gamification.AudioGame;
+import com.kth.ev.differentiatedrange.gamification.PdDataController;
 import com.kth.ev.differentiatedrange.puredata.Patch;
 import com.kth.ev.differentiatedrange.puredata.PureDataHandler;
 
@@ -39,7 +39,7 @@ public class AudiobahnFragment extends Fragment implements OnClickListener,
 	private static PureDataHandler pdHandler;
 	private static CarData carData;
 
-	AudioGame audioGame;
+	PdDataController pdDataController;
 
 	// View
 	View audiobahnView;
@@ -62,10 +62,10 @@ public class AudiobahnFragment extends Fragment implements OnClickListener,
 	public void onCreate(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		// Log.v(TAG, "onCreate");
-		audioGame = new AudioGame(getActivity());
+		pdDataController = new PdDataController(getActivity());
 		if (getActivity() instanceof ElvizpActivity) {
 			carData = ((ElvizpActivity) getActivity()).cd;
-			carData.addObserver(audioGame);
+			carData.addObserver(pdDataController);
 			pdHandler = new PureDataHandler(getActivity(), carData);
 			pdHandler.addReadyListener(new PureDataHandler.ReadyListener() {
 				@Override
@@ -118,13 +118,10 @@ public class AudiobahnFragment extends Fragment implements OnClickListener,
 		loadPatches();
 
 		// add some data graphs
-		container.addView(audioGame.getSpeedGraph());
-		container.addView(audioGame.getAccelerationGraph());
-		container.addView(audioGame.getAmpGraph());
-		container.addView(audioGame.getAmpSpeedGraph());
-		container.addView(audioGame.getAmpAccelerationGraph());
-		container.addView(audioGame.getAmpStateGraph());
-		container.addView(audioGame.getConsumptionGraph());
+		container.addView(pdDataController.getSpeedGraph());
+		container.addView(pdDataController.getAccelerationGraph());
+		container.addView(pdDataController.getAmpGraph());
+		container.addView(pdDataController.getConsumptionGraph());
 
 		// DataGraph graph;
 		// graph = new DataGraph(getActivity(), carData, DataGraph.DATA.SPEED);
@@ -136,7 +133,7 @@ public class AudiobahnFragment extends Fragment implements OnClickListener,
 		
 		updateSliderValues();
 		
-		audioGame.fineDriver.initView(v);
+		pdDataController.fineDriver.initView(v);
 	}
 
 	/**
@@ -215,14 +212,14 @@ public class AudiobahnFragment extends Fragment implements OnClickListener,
 
 		switch (v.getId()) {
 		case R.id.start_game:
-			if (audioGame.isRunning()) {
+			if (pdDataController.isRunning()) {
 				startGame.setText(R.string.start_game);
 				startGame.setTextColor(getResources().getColor(R.color.black));
-				audioGame.stop();
+				pdDataController.stop();
 			} else {
 				startGame.setText(R.string.stop_game);
 				startGame.setTextColor(getResources().getColor(R.color.red));
-				audioGame.start();
+				pdDataController.start();
 			}
 			break;
 		case R.id.toggle_sound:
@@ -243,7 +240,7 @@ public class AudiobahnFragment extends Fragment implements OnClickListener,
 	@Override
 	public void update(Observable observable, Object data) {
 		if (observable instanceof RouteDataFetcher) {
-			audioGame.setRouteData((RouteDataFetcher) observable);
+			pdDataController.setRouteData((RouteDataFetcher) observable);
 		}
 	}
 
