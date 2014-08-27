@@ -185,7 +185,7 @@
 #X floatatom 452 64 5 0 0 0 - - -, f 5;
 #X floatatom 452 112 5 0 0 0 - - -, f 5;
 #X obj 293 335 vsl 15 70 0 1 0 0 empty empty empty 0 -9 0 10 -262130
--1 -1 0 1;
+-1 -1 307 1;
 #X text 131 103 tempo;
 #X text 452 43 pitch/transpose;
 #X floatatom 302 273 5 0 0 0 - - -, f 5;
@@ -329,7 +329,7 @@ MAY NOT BE UP TO DATE;
 #X obj 1209 495 r c_transition_time;
 #X msg 1373 637 0;
 #X msg 199 646 0;
-#X obj 1421 -132 cnv 15 450 200 empty empty empty 20 12 0 14 -262130
+#X obj 1421 -129 cnv 15 450 200 empty empty empty 20 12 0 14 -262130
 -66577 0;
 #X obj 1576 -24 line;
 #X msg 1676 -56 0;
@@ -346,9 +346,9 @@ MAY NOT BE UP TO DATE;
 -1;
 #X obj 1448 35 s c_pos_bang;
 #X msg 1576 -57 1 5000;
-#X obj 1586 4 cnv 15 260 20 empty empty empty 20 12 0 14 -261304 -66577
+#X obj 1585 -4 cnv 15 260 40 empty empty empty 20 12 0 14 -261304 -66577
 0;
-#X text 1588 5 <- DISCONNECT HERE WHEN USING IN APP;
+#X text 1588 -1 <- DISCONNECT HERE WHEN USING IN APP;
 #X text 1477 -124 >>>>>>>>>> FOR TESTING/DEVELOPING <<<<<<<<<<<<<;
 #X text 1468 -76 warn;
 #X text 1467 14 encourage;
@@ -492,9 +492,9 @@ order for the state changes to work properly.;
 #X obj 529 147 cnv 15 150 24 empty empty empty 20 12 0 14 -203904 -66577
 0;
 #X obj 534 150 r c_transition_time;
-#X obj 1572 31 cnv 15 150 24 empty empty empty 20 12 0 14 -203904 -66577
+#X obj 1573 38 cnv 15 150 24 empty empty empty 20 12 0 14 -203904 -66577
 0;
-#X obj 1576 35 s c_transition_time;
+#X obj 1576 42 s c_transition_time;
 #X obj 29 -66 cnv 15 920 140 empty empty empty 20 12 0 14 -262134 -66577
 0;
 #X text 48 -35 This patch is used with the "Fine Driver" game.;
@@ -527,6 +527,7 @@ uses the right amount of energy to stay in the current mode.;
 #X obj 205 162 sub/wav ../wav/fine-driving.wav;
 #X obj 104 272 sub/wav ../wav/failure_1.wav;
 #X obj 105 135 sub/wav ../wav/success_2.wav;
+#X text 1620 14 (connect when testing in pd);
 #X connect 3 0 8 0;
 #X connect 4 0 5 0;
 #X connect 4 1 6 0;
@@ -591,6 +592,7 @@ uses the right amount of energy to stay in the current mode.;
 #X connect 56 0 31 0;
 #X connect 57 0 9 0;
 #X connect 59 0 61 0;
+#X connect 59 0 186 0;
 #X connect 60 0 59 0;
 #X connect 62 0 70 0;
 #X connect 63 0 60 0;
