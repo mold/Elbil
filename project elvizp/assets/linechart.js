@@ -33,13 +33,13 @@
 
     var energy_curve = d3.svg.line()
       .x(function(d) { return x(d.distance/1000); })
-      .y(function(d) { return y(d.consumption); }) 
+      .y(function(d) { return y(d.energy); }) 
       .interpolate("basis");
 
     var area = d3.svg.area()
       .interpolate("basis")
       .x(function(d) { return x(d.distance/1000); })
-      .y1(function(d) { return y(d.consumption); });
+      .y1(function(d) { return y(d.energy); });
 
     function LineChart(){
 
@@ -119,11 +119,11 @@
     consum_current_data[1].energy = curr_consump;
 
  
-    var new_top_y = Math.max(y.domain()[1], avg_consump-3);
-    //new_top_y = Math.max(new_top_y, curr_consump+0.1);
-    //y.domain([y.domain()[0], new_top_y]);
-	y.domain([-2, 10]);
-    
+    var new_top_y = Math.max(y.domain()[1],curr_consump+0.1);
+  //  new_top_y = Math.max(new_top_y, curr_consump+0.1);
+    //
+//    y.domain([y.domain()[0], new_top_y]);
+   y.domain([-0.5,1.2]);
     svg.select("#yaxis")
       .call(yAxis);
     
@@ -204,7 +204,7 @@
       
       svg.append("g")
         .attr("id", "yaxis")
-        .attr("class", "y axis")
+       .attr("class", "y axis")
         .call(yAxis)
         .append("text")
         .attr("transform", "rotate(-90)")
@@ -315,7 +315,7 @@
       var est_y = y.invert(point.y);
       // console.log("check: "+ travelled_distance +" m, "+e+" kwH/km, "+est_y+" kwH/km");
       consumed_energy += e * dist/1000;
-      progress.push({distance: travelled_distance, energy: e, est_energy: est_y, speed: data.speed, climate: data.climate, consumption: data.consumption});
+      progress.push({distance: travelled_distance, energy: data.consumption, est_energy: est_y, speed: data.speed, climate: data.climate});
     
       svg.select("#progressLine")
         .attr("d", energy_curve);
