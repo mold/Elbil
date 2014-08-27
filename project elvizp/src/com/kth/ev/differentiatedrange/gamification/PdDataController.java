@@ -261,9 +261,7 @@ public class PdDataController implements Observer {
 										* (routeConsumptions[routeStepIndex] - prevRouteConsumption);
 								// PdBase.sendFloat("consumption",
 								// (float) currentConsumption);
-								double carConsumption = carData
-										.getTotalConsumption()
-										- prevConsumption;
+								double carConsumption = carData.getConsumption(false) - prevConsumption;
 								// Log.v("pdgame", "car consumption: " +
 								// carConsumption + ", consumption: "
 								// + currentConsumption + ", distance: " +
