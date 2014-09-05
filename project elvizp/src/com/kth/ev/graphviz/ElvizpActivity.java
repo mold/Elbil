@@ -28,7 +28,7 @@ import android.view.ViewGroup;
  * @author marothon
  *  
  */             
-public class ElvizpActivity extends FragmentActivity implements Observer {
+public class ElvizpActivity extends FragmentActivity{
 	protected static final String TAG = "ElvizpActivity";
 	public CarData cd;
 	CarDataFetcher cdf;
@@ -44,8 +44,7 @@ public class ElvizpActivity extends FragmentActivity implements Observer {
 		cd = new CarData();
 		
 		//Makes this activity listen for change in the activity
-		cd.addObserver(this);
-        mp = new ElvizpAdapter(getSupportFragmentManager(), cd, this);
+		mp = new ElvizpAdapter(getSupportFragmentManager(), cd, this);
 
         //Setup the swipe interaction.
         vp = (ViewPager)findViewById(R.id.pager);
@@ -60,20 +59,6 @@ public class ElvizpActivity extends FragmentActivity implements Observer {
 		cdf = new CarDataFetcher(cd, false);
 		new Thread(cdf).start();
 		
-	}
-
-	/**
-	 * Simply prints the current car battery level every time
-	 * there is a change in the CarData object.
-	 */
-	@Override
-	public void update(Observable observable, Object data) {
-		if(observable instanceof CarData){
-			CarData cd = (CarData) observable;
-			String battery = String.valueOf(cd.getSoc(true));
-			Log.d(TAG, battery);
-			Log.v("cardebug", "update elvizp activity");
-		}
 	}
 	
 	/**

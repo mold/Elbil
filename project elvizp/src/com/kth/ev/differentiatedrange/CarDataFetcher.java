@@ -88,13 +88,13 @@ public class CarDataFetcher implements Runnable{
 				carData.setVolt(Double.parseDouble(getServerData("volt")));*/
 				double speed = carData.getSpeed(false);
 				double amp = carData.getAmp(false);
-				Log.v("cardebug", "speed: " + speed + ", amp: " + amp);
+				//Log.v("cardebug", "speed: " + speed + ", amp: " + amp);
 				//carData.setClimate(Double.parseDouble(getServerData("heating0")));
 				//carData.setFan(Double.parseDouble(getServerData("heating1")));
 				carData.calculate();
-				Log.v("cardebug", "calculated");
+				//Log.v("cardebug", "calculated");
 				carData.notifyObservers();
-				Log.v("cardebug", "notify");
+				//Log.v("cardebug", "notify");
 			} catch (NumberFormatException e) {
 				// Got null values or something
 				//Log.i("fetch", "Got null from server for some parameter");
@@ -117,7 +117,7 @@ public class CarDataFetcher implements Runnable{
 				Log.e("cardebug", "wrong value?: " + e.toString());
 			}
 		}
-	}
+	}   
 
 	private String getServerData(String type) throws Exception {
 		HttpGet request = new HttpGet();
@@ -131,7 +131,7 @@ public class CarDataFetcher implements Runnable{
 			sb.append(l + nl);
 		}
 		in.close();
-		Log.i("fetch", type + ": " + sb.toString());
+		Log.i("fetch", type + ": " + sb.toString());	
 		return sb.toString();
 	}
 
@@ -139,18 +139,18 @@ public class CarDataFetcher implements Runnable{
 		return carData;
 	}
 
-	/**
+	/** 
 	 * Fetches data every 500ms.
 	 */
 	@Override
 	public void run() {
 		while(true){
-			Log.v("cardebug", "before fetch");
+			//Log.v("cardebug", "before fetch");
 			fetchData();
-			Log.v("cardebug", "after fetch");
+			//Log.v("cardebug", "after fetch");
 			try {
-				Thread.sleep(50);
-				Log.v("cardebug", "after sleep");
+				Thread.sleep(500);
+				//Log.v("cardebug", "after sleep");
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

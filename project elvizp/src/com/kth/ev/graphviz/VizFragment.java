@@ -9,6 +9,7 @@ import com.google.gson.Gson;
 import com.kth.ev.differentiatedrange.CarData;
 
 import android.annotation.SuppressLint;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -23,7 +24,7 @@ import android.widget.Toast;
 
 /**
  * Fragment that contains a WebView for rendering graphs using the d3.js
- * framework. 
+ * framework.
  * 
  * @author marothon
  * 
@@ -32,8 +33,9 @@ import android.widget.Toast;
 public class VizFragment extends Fragment implements Observer {
 	private static final String TAG = "VizFragment";
 	private CarData cd;
-	private WebView browser;  
-  
+	private WebView browser;
+	private RouteProgress rp;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
@@ -44,7 +46,7 @@ public class VizFragment extends Fragment implements Observer {
 			Bundle bundle) {
 		View v = inflater.inflate(R.layout.fragment_d3, container, false);
 		return v;
-	}    
+	}
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
@@ -54,7 +56,7 @@ public class VizFragment extends Fragment implements Observer {
 
 			browser.setVerticalScrollBarEnabled(false);
 			browser.setHorizontalScrollBarEnabled(false);
- 
+
 			if (getActivity() instanceof ElvizpActivity) {
 				Log.d(TAG, "Adding javascript interface");
 				browser.addJavascriptInterface(cd, "CarData");
@@ -62,14 +64,18 @@ public class VizFragment extends Fragment implements Observer {
 
 			browser.setWebChromeClient(new WebChromeClient());
 			browser.getSettings().setJavaScriptEnabled(true);
- 
-			//Disable scrolling, but also disables javascript events!
+
+			// Disable scrolling, but also disables javascript events!
 			browser.setOnTouchListener(new OnTouchListener() {
 				@Override
 				public boolean onTouch(View v, MotionEvent event) {
 					return (event.getAction() == MotionEvent.ACTION_MOVE);
 				}
 			});
+
+			if (Build.VERSION.SDK_INT >= 11) {
+				browser.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+			}
 
 			runBrowserCommand("file:///android_asset/viz.html");
 		}
@@ -90,44 +96,71 @@ public class VizFragment extends Fragment implements Observer {
 	/**
 	 * Listens for RouteDataFetchers and CarData objects.
 	 * 
-	 * @param data 
+	 * @param data
 	 *            optional data from the observable.
 	 * @param observable
 	 *            The observable object.
-	 */                               
+	 */
 	@Override
 	public void update(Observable observable, Object data) {
-		if (observable instanceof RouteDataFetcher) {
-			RouteDataFetcher rdf = (RouteDataFetcher) observable;
-			if (rdf.data == null) {
-				postToast("Unsuccessful data fetch.");
+		synchronized (this) {
+			if (observable instanceof RouteDataFetcher) {
+				RouteDataFetcher rdf = (RouteDataFetcher) observable;
+				if (rdf.data == null) {
+					postToast("Unsuccessful data fetch.");
+				}
+				// runBrowserCommand("file:///sdcard/elvizp/viz.html");
+				runBrowserCommand("file:///android_asset/viz.html");
+				// reset();
+				updateRoute(rdf.json_processed);
+				updateEstimation(cd, (RouteDataFetcher) observable);
+
+				// Attach RouteProgress
+				rp = new RouteProgress(getActivity(), rdf.data);
+				rp.addObserver(this);
+				cd.addObserver(rp);
+				rp.start();
 			}
-			//runBrowserCommand("file:///sdcard/elvizp/viz.html");
-			runBrowserCommand("file:///android_asset/viz.html");
-			reset();
-			updateRoute(rdf.json_processed);
-			updateEstimation(cd, (RouteDataFetcher) observable);
-		}
-		if (observable instanceof CarData) {
-			CarData cd = (CarData) observable;
-			updateProgress(cd);
-			Log.v("cardebug", "update vizfragment");
+			// if (observable instanceof CarData) {
+			// CarData cd = (CarData) observable;
+			// updatePr/**
+			// * Updates visualization with current CarData
+			// */
+			// private void updateProgress(CarData cd) {
+			// runBrowserCommand("javascript:updateData(" + cd.toJson(true) +
+			// ")");
+			// }ogress(cd);
+			// Log.v("cardebug", "update vizfragment");
+			// }
+			if (observable instanceof RouteProgress) {
+				synchronized (rp) {
+					addProgress(rp.currentDistance(), rp.currentConsumption());
+				}
+			}
 		}
 	}
 
-	/**
-	 * Resets the visualization
-	 */
-	private void reset() {
-		runBrowserCommand("javascript:reset()");
-	}
+	// /**
+	// * Resets the visualization
+	// */
+	// private void reset() {
+	// runBrowserCommand("javascript:reset()");
+	// }
 
 	/**
-	 * Updates visualization with current CarData
+	 * Adds a specific data point to the visualization
 	 */
-	private void updateProgress(CarData cd) {
-		runBrowserCommand("javascript:updateData(" + cd.toJson(true) + ")");
+	private void addProgress(double distance, double consumption) {
+		runBrowserCommand("javascript:addProgress(" + distance + ", "
+				+ consumption + ")");
 	}
+
+	// /**
+	// * Updates visualization with current CarData
+	// */
+	// private void updateProgress(CarData cd) {
+	// runBrowserCommand("javascript:updateData(" + cd.toJson(true) + ")");
+	// }
 
 	/**
 	 * Loads a json encoded step file (fetched from google api) into the

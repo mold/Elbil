@@ -1,7 +1,7 @@
 (function() {
     var margin = {top: 10, right: 15, bottom: 35, left: 50},
     width = window.innerWidth - 15 - margin.left - margin.right,
-    height = 0.1 * window.innerHeight - margin.top - margin.bottom;
+    height = 0.14 * window.innerHeight - margin.top - margin.bottom;
     
     var svg = d3.select("body")
     	.append("svg")
@@ -16,10 +16,10 @@
       .range([0, width]);
 
     var y = d3.scale.linear()
-      .range([0, height]);
+      .range([height, 0]);
     
     var y_elevation = d3.scale.linear()
-      .range([0, height]);
+      .range([height, 0]);
     
     var xAxis = d3.svg.axis()
       .scale(x)
@@ -35,7 +35,7 @@
 
     var elevation_curve = d3.svg.line()
       .x(function(d) { return x(d.distance/1000); })
-      .y(function(d) { return y(d.elevation); }) 
+      .y(function(d) { return y_elevation(d.elevation); }) 
       .interpolate("basis");
 
     var elevation_area = d3.svg.area()
@@ -48,26 +48,16 @@
       .y(function(d) { return y(d.speed); }) 
       .interpolate("basis");
 
-
-  
-
     var progress = [];
     var isReady = false;
 
-    function SparkLines(){
-
-    }
+    function SparkLines(){}
 
   	SparkLines.prototype.ready = function(){
   		return isReady;
   	}
 
-  	/*
-
-	
-	
-  	*/
-  	SparkLines.prototype.updateProgress = function(progress){
+    SparkLines.prototype.updateProgress = function(progress){
 
   		//Rescale y-axis
   		var max_y = Math.max(y.domain()[1], progress[progress.length-1].speed + 10);
@@ -76,26 +66,24 @@
   		if(progress[progress.length-1].speed < min_y)
   			min_y = progress[progress.length-1].speed;
 	
-		console.log("domain: "+min_y+" ->" + max_y);
- 
-		y.domain([min_y, max_y]);
+  		//console.log("domain: "+min_y+" ->" + max_y);
+   
+  		y.domain([min_y, max_y]);
 
-		line_speed
-        	.datum(progress)
-        	.attr("class", "speedLine")
-        	.attr("id", "limit")
-        	.attr("d", speed_curve);
+  		line_speed
+          	.datum(progress)
+          	.attr("class", "speedLine")
+          	.attr("id", "limit")
+          	.attr("d", speed_curve);
 
         rescale();
-
-
   	}
 
   	function rescale() {
   		svg.select("#speed_est")
   			.attr("d", speed_curve);
 
-		svg.select("#elev_est")
+		  svg.select("#elev_est")
   			.attr("d", elevation_curve);
 
   		line_speed
@@ -103,6 +91,7 @@
   	}
 
   	SparkLines.prototype.setRoute = function(values){
+      //console.log("sparked: NEW VALUES");
   		var total_distance = d3.sum(values, function(d) { return d.distance.value/1000; });
   		
   		x.domain([0, total_distance]);
@@ -125,7 +114,7 @@
     		elem.speed = 3.6 * values[i].distance.value/values[i].duration.value;
     		dist += values[i].distance.value;
     		data.push(elem); 
-    		console.log("elem"+i+": distance: "+elem.distance+", speed: "+elem.speed+", elevation: "+elem.elevation);
+    		//console.log("elem"+i+": distance: "+elem.distance+", speed: "+elem.speed+", elevation: "+elem.elevation);
     	
     	}
 

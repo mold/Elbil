@@ -41,6 +41,7 @@ public class APIDataTypes {
 		public Location end;
 		
 		public double slope;
+		public double consumption;
 		
 		public void updateSlope(double elevA, double elevB){
 			slope = (elevB - elevA)/distance.value;

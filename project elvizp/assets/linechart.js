@@ -287,6 +287,35 @@
 
   /*
 
+    Semi realtime update of energy consumption
+
+  */
+  LineChart.prototype.addProgress = function(distance, consumption){
+    evenergy.reset();
+    consumption = 0.25;
+    var point = find_point_from_x(distance, est_path.node());
+    var est_y = y.invert(point.y);
+    // console.log("check: "+ travelled_distance +" m, "+e+" kwH/km, "+est_y+" kwH/km");
+    progress.push({distance: distance, energy: consumption, est_energy: est_y});
+  
+    svg.select("#progressLine")
+      .attr("d", energy_curve);
+   
+    svg.select("#clip-below path")
+       .attr("d", area.y0(height));
+
+     svg.select("#clip-above path")
+       .attr("d", area.y0(0));
+
+     svg.select(".area.above")
+       .attr("d", area.y0(function(d) { return y(d.est_energy);}));
+
+     svg.select(".area.below")
+       .attr("d", area);
+  }
+
+  /*
+
     Realtime update of energy consumption.
 
   */

@@ -47,7 +47,7 @@ public class RoutePickFragment extends Fragment {
 				.inflate(R.layout.fragment_routepick, container, false);
 		return v;
 	}
-
+ 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
@@ -57,8 +57,8 @@ public class RoutePickFragment extends Fragment {
 		final AutoCompleteTextView to = (AutoCompleteTextView) getView()
 				.findViewById(R.id.to);
  
-		from.setText("Lindstedtsvägen 9, Stockholm, Sweden");
-		to.setText("Blackeberg, Sweden");
+		from.setText("Lindstedtsvägen 3, Stockholm, Sweden");
+		to.setText("Lindstedtsvägen 11, Stockholm, Sweden");
 		
 		OnKeyListener okl = new OnKeyListener() {
 			@Override
