@@ -34,6 +34,7 @@ public class ElvizpActivity extends FragmentActivity{
 	CarDataFetcher cdf;
 	ViewPager vp;
 	ElvizpAdapter mp;
+	GPSHolder gps;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +59,10 @@ public class ElvizpActivity extends FragmentActivity{
 		//Starts a separate thread for fetching the data
 		cdf = new CarDataFetcher(cd, false);
 		new Thread(cdf).start();
+		
+		//Starts listening for GPS location.
+		gps = new GPSHolder(this);
+		gps.start();
 		
 	}
 	
@@ -124,7 +129,7 @@ public class ElvizpActivity extends FragmentActivity{
     /**
      * Adds all fragments (which are observers) as an observer
      * to the given observable
-     */
+     */ 
     public void relayObservable(Observable o){
     	for(Fragment f :getSupportFragmentManager().getFragments()){
     		if(f instanceof Observer){

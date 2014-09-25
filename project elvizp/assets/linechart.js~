@@ -292,6 +292,7 @@
   */
   LineChart.prototype.addProgress = function(distance, consumption){
     evenergy.reset();
+    consumption = 0.25;
     var point = find_point_from_x(distance, est_path.node());
     var est_y = y.invert(point.y);
     // console.log("check: "+ travelled_distance +" m, "+e+" kwH/km, "+est_y+" kwH/km");

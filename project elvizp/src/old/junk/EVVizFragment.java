@@ -41,7 +41,7 @@ public class EVVizFragment extends Fragment implements Observer {
 			int route_index = 0;
 			Step current_step;
 			ee = cd.getEvEnergy();
-			while (route_index < rdf.data.size()) {
+			while (route_index < rdf.getCombinedRoute().size()) {
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
@@ -54,7 +54,7 @@ public class EVVizFragment extends Fragment implements Observer {
 				// double lin_acc = (speed - last_speed)/dt;
 				double dist = (last_speed + speed) / 2.0f * dt;// meters
 				travelled_distance += dist;
-				current_step = rdf.data.get(route_index);
+				current_step = rdf.getCombinedRoute().get(route_index);
 
 				if (travelled_distance / 1000.0f > distance_for_steps[route_index]) {
 					route_index++;
@@ -138,27 +138,27 @@ public class EVVizFragment extends Fragment implements Observer {
 	}
 
 	public void addEvData(CarData cd, RouteDataFetcher rdf) {
-		if(rdf.data.size() < 1)
+		if(rdf.getCombinedRoute().size() < 1)
 			return;
 		
 		int factors = 0;
 		factors |= CarData.SLOPE | CarData.TIME | CarData.SPEED;
-		double[] consumption = cd.consumptionOnRoute(rdf.data, factors);
+		double[] consumption = cd.consumptionOnRoute(rdf.getCombinedRoute(), factors);
 		factors = 0;
 		factors |= CarData.TIME | CarData.SPEED;
-		double[] consumption2 = cd.consumptionOnRoute(rdf.data, factors);
+		double[] consumption2 = cd.consumptionOnRoute(rdf.getCombinedRoute(), factors);
 
 		distance_for_steps = new float[consumption.length];
 		float[] data2 = new float[consumption.length];
 		float[] data3 = new float[consumption2.length];
 
-		if (rdf.data.size() > 0) {
-			double xval = rdf.data.get(0).distance.value;
+		if (rdf.getCombinedRoute().size() > 0) {
+			double xval = rdf.getCombinedRoute().get(0).distance.value;
 			for (int i = 0; i < consumption.length; i++) {
 				distance_for_steps[i] = (float) (xval / 1000.0f);
 				data2[i] = (float) consumption[i];
 				data3[i] = (float) consumption2[i];
-				xval += rdf.data.get(i).distance.value;
+				xval += rdf.getCombinedRoute().get(i).distance.value;
 			}
 			evg.add_data("Consumption", distance_for_steps, data2);
 			evg.add_data("Consumpton (\"no slope\")", distance_for_steps,

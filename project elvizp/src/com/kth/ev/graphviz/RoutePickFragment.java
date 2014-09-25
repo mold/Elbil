@@ -1,11 +1,15 @@
 package com.kth.ev.graphviz;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.google.api.client.json.JsonParser;
+import com.google.gson.JsonObject;
 
 import se.kth.ev.gmapsviz.R;
 import android.content.Context;
@@ -47,7 +51,7 @@ public class RoutePickFragment extends Fragment {
 				.inflate(R.layout.fragment_routepick, container, false);
 		return v;
 	}
- 
+
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
@@ -56,23 +60,25 @@ public class RoutePickFragment extends Fragment {
 				.findViewById(R.id.from);
 		final AutoCompleteTextView to = (AutoCompleteTextView) getView()
 				.findViewById(R.id.to);
- 
+
 		from.setText("Lindstedtsvägen 3, Stockholm, Sweden");
-		to.setText("Lindstedtsvägen 11, Stockholm, Sweden");
-		
+		to.setText("Blackeberg, Sweden");
+
 		OnKeyListener okl = new OnKeyListener() {
 			@Override
 			public boolean onKey(View v, int keyCode, KeyEvent event) {
 				if ((event.getAction() == KeyEvent.ACTION_DOWN)
 						&& (keyCode == KeyEvent.KEYCODE_ENTER)) {
-					InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(getActivity().INPUT_METHOD_SERVICE);
+					InputMethodManager imm = (InputMethodManager) getActivity()
+							.getSystemService(
+									getActivity().INPUT_METHOD_SERVICE);
 					imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
 					return true;
 				}
 				return false;
 			}
 		};
-		
+
 		from.setOnKeyListener(okl);
 		to.setOnKeyListener(okl);
 		from.setAdapter(new PlacesAutoCompleteAdapter(getActivity(),
@@ -91,7 +97,7 @@ public class RoutePickFragment extends Fragment {
 						.findViewById(R.id.from);
 				AutoCompleteTextView to = (AutoCompleteTextView) getView()
 						.findViewById(R.id.to);
-				// Log.d(TAG, 
+				// Log.d(TAG,
 				// "Clicked for query "+from.getText().toString()+" to "+to.getText().toString());
 				RouteDataFetcher rdf = new RouteDataFetcher(from.getText()
 						.toString(), to.getText().toString());
@@ -107,6 +113,53 @@ public class RoutePickFragment extends Fragment {
 							.getApplicationContext(), text, duration);
 					toast.show();
 					Log.e(TAG, text.toString());
+				}
+			}
+		});
+
+		Button use_gps = (Button) getView().findViewById(R.id.use_gps);
+		use_gps.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// Check that we have a location to use
+				AutoCompleteTextView from = (AutoCompleteTextView) getView()
+						.findViewById(R.id.from);
+				ElvizpActivity act = (ElvizpActivity) getActivity();
+
+				if (!act.gps.hasLocation()) {
+					postToast("No GPS location available");
+					return;
+				}
+
+				try {
+					String georevdata = GoogleAPIQueries
+							.requestReverseGeolocation(
+									act.gps.getCurrentLocation()).get();
+					// JsonParser parser = APIRequestTask.JSON_FACTORY
+					// .createJsonParser(georevdata);
+					JSONObject obj = new JSONObject(georevdata);
+					// parser.parse(obj);
+
+					String address = obj.getJSONArray("results")
+							.getJSONObject(0).getString("formatted_address");
+					Log.d(TAG, address);
+					from.setText(address);
+				} catch (InterruptedException e) {
+					Log.d(TAG,
+							"Something stopped us from getting the geolocation");
+					e.printStackTrace();
+				} catch (ExecutionException e) {
+					Log.d(TAG, "Something went wrong, using raw gps location.");
+					from.setText(act.gps.getCurrentLocation().getLatitude()
+							+ "," + act.gps.getCurrentLocation().getLongitude());
+					e.printStackTrace();
+				} catch (JSONException e) {
+					Log.d(TAG,
+							"Something went wrong with the json parsing. Using raw gps location");
+					from.setText(act.gps.getCurrentLocation().getLatitude()
+							+ "," + act.gps.getCurrentLocation().getLongitude());
+					e.printStackTrace();
 				}
 			}
 		});
@@ -138,6 +191,15 @@ public class RoutePickFragment extends Fragment {
 				}
 			}
 		});
+	}
+
+	private void postToast(String toast_text) {
+		CharSequence text = toast_text;
+		int duration = Toast.LENGTH_SHORT;
+		Toast toast = Toast.makeText(getActivity().getApplicationContext(),
+				text, duration);
+		toast.show();
+
 	}
 
 	/**
@@ -225,7 +287,7 @@ public class RoutePickFragment extends Fragment {
 					// Assign the data to the FilterResults
 					results.values = resultList;
 					results.count = resultList.size();
-					
+
 					if (results != null && results.count > 0) {
 						notifyDataSetChanged();
 					} else {

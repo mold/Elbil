@@ -2,6 +2,8 @@ package com.kth.ev.graphviz;
 
 import java.util.List;
 
+import android.location.Location;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.PolyUtil;
 
@@ -13,10 +15,11 @@ import com.google.maps.android.PolyUtil;
  */
 public class GoogleAPIQueries {
 	//private static final String TAG = "GoogleAPIQueries";
-	public static final String elevation_url = "https://maps.googleapis.com/maps/api/elevation/json";
-	public static final String directions_url = "https://maps.googleapis.com/maps/api/directions/json";
-	public static final String places_url = "https://maps.googleapis.com/maps/api/place";
-
+	private static final String base_url = "https://maps.googleapis.com/maps/api/";
+	public static final String elevation_url = base_url+ "elevation/json";
+	public static final String directions_url = base_url+"directions/json";
+	public static final String places_url = base_url+"place";
+	public static final String geocode_url = base_url+"geocode/json";
 	public static void setKey(String key) {
 		APIRequestTask.setKey(key);
 	}
@@ -114,6 +117,32 @@ public class GoogleAPIQueries {
 		return task; 
 	}
 
+	/**
+	 * Finds out the corresponding street address from a given GPS location (according to the Google API).
+	 * 
+	 * @param location
+	 * @return
+	 */
+	public static APIRequestTask requestReverseGeolocation(Location location){
+		StringBuilder sb = new StringBuilder();
+		sb.append(location.getLatitude());
+		sb.append(", ");
+		sb.append(location.getLongitude());
+		
+		URLParameter latlng = new URLParameter("latlng",sb.toString());
+		APIRequestTask task = new APIRequestTask(geocode_url);
+		URLParameter res_type = new URLParameter("result_type","street_address");
+
+		task.execute(latlng, res_type);
+		return task; 
+	}
+	
+	/**
+	 * Fetches autocompletion data based on the given input String.
+	 * 
+	 * @param input
+	 * @return
+	 */
 	public static APIRequestTask requestAutocomplete(String input) {
 		String url = places_url + "/autocomplete" + "/json";
 		URLParameter input_param = null;

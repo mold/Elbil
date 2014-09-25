@@ -221,13 +221,13 @@ public class PdDataController implements Observer {
 					if (distanceTraveledStart == -1) {
 						distanceTraveledStart = distance;
 						routeConsumptions = carData.consumptionOnRoute(
-								routeData.data, CarData.SPEED | CarData.TIME
+								routeData.getCombinedRoute(), CarData.SPEED | CarData.TIME
 										| CarData.SLOPE | CarData.CLIMATE);
 						prevConsumption = carData.getTotalConsumption();
 						Log.v("pdgame",
-								"route started: " + routeData.data.size());
-					} else if (routeStepIndex < routeData.data.size()) {
-						Step step = routeData.data.get(routeStepIndex);
+								"route started: " + routeData.getCombinedRoute().size());
+					} else if (routeStepIndex < routeData.getCombinedRoute().size()) {
+						Step step = routeData.getCombinedRoute().get(routeStepIndex);
 						if (step != null) {
 							double distanceSum = routeDistanceTraveled
 									+ step.distance.value;
@@ -237,9 +237,9 @@ public class PdDataController implements Observer {
 							// Log.v("pdgame", "distance travelled: " +
 							// (distance - distanceTravelledStart));
 							if (distance - distanceTraveledStart > distanceSum
-									&& routeStepIndex < routeData.data.size()) {
+									&& routeStepIndex < routeData.getCombinedRoute().size()) {
 								routeStepIndex++;
-								step = routeData.data.get(routeStepIndex);
+								step = routeData.getCombinedRoute().get(routeStepIndex);
 								routeDistanceTraveled = distanceSum;
 								distanceSum += step.distance.value;
 								prevConsumption = carData.getTotalConsumption();
@@ -247,7 +247,7 @@ public class PdDataController implements Observer {
 										+ routeDistanceTraveled + "/"
 										+ (distance - distanceTraveledStart));
 							}
-							if (routeStepIndex >= routeData.data.size() - 1) {
+							if (routeStepIndex >= routeData.getCombinedRoute().size() - 1) {
 								// interrupt drive
 							} else if (routeStepIndex >= 0) {
 								double prevRouteConsumption = 0;

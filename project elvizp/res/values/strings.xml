@@ -14,5 +14,7 @@
 	<string name="start_game">Start audio game</string><string name="stop_game">Stop audio game</string>
 	<string name="show_on_gmaps">Show on Google Maps</string>
 	<string name="fine_driver_title">FINE DRIVER</string>
+	<string name="use_gps">Use GPS</string>
+	
 	
 </resources>

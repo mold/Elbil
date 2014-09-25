@@ -35,6 +35,7 @@ public class VizFragment extends Fragment implements Observer {
 	private CarData cd;
 	private WebView browser;
 	private RouteProgress rp;
+	private TestRouteProgress trp;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -106,20 +107,28 @@ public class VizFragment extends Fragment implements Observer {
 		synchronized (this) {
 			if (observable instanceof RouteDataFetcher) {
 				RouteDataFetcher rdf = (RouteDataFetcher) observable;
-				if (rdf.data == null) {
+				if (rdf.getCombinedRoute() == null) {
 					postToast("Unsuccessful data fetch.");
 				}
 				// runBrowserCommand("file:///sdcard/elvizp/viz.html");
 				runBrowserCommand("file:///android_asset/viz.html");
 				// reset();
-				updateRoute(rdf.json_processed);
+				updateRoute(rdf.data_combined_json);
 				updateEstimation(cd, (RouteDataFetcher) observable);
-
 				// Attach RouteProgress
-				rp = new RouteProgress(getActivity(), rdf.data);
+				// For testing with real GPS
+				rp = new RouteProgress(((ElvizpActivity) getActivity()).gps, rdf.getCombinedRoute());
 				rp.addObserver(this);
 				cd.addObserver(rp);
-				rp.start();
+				
+				//For testing locally
+				//trp = new TestRouteProgress((ElvizpActivity) getActivity(), rdf);
+				//rp = trp.getProgress();
+				rp.addObserver(this);
+				cd.addObserver(rp);
+				
+				new Thread(trp).start();
+				//rp.start();
 			}
 			// if (observable instanceof CarData) {
 			// CarData cd = (CarData) observable;
@@ -188,12 +197,12 @@ public class VizFragment extends Fragment implements Observer {
 	 */
 	private void updateEstimation(CarData cd2, RouteDataFetcher observable) {
 		RouteDataFetcher rdf = (RouteDataFetcher) observable;
-		if (rdf.data == null || rdf.data.size() < 1 || browser == null)
+		if (rdf.getCombinedRoute() == null || rdf.getCombinedRoute().size() < 1 || browser == null)
 			return;
 
 		int factors = 0;
 		factors |= CarData.SLOPE | CarData.TIME | CarData.SPEED;
-		final String consumption = cd.consumptionOnRouteJSON(rdf.data, factors);
+		final String consumption = cd.consumptionOnRouteJSON(rdf.getCombinedRoute(), factors);
 		runBrowserCommand("javascript:updateEstimation(" + consumption + ")");
 	}
 

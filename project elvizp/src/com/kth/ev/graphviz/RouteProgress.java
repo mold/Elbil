@@ -29,88 +29,58 @@ import com.kth.ev.graphviz.APIDataTypes.Step;
  * while the estimated distance & energy consumption of every step is relayed
  * further using the Observable extension.
  * 
+ * Will only setChanged when the car has actually moved forward (ie.
+ * currentDistance() is greater than before.
+ * 
  * @author marothon
  *
  */
 public class RouteProgress extends Observable implements Observer {
 	protected static final String TAG = "RouteProgress";
-	List<Step> route;
-	int current, samples;
-	double travelled_distance;
-	double intermediate_distance;
-	double consumed_energy;
-	double[] energy_per_step;
-	Location current_location, last_location;
-
-	private Activity c;
-	private LocationManager locationManager;
+	private List<Step> route;
+	private int current, samples;
+	private double travelled_distance;
+	private double intermediate_distance;
+	private double consumed_energy;
+	private double[] energy_per_step;
+	private Location last_location;
 	private double avg_current_consumption;
+	private GPSHolder gps;
 
-	// Simple updates current_location.
-	LocationListener locationListener = new LocationListener() {
-		@Override
-		public void onLocationChanged(Location loc) {
-			synchronized (this) {
-				current_location = loc;
-				Log.v(TAG, loc.getLatitude() + ", " + loc.getLongitude());
-			}
-		}
-
-		// Unused methods
-		public void onProviderDisabled(String provider) {}
-		public void onProviderEnabled(String provider) {}
-		public void onStatusChanged(String provider, int status, Bundle extras) {}
-	};
-
-	public RouteProgress(Activity c, List<Step> route) {
+	public RouteProgress(GPSHolder gps, List<Step> route) {
 		this.route = route;
 		this.current = 0;
 		this.energy_per_step = new double[route.size()];
 		this.travelled_distance = 0;
-		this.c = c;
-	}  
-
-	public void start() {
-		c.runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				locationManager = (LocationManager) c
-						.getSystemService(Context.LOCATION_SERVICE);
-				locationManager.requestLocationUpdates(
-						LocationManager.GPS_PROVIDER, 500, 15.0f,
-						locationListener);
-				started = true;
-			}
-		});
+		this.gps = gps;
 	}
-
-	private boolean started = false;
 
 	@Override
 	public void update(Observable observable, Object data) {
-		if (!started) {
-			return;
-		}
-
 		if (observable instanceof CarData) {// then take current consumption and
 											// add to current sum.
 			consumed_energy += ((CarData) observable).getConsumption(true);
 			samples++;
-			updateIndex();
+			if(gps.hasLocation()){
+				updateDistance(gps.getCurrentLocation());
+			}
 		}
 	}
 
 	/**
-	 * Estimates the current distance traveled using the GPS position to measure the 
-	 * distances between the closest step's positional data.
+	 * Estimates the current distance traveled using the GPS position to measure
+	 * the distances between the closest step's positional data.
 	 */
-	private void updateIndex() {
-		if (current >= route.size() || current_location == null
-				|| current_location == last_location) {
-			return;
-		}
+	public void updateDistance(Location gps_location) {
+		synchronized (this) {
+			double od = currentDistance();
+			double oid = intermediate_distance;
 
-		synchronized (locationListener) {
+			if (current >= route.size() || gps_location == null
+					|| gps_location == last_location) {
+				Log.e(TAG, "Cannot compute new index.");
+				return;
+			}
 
 			Step currentStep = route.get(current);
 			Location a = new Location("");
@@ -122,10 +92,15 @@ public class RouteProgress extends Observable implements Observer {
 			b.setLongitude(currentStep.end.lng);
 
 			// checks if we should move along the route
-			if (current_location.distanceTo(a) > current_location
-					.distanceTo((b))) {// then we have moved
-										// along the route
+			if (gps_location.distanceTo(a) > gps_location.distanceTo((b))) {// then
+																			// we
+																			// have
+																			// moved
+																			// along
+																			// the
+																			// route
 				synchronized (this) {
+					current++;
 					Log.v(TAG, "TIME TO MOVE");
 					travelled_distance += currentStep.distance.value;
 					currentStep = route.get(current);
@@ -134,39 +109,53 @@ public class RouteProgress extends Observable implements Observer {
 					b.setLatitude(currentStep.end.lat);
 					b.setLongitude(currentStep.end.lng);
 				}
-			} 
+			}
 
 			// Determine current distance using step GPS positions
 			// Special cases
-			if (current == route.size() - 1) {//We are at the last step
-				intermediate_distance = -current_location.distanceTo(b);
-				return;
-			}
-			if (current == 0) {//We are at the first step, so always increment
-				intermediate_distance = current_location.distanceTo(a);
-				return;
-			} else {//We are in the middle of the route
+			if (current == route.size() - 1) {// We are at the last step, so
+												// assume we are behind
+				intermediate_distance = -gps_location.distanceTo(b);
+			} else if (current == 0) {// We are at the first step, so assume
+										// we are ahead
+				intermediate_distance = gps_location.distanceTo(b);
+			} else {// We are in the middle of the route
 				Step prev_step = route.get(current - 1);
 				Location pa = new Location("");
 				pa.setLatitude(prev_step.start.lat);
 				pa.setLongitude(prev_step.start.lat);
 
-				double cb = current_location.distanceTo(b);
-				double cpa = current_location.distanceTo(pa);
+				double cb = gps_location.distanceTo(b);
+				double cpa = gps_location.distanceTo(pa);
 				if (cpa < cb) {// Before the current step start
-					intermediate_distance = -current_location.distanceTo(a);
+					intermediate_distance = -gps_location.distanceTo(a);
 				} else {// After the current step start
-					intermediate_distance = current_location.distanceTo(a);
+					intermediate_distance = gps_location.distanceTo(a);
 				}
 			}
-			last_location = current_location;
-			avg_current_consumption = consumed_energy / samples;
+			last_location = gps_location;
+
+			// We didn't move forward, thus use the previous intermediate
+			// distance
+			// and don't call setChanged.
+			if (od > currentDistance()) {
+				intermediate_distance = oid;
+				return;
+			}
+
+			// Log.d(TAG, "Current consumption: "+consumed_energy);
+			if (consumed_energy > 0 && samples > 1)
+				avg_current_consumption = consumed_energy / samples;
+
 			samples = 0;
 			consumed_energy = 0;
-			current++;
-
+			setChanged();
 			notifyObservers();
 		}
+	}
+
+	public int currentRouteIndex() {
+		return current;
 	}
 
 	/**
@@ -180,5 +169,9 @@ public class RouteProgress extends Observable implements Observer {
 
 	public double currentDistance() {
 		return travelled_distance + intermediate_distance;
+	}
+
+	public List<Step> getRoute() {
+		return route;
 	}
 }

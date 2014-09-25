@@ -27,9 +27,10 @@ import com.kth.ev.graphviz.APIDataTypes.Value;
  */
 public class RouteDataFetcher extends Observable implements Runnable {
 	private static final String TAG = "RouteDataFetcher";
-	String pointA, pointB;
-	public List<Step> data;
-	public String json, json_processed;
+	private String pointA, pointB;
+	private List<Step> data_directions, data_combined;
+	private String json;
+	public String data_combined_json;
 	public List<LatLng> route, elevation;
 	                 
 	private static int sample_size = 100;   
@@ -42,7 +43,7 @@ public class RouteDataFetcher extends Observable implements Runnable {
 	public RouteDataFetcher() {
 		pointA = "Tåsjöberget, Sweden";
 		pointB = "Tåsjön, Strömsund, Sweden";
-		data = new ArrayList<Step>();
+		data_combined = new ArrayList<Step>();
 	}    
 
 	/**
@@ -54,7 +55,23 @@ public class RouteDataFetcher extends Observable implements Runnable {
 	public RouteDataFetcher(String a, String b) {
 		pointA = a;
 		pointB = b;
-		data = new ArrayList<Step>();
+		data_combined = new ArrayList<Step>();
+	}
+	
+	public List<Step> getDirectionsRoute(){
+		if(data_directions == null){
+			Log.e(TAG, "No directions data available.");
+			return null;
+		}
+		return data_directions;
+	}
+	
+	public List<Step> getCombinedRoute(){
+		if(data_combined == null){
+			Log.e(TAG, "No combined data available.");
+			return null;
+		}
+		return data_combined;
 	}
 
 	@Override
@@ -73,12 +90,12 @@ public class RouteDataFetcher extends Observable implements Runnable {
 				List<LatLng> step_locas = new ArrayList<LatLng>(20);
 				// Push all LatLng from the parsed data.
 				List<Leg> legs = dRes.routes.get(0).legs;
-				List<Step> steps = new ArrayList<Step>();
+				data_directions = new ArrayList<Step>();
 				double dist = 0;
 				for (Leg l : legs) {
 					for (Step s : l.steps) {
 						dist += s.distance.value;
-						steps.add(s);
+						data_directions.add(s);
 						step_locas.add(new LatLng(s.start.lat, s.start.lng));
 					}
 				}
@@ -162,16 +179,16 @@ public class RouteDataFetcher extends Observable implements Runnable {
 //					ElevationData a = ed.get(i), b = ed.get(i + 1);
 //					s.updateSlope(a.elevation, b.elevation);
 //				}
-				data = ret;
+				data_combined = ret;
 				Gson gson = new Gson();
-				json_processed = gson.toJson(ret);
+				data_combined_json = gson.toJson(ret);
 				//json_processed = gson.toJson(steps);
 				//Log.v(TAG, ret.size()+"");
-				Log.v(TAG, json_processed);
+				Log.v(TAG, data_combined_json);
 				//Log.v(TAG, rawextra);
 			}
 		} catch (Exception e) {
-			data = null;
+			data_combined = null;
 			Log.d(TAG, e.toString());
 		}
 		setChanged();

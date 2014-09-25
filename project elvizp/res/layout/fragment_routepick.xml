@@ -12,13 +12,22 @@
         android:id="@+id/from_label"
         android:text="@string/from"
         android:textColor="?android:textColorSecondary" />
-
+	<GridLayout
+		android:layout_width="match_parent"
+    	android:layout_height="wrap_content"
+    	android:columnCount="2"
+    	android:orientation="horizontal"
+    	android:rowCount="1">
+    <Button
+        android:id="@+id/use_gps"
+        android:text="@string/use_gps" />
     <AutoCompleteTextView
         android:id="@+id/from"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:completionThreshold="3" />
-
+        android:completionThreshold="3"/>
+    </GridLayout>
+    
     <TextView
         android:id="@+id/to_label"
         android:text="@string/to"
