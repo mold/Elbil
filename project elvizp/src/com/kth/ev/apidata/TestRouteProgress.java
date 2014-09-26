@@ -1,10 +1,12 @@
-package com.kth.ev.graphviz;
+package com.kth.ev.apidata;
 
 import java.util.List;
+
 import android.location.Location;
 import android.util.Log;
 
-import com.kth.ev.graphviz.APIDataTypes.Step;
+import com.kth.ev.apidata.APIDataTypes.Step;
+import com.kth.ev.application.ElvizpActivity;
 
 public class TestRouteProgress implements Runnable {
 
@@ -14,8 +16,8 @@ public class TestRouteProgress implements Runnable {
 	
 	public TestRouteProgress(ElvizpActivity act, RouteDataFetcher in) {
 		route = in.getCombinedRoute();
-		rp = new RouteProgress(act.gps, in.getDirectionsRoute());
-	}
+		rp = new RouteProgress(null, in.getCombinedRoute());
+	} 
 	
 	@Override
 	public void run() {
@@ -37,7 +39,7 @@ public class TestRouteProgress implements Runnable {
 	
 	private void sleepie(){
 		try {
-			Thread.sleep(500);
+			Thread.sleep(1500);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

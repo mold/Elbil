@@ -1,4 +1,4 @@
-package com.kth.ev.graphviz;
+package com.kth.ev.apidata;
          
 import java.util.List;
 

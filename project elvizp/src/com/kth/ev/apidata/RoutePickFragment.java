@@ -1,6 +1,5 @@
-package com.kth.ev.graphviz;
+package com.kth.ev.apidata;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
@@ -8,8 +7,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.google.api.client.json.JsonParser;
-import com.google.gson.JsonObject;
+import com.kth.ev.application.ElvizpActivity;
 
 import se.kth.ev.gmapsviz.R;
 import android.content.Context;
@@ -17,7 +15,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.text.InputType;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -71,7 +68,7 @@ public class RoutePickFragment extends Fragment {
 						&& (keyCode == KeyEvent.KEYCODE_ENTER)) {
 					InputMethodManager imm = (InputMethodManager) getActivity()
 							.getSystemService(
-									getActivity().INPUT_METHOD_SERVICE);
+									ElvizpActivity.INPUT_METHOD_SERVICE);
 					imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
 					return true;
 				}
@@ -127,7 +124,7 @@ public class RoutePickFragment extends Fragment {
 						.findViewById(R.id.from);
 				ElvizpActivity act = (ElvizpActivity) getActivity();
 
-				if (!act.gps.hasLocation()) {
+				if (!act.gps().hasLocation()) {
 					postToast("No GPS location available");
 					return;
 				}
@@ -135,7 +132,7 @@ public class RoutePickFragment extends Fragment {
 				try {
 					String georevdata = GoogleAPIQueries
 							.requestReverseGeolocation(
-									act.gps.getCurrentLocation()).get();
+									act.gps().getCurrentLocation()).get();
 					// JsonParser parser = APIRequestTask.JSON_FACTORY
 					// .createJsonParser(georevdata);
 					JSONObject obj = new JSONObject(georevdata);
@@ -151,14 +148,14 @@ public class RoutePickFragment extends Fragment {
 					e.printStackTrace();
 				} catch (ExecutionException e) {
 					Log.d(TAG, "Something went wrong, using raw gps location.");
-					from.setText(act.gps.getCurrentLocation().getLatitude()
-							+ "," + act.gps.getCurrentLocation().getLongitude());
+					from.setText(act.gps().getCurrentLocation().getLatitude()
+							+ "," + act.gps().getCurrentLocation().getLongitude());
 					e.printStackTrace();
 				} catch (JSONException e) {
 					Log.d(TAG,
 							"Something went wrong with the json parsing. Using raw gps location");
-					from.setText(act.gps.getCurrentLocation().getLatitude()
-							+ "," + act.gps.getCurrentLocation().getLongitude());
+					from.setText(act.gps().getCurrentLocation().getLatitude()
+							+ "," + act.gps().getCurrentLocation().getLongitude());
 					e.printStackTrace();
 				}
 			}
@@ -199,7 +196,6 @@ public class RoutePickFragment extends Fragment {
 		Toast toast = Toast.makeText(getActivity().getApplicationContext(),
 				text, duration);
 		toast.show();
-
 	}
 
 	/**

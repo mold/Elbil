@@ -1,4 +1,4 @@
-package old.junk;
+package com.kth.ev.graphviz;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;

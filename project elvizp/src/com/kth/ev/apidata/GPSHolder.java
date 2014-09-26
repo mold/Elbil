@@ -1,4 +1,4 @@
-package com.kth.ev.graphviz;
+package com.kth.ev.apidata;
 
 import java.util.Observable;
 
@@ -10,6 +10,13 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 
+/**
+ * Class wrapper for the GPS position provided by the Android SDK. When the GPS position is changed,
+ * the location listener will call the Observable methods of GPSHolder.
+ * 
+ * @author marothon
+ *
+ */
 public class GPSHolder extends Observable{
 	protected static final String TAG = "GPSHolder";
 	private Activity act;
@@ -24,19 +31,16 @@ public class GPSHolder extends Observable{
 			time = System.currentTimeMillis();
 			synchronized (this) {
 				current_location = loc;
-				Log.v(TAG, loc.getLatitude() + ", " + loc.getLongitude());
+				setChanged();
+				notifyObservers();
+				Log.d(TAG, loc.getLatitude() + ", " + loc.getLongitude());
 			}
 		}
 
 		// Unused methods
-		public void onProviderDisabled(String provider) {
-		}
-
-		public void onProviderEnabled(String provider) {
-		}
-
-		public void onStatusChanged(String provider, int status, Bundle extras) {
-		}
+		public void onProviderDisabled(String provider) {}
+		public void onProviderEnabled(String provider) {}
+		public void onStatusChanged(String provider, int status, Bundle extras) {}
 	};
 
 	public GPSHolder(Activity act){
@@ -73,6 +77,10 @@ public class GPSHolder extends Observable{
 		return System.currentTimeMillis() - time;
 	}
 
+	/**
+	 * Starts a requestLocationUpdates thread and uses the 
+	 * listener defined in this class.
+	 */
 	public void start() {
 		time = 0;
 		act.runOnUiThread(new Runnable() {
@@ -81,7 +89,7 @@ public class GPSHolder extends Observable{
 				locationManager = (LocationManager) act
 						.getSystemService(Context.LOCATION_SERVICE);
 				locationManager.requestLocationUpdates(
-						LocationManager.GPS_PROVIDER, 100, 15.0f,
+						LocationManager.GPS_PROVIDER, 800, 5.0f,
 						locationListener);
 			}
 		});

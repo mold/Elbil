@@ -1,4 +1,4 @@
-package com.kth.ev.graphviz;
+package com.kth.ev.application;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -6,7 +6,9 @@ import java.util.Observer;
 import se.kth.ev.gmapsviz.R;
 
 import com.google.gson.Gson;
-import com.kth.ev.differentiatedrange.CarData;
+import com.kth.ev.apidata.RouteDataFetcher;
+import com.kth.ev.apidata.RouteProgress;
+import com.kth.ev.electriccar.CarData;
 
 import android.annotation.SuppressLint;
 import android.os.Build;
@@ -35,7 +37,7 @@ public class VizFragment extends Fragment implements Observer {
 	private CarData cd;
 	private WebView browser;
 	private RouteProgress rp;
-	private TestRouteProgress trp;
+//	private TestRouteProgress trp;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -111,57 +113,58 @@ public class VizFragment extends Fragment implements Observer {
 					postToast("Unsuccessful data fetch.");
 				}
 				// runBrowserCommand("file:///sdcard/elvizp/viz.html");
-				runBrowserCommand("file:///android_asset/viz.html");
-				// reset();
+				//runBrowserCommand("file:///android_asset/viz.html");
+				reset();
 				updateRoute(rdf.data_combined_json);
 				updateEstimation(cd, (RouteDataFetcher) observable);
 				// Attach RouteProgress
+				
 				// For testing with real GPS
 				rp = new RouteProgress(((ElvizpActivity) getActivity()).gps, rdf.getCombinedRoute());
 				rp.addObserver(this);
 				cd.addObserver(rp);
 				
 				//For testing locally
-				//trp = new TestRouteProgress((ElvizpActivity) getActivity(), rdf);
-				//rp = trp.getProgress();
-				rp.addObserver(this);
-				cd.addObserver(rp);
-				
-				new Thread(trp).start();
-				//rp.start();
+//				trp = new TestRouteProgress((ElvizpActivity) getActivity(), rdf);
+//				rp = trp.getProgress();
+//				rp.addObserver(this);
+//				cd.addObserver(rp);				
+//				new Thread(trp).start();
 			}
-			// if (observable instanceof CarData) {
-			// CarData cd = (CarData) observable;
-			// updatePr/**
-			// * Updates visualization with current CarData
-			// */
-			// private void updateProgress(CarData cd) {
-			// runBrowserCommand("javascript:updateData(" + cd.toJson(true) +
-			// ")");
-			// }ogress(cd);
-			// Log.v("cardebug", "update vizfragment");
-			// }
+//			if (observable instanceof CarData) {
+//				CarData cd = (CarData) observable;
+//				updateProgress(cd);
+//				Log.v("cardebug", "update vizfragment");
+//			}
 			if (observable instanceof RouteProgress) {
 				synchronized (rp) {
-					addProgress(rp.currentDistance(), rp.currentConsumption());
-				}
-			}
+					Log.d(TAG, "dist: "+rp.currentDistance()+", "+" consump: "+cd.getConsumption(true));
+					addProgress(rp.currentDistance(), cd.toJson(true)); 
+				}  
+			} 
 		}
 	}
+	
+//	/**
+//	 * Updates visualization with current CarData
+//	 */
+//	private void updateProgress(CarData cd) {
+//		runBrowserCommand("javascript:updateData(" + cd.toJson(true) + ")");
+//	}
 
-	// /**
-	// * Resets the visualization
-	// */
-	// private void reset() {
-	// runBrowserCommand("javascript:reset()");
-	// }
+	/**
+	 * Resets the visualization
+	 */
+	private void reset() {
+		runBrowserCommand("javascript:reset()");
+	}
 
 	/**
 	 * Adds a specific data point to the visualization
 	 */
-	private void addProgress(double distance, double consumption) {
+	private void addProgress(double distance, String cardata) {
 		runBrowserCommand("javascript:addProgress(" + distance + ", "
-				+ consumption + ")");
+				+ cardata + ")");
 	}
 
 	// /**
@@ -231,7 +234,7 @@ public class VizFragment extends Fragment implements Observer {
 	 * 
 	 * @param JSON_STRING
 	 *            String to check.
-	 * @return True if valid.
+	 * @return True if valid. 
 	 */
 	private boolean isValidJSON(String JSON_STRING) {
 		try {
@@ -240,9 +243,9 @@ public class VizFragment extends Fragment implements Observer {
 		} catch (com.google.gson.JsonSyntaxException ex) {
 			return false;
 		}
-	}
+	} 
 
-	/**
+	/** 
 	 * Posts a toast message on the main UI thread.
 	 * 
 	 * @param cs

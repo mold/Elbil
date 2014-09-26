@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<old.junk.EVVizSurface xmlns:android="http://schemas.android.com/apk/res/android"
+<com.kth.ev.graphviz.EVVizSurface xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/elviz_surf	"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal" >
 
-</old.junk.EVVizSurface>
+</com.kth.ev.graphviz.EVVizSurface>

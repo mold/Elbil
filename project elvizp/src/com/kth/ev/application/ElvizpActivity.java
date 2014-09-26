@@ -1,12 +1,15 @@
-package com.kth.ev.graphviz;
+package com.kth.ev.application;
 
 import java.util.Observable;
 import java.util.Observer;
 
 import se.kth.ev.gmapsviz.R;
 
-import com.kth.ev.differentiatedrange.CarData;
-import com.kth.ev.differentiatedrange.CarDataFetcher;
+import com.kth.ev.apidata.GPSHolder;
+import com.kth.ev.apidata.GoogleAPIQueries;
+import com.kth.ev.apidata.RoutePickFragment;
+import com.kth.ev.electriccar.CarData;
+import com.kth.ev.electriccar.CarDataFetcher;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -17,7 +20,6 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -91,7 +93,7 @@ public class ElvizpActivity extends FragmentActivity{
         public Fragment getItem(int position) {
         	switch(position){
         	case 0:
-        		VizFragment e = new VizFragment();
+        		EVVizFragment e = new EVVizFragment();
         		return e;
         	case 1:
         		return new RoutePickFragment();
@@ -159,6 +161,10 @@ public class ElvizpActivity extends FragmentActivity{
 	          = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 	    NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
 	    return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+	}
+
+	public GPSHolder gps() {
+		return gps;
 	}
 	
 }

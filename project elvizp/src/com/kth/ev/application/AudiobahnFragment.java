@@ -1,4 +1,4 @@
-package com.kth.ev.graphviz;
+package com.kth.ev.application;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -7,12 +7,12 @@ import org.puredata.core.PdBase;
 
 import se.kth.ev.gmapsviz.R;
 
-import com.kth.ev.differentiatedrange.CarData;
+import com.kth.ev.apidata.RouteDataFetcher;
 import com.kth.ev.differentiatedrange.gamification.PdDataController;
 import com.kth.ev.differentiatedrange.puredata.Patch;
 import com.kth.ev.differentiatedrange.puredata.PureDataHandler;
+import com.kth.ev.electriccar.CarData;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;

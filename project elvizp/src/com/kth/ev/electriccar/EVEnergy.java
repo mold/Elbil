@@ -1,4 +1,4 @@
-package com.kth.ev.differentiatedrange;
+package com.kth.ev.electriccar;
 
 public class EVEnergy {
 

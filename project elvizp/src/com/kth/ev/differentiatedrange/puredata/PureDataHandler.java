@@ -18,7 +18,7 @@ import org.puredata.android.service.PdService;
 import org.puredata.core.PdBase;
 import org.puredata.core.PdReceiver;
 
-import com.kth.ev.differentiatedrange.CarData;
+import com.kth.ev.electriccar.CarData;
 
 import android.content.ComponentName;
 import android.content.Context;

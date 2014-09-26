@@ -1,4 +1,4 @@
-package com.kth.ev.differentiatedrange;
+package com.kth.ev.electriccar;
 
 import java.util.List;
 import java.util.Observable;
@@ -7,9 +7,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.kth.ev.graphviz.APIDataTypes.Step;
-import android.webkit.JavascriptInterface;
+import com.kth.ev.apidata.APIDataTypes.Step;
 
+import android.webkit.JavascriptInterface;
 import android.util.Log;
 
 /**
@@ -34,10 +34,10 @@ public class CarData extends Observable {
 	public static final int SPEED = 1, SLOPE = 2, CLIMATE = 4,
 			ACCELERATION = 8, TIME = 16;
 
-	@SuppressWarnings("unused")
 	private static final String TAG = "cardata";
 
 	private double soc, speed, fan, climate, amp, acceleration, volt, consumption;
+	@SuppressWarnings("unused")
 	private double socPrev, speedPrev, fanPrev, climatePrev, ampPrev, accelerationPrev, voltPrev, consumptionPrev;
 	private double totalConsumption;
 	private double capacity;

@@ -34,10 +34,10 @@
     var energy_curve = d3.svg.line()
       .x(function(d) { return x(d.distance/1000); })
       .y(function(d) { return y(d.energy); }) 
-      .interpolate("basis");
+      .interpolate("step");
 
     var area = d3.svg.area()
-      .interpolate("basis")
+      .interpolate("step")
       .x(function(d) { return x(d.distance/1000); })
       .y1(function(d) { return y(d.energy); });
 
@@ -287,15 +287,21 @@
 
   /*
 
-    Semi realtime update of energy consumption
+    Semi realtime update of make believe energy consumption
 
   */
-  LineChart.prototype.addProgress = function(distance, consumption){
+  LineChart.prototype.addProgress = function(distance, cd){
     evenergy.reset();
     var point = find_point_from_x(distance, est_path.node());
     var est_y = y.invert(point.y);
+
+    //The make believe part
+    var tdt = distance - travelled_distance;
+    travelled_distance = distance;
+    consumed_energy += tdt/1000 * cd.consumption;
+
     // console.log("check: "+ travelled_distance +" m, "+e+" kwH/km, "+est_y+" kwH/km");
-    progress.push({distance: distance, energy: consumption, est_energy: est_y});
+    progress.push({distance: distance, energy: cd.consumption, est_energy: est_y, speed: cd.speed});
   
     svg.select("#progressLine")
       .attr("d", energy_curve);
@@ -318,49 +324,49 @@
     Realtime update of energy consumption.
 
   */
-  var t = Date.now();
-  LineChart.prototype.updateProgress = function(data){
-    if(route_index >= route.length)
-      return;
+  // var t = Date.now();
+  // LineChart.prototype.updateProgress = function(data){
+  //   if(route_index >= route.length)
+  //     return;
 
-    speed = data.speed / 3.6;
-    dist = speed * data.time;// meters
-    travelled_distance += dist; 
+  //   speed = data.speed / 3.6;
+  //   dist = speed * data.time;// meters
+  //   travelled_distance += dist; 
    
-    //alert(speed+" m/s, "+data.time+" s");
+  //   //alert(speed+" m/s, "+data.time+" s");
 
-    if (travelled_distance > current_step.overallDistance) {
-      route_index++;
-    }
+  //   if (travelled_distance > current_step.overallDistance) {
+  //     route_index++;
+  //   }
    
-    current_step = route[route_index];
+  //   current_step = route[route_index];
     
-    evenergy.reset();
-    evenergy.speed(speed,"ms").distance(dist,"m").slope(current_step.slope);
-    e = evenergy.kWhPerKm();
-    if(isNumber(e)){
-      var point = find_point_from_x(travelled_distance, est_path.node());
-      var est_y = y.invert(point.y);
-      // console.log("check: "+ travelled_distance +" m, "+e+" kwH/km, "+est_y+" kwH/km");
-      consumed_energy += e * dist/1000;
-      progress.push({distance: travelled_distance, energy: data.consumption, est_energy: est_y, speed: data.speed, climate: data.climate});
+  //   evenergy.reset();
+  //   evenergy.speed(speed,"ms").distance(dist,"m").slope(current_step.slope);
+  //   e = evenergy.kWhPerKm();
+  //   if(isNumber(e)){
+  //     var point = find_point_from_x(travelled_distance, est_path.node());
+  //     var est_y = y.invert(point.y);
+  //     // console.log("check: "+ travelled_distance +" m, "+e+" kwH/km, "+est_y+" kwH/km");
+  //     consumed_energy += e * dist/1000;
+  //     progress.push({distance: travelled_distance, energy: data.consumption, est_energy: est_y, speed: data.speed, climate: data.climate});
     
-      svg.select("#progressLine")
-        .attr("d", energy_curve);
+  //     svg.select("#progressLine")
+  //       .attr("d", energy_curve);
      
-      svg.select("#clip-below path")
-         .attr("d", area.y0(height));
+  //     svg.select("#clip-below path")
+  //        .attr("d", area.y0(height));
 
-       svg.select("#clip-above path")
-         .attr("d", area.y0(0));
+  //      svg.select("#clip-above path")
+  //        .attr("d", area.y0(0));
 
-       svg.select(".area.above")
-         .attr("d", area.y0(function(d) { return y(d.est_energy);}));
+  //      svg.select(".area.above")
+  //        .attr("d", area.y0(function(d) { return y(d.est_energy);}));
 
-       svg.select(".area.below")
-         .attr("d", area);
-    }
-  };
+  //      svg.select(".area.below")
+  //        .attr("d", area);
+  //   }
+  // };
 
   /*
 

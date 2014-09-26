@@ -1,4 +1,4 @@
-package com.kth.ev.graphviz;
+package com.kth.ev.apidata;
 import java.io.IOException;
 
 import android.os.AsyncTask;

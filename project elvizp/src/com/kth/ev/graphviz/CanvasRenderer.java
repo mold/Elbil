@@ -1,4 +1,4 @@
-package old.junk;
+package com.kth.ev.graphviz;
 
 import android.graphics.Canvas;
 

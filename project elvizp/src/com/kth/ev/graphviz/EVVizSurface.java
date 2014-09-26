@@ -1,4 +1,4 @@
-package old.junk;
+package com.kth.ev.graphviz;
 
 import java.util.ArrayList;
 import java.util.List;

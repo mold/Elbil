@@ -34,7 +34,7 @@
     var energy_curve = d3.svg.line()
       .x(function(d) { return x(d.distance/1000); })
       .y(function(d) { return y(d.energy); }) 
-      .interpolate("basis");
+      .interpolate("step");
 
     var area = d3.svg.area()
       .interpolate("basis")
@@ -292,7 +292,6 @@
   */
   LineChart.prototype.addProgress = function(distance, consumption){
     evenergy.reset();
-    consumption = 0.25;
     var point = find_point_from_x(distance, est_path.node());
     var est_y = y.invert(point.y);
     // console.log("check: "+ travelled_distance +" m, "+e+" kwH/km, "+est_y+" kwH/km");

@@ -1,4 +1,4 @@
-package com.kth.ev.graphviz;
+package com.kth.ev.apidata;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -11,13 +11,13 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.api.client.json.JsonParser;
 import com.google.gson.Gson;
 import com.google.maps.android.PolyUtil;
-import com.kth.ev.graphviz.APIDataTypes.DirectionsResult;
-import com.kth.ev.graphviz.APIDataTypes.ElevationData;
-import com.kth.ev.graphviz.APIDataTypes.ElevationResult;
-import com.kth.ev.graphviz.APIDataTypes.Leg;
-import com.kth.ev.graphviz.APIDataTypes.Location;
-import com.kth.ev.graphviz.APIDataTypes.Step;
-import com.kth.ev.graphviz.APIDataTypes.Value;
+import com.kth.ev.apidata.APIDataTypes.DirectionsResult;
+import com.kth.ev.apidata.APIDataTypes.ElevationData;
+import com.kth.ev.apidata.APIDataTypes.ElevationResult;
+import com.kth.ev.apidata.APIDataTypes.Leg;
+import com.kth.ev.apidata.APIDataTypes.Location;
+import com.kth.ev.apidata.APIDataTypes.Step;
+import com.kth.ev.apidata.APIDataTypes.Value;
 /**
  * A Runnable implementation that performs some calls to the
  * google API to fetch information about a given route.
@@ -34,6 +34,7 @@ public class RouteDataFetcher extends Observable implements Runnable {
 	public List<LatLng> route, elevation;
 	                 
 	private static int sample_size = 100;   
+	private static double step_size = 100;
 
 	/**
 	 * Constructor
@@ -103,6 +104,8 @@ public class RouteDataFetcher extends Observable implements Runnable {
 				//Create new step list which will be filled
 				//with slope estimations from the elevation
 				//data.
+				//Base sample size on a set step distance
+				sample_size = (int) Math.floor((dist / step_size));
 				List<Step> ret = new ArrayList<Step>(sample_size);
 				double[] speeds = new double[sample_size];
 				double avg = dist / sample_size;

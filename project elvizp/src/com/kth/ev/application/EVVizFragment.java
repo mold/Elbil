@@ -1,18 +1,18 @@
-package old.junk;
+package com.kth.ev.application;
 
 import java.util.Observable;
 import java.util.Observer;
 
-
 import se.kth.ev.gmapsviz.R;
 
-import com.kth.ev.differentiatedrange.CarData;
-import com.kth.ev.differentiatedrange.EVEnergy;
-import com.kth.ev.graphviz.ElvizpActivity;
-import com.kth.ev.graphviz.RouteDataFetcher;
-import com.kth.ev.graphviz.APIDataTypes.Step;
+import com.kth.ev.apidata.RouteDataFetcher;
+import com.kth.ev.apidata.RouteProgress;
+import com.kth.ev.apidata.APIDataTypes.Step;
+import com.kth.ev.electriccar.CarData;
+import com.kth.ev.electriccar.EVEnergy;
+import com.kth.ev.graphviz.EVVizSurface;
+import com.kth.ev.graphviz.XYPlot;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -103,15 +103,6 @@ public class EVVizFragment extends Fragment implements Observer {
 		}
 	}
 	
-	/**
-	 * Starts thread to fetch new data and update the visualization.
-	 * 
-	 * @param from
-	 * @param to
-	 */
-	public void changeRoute(String from, String to){
-	}
-	
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle bundle) {
       View v = inflater.inflate(R.layout.fragment_elviz, container, false);
@@ -134,9 +125,23 @@ public class EVVizFragment extends Fragment implements Observer {
 				}
 				canvas.redraw();
 			}
+			if(observable instanceof RouteProgress){
+				//RouteProgress rp = (RouteProgress) observable;
+				//evg.add_data_point("Route progress", rp.currentDistance(), cd.getConsumption(true));
+				//Gör nåt med RouteProgress
+			}
+			if(observable instanceof CarData){
+				//Gör nåt med CarData
+			}
 		}
 	}
 
+	/**
+	 * Adds estimated consumption along a route to the XYPlot object.
+	 * 
+	 * @param cd CarData object.
+	 * @param rdf RouteDataFetcher object, containing the route data.
+	 */
 	public void addEvData(CarData cd, RouteDataFetcher rdf) {
 		if(rdf.getCombinedRoute().size() < 1)
 			return;
@@ -144,25 +149,18 @@ public class EVVizFragment extends Fragment implements Observer {
 		int factors = 0;
 		factors |= CarData.SLOPE | CarData.TIME | CarData.SPEED;
 		double[] consumption = cd.consumptionOnRoute(rdf.getCombinedRoute(), factors);
-		factors = 0;
-		factors |= CarData.TIME | CarData.SPEED;
-		double[] consumption2 = cd.consumptionOnRoute(rdf.getCombinedRoute(), factors);
 
 		distance_for_steps = new float[consumption.length];
-		float[] data2 = new float[consumption.length];
-		float[] data3 = new float[consumption2.length];
+		float[] consumption_per_step = new float[consumption.length];
 
 		if (rdf.getCombinedRoute().size() > 0) {
 			double xval = rdf.getCombinedRoute().get(0).distance.value;
 			for (int i = 0; i < consumption.length; i++) {
 				distance_for_steps[i] = (float) (xval / 1000.0f);
-				data2[i] = (float) consumption[i];
-				data3[i] = (float) consumption2[i];
+				consumption_per_step[i] = (float) consumption[i];
 				xval += rdf.getCombinedRoute().get(i).distance.value;
 			}
-			evg.add_data("Consumption", distance_for_steps, data2);
-			evg.add_data("Consumpton (\"no slope\")", distance_for_steps,
-					data3, Color.BLUE);
+			evg.add_data("Consumption", distance_for_steps, consumption_per_step);
 		}
 	}
 

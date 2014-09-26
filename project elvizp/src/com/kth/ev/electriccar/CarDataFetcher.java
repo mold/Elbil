@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.kth.ev.differentiatedrange;
+package com.kth.ev.electriccar;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -86,8 +86,8 @@ public class CarDataFetcher implements Runnable{
 				carData.setSoc(Double.parseDouble(getServerData("soc")));
 				carData.setAmp(Double.parseDouble(getServerData("amp")));
 				carData.setVolt(Double.parseDouble(getServerData("volt")));*/
-				double speed = carData.getSpeed(false);
-				double amp = carData.getAmp(false);
+				//double speed = carData.getSpeed(false);
+				//double amp = carData.getAmp(false);
 				//Log.v("cardebug", "speed: " + speed + ", amp: " + amp);
 				//carData.setClimate(Double.parseDouble(getServerData("heating0")));
 				//carData.setFan(Double.parseDouble(getServerData("heating1")));

@@ -48,30 +48,34 @@ function updateEstimation(est){
 /*
   Adds a data point to the progress chart-
 */
-function addProgress(distance, consumption){
+function addProgress(distance, cd){
   if(linechart === undefined || !linechart.ready()){
     return;
   }
-  linechart.addProgress(distance, consumption);
+  linechart.addProgress(distance, cd);
+  //linechart.updateProgress(cd);
+  linechart.updateLimits(cd);
+  sparklines.updateProgress(linechart.getProgress());
+
 }
 
 /**
  *  Method to update visualization with new CarData contained
  *  in the parameter cd.
  */
-var t = Date.now();
+// var t = Date.now();
 function updateData(cd){
   if(linechart === undefined || !linechart.ready()){
     return;
   }
 
-  cd.time = (Date.now() - t) / 1000;
+  // cd.time = (Date.now() - t) / 1000;
   //cd.speed = 200;
-  t = Date.now();
-  d3.select("body p").html(cd.speed +" km/h, "+cd.soc+"%, "+cd.capacity+" kWh, "+ cd.time +" s");
+  // t = Date.now();
+  //d3.select("body p").html(cd.speed +" km/h, "+cd.soc+"%, "+cd.capacity+" kWh, "+ cd.time +" s");
   //alert(cd.time);
   linechart.updateLimits(cd);
-  linechart.updateProgress(cd);
+  // linechart.updateProgress(cd);
 
   if(sparklines === undefined || !sparklines.ready())
     return;

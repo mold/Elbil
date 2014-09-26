@@ -1,19 +1,13 @@
-package com.kth.ev.graphviz;
+package com.kth.ev.apidata;
 
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
-import android.app.Activity;
-import android.content.Context;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.os.Bundle;
-import android.util.Log;
+import com.kth.ev.apidata.APIDataTypes.Step;
 
-import com.kth.ev.differentiatedrange.CarData;
-import com.kth.ev.graphviz.APIDataTypes.Step;
+import android.location.Location;
+import android.util.Log;
 
 /**
  * An observable that will notify observers when the current gps position is
@@ -21,47 +15,40 @@ import com.kth.ev.graphviz.APIDataTypes.Step;
  * estimates the current traveled distance. Note that this class also assumes
  * that the car will travel along the original plotted route.
  * 
- * Another important thing to remember is that the energy consumption is
- * averaged over the number of samples received from CarData while the Car was
- * driving along the current step.
- * 
- * The energy value is fetched from a CarData using the Observer implementation,
- * while the estimated distance & energy consumption of every step is relayed
- * further using the Observable extension.
- * 
- * Will only setChanged when the car has actually moved forward (ie.
- * currentDistance() is greater than before.
- * 
  * @author marothon
  *
  */
 public class RouteProgress extends Observable implements Observer {
 	protected static final String TAG = "RouteProgress";
 	private List<Step> route;
-	private int current, samples;
+	private int current;
 	private double travelled_distance;
 	private double intermediate_distance;
-	private double consumed_energy;
-	private double[] energy_per_step;
 	private Location last_location;
 	private double avg_current_consumption;
-	private GPSHolder gps;
+	private boolean finished;
 
 	public RouteProgress(GPSHolder gps, List<Step> route) {
 		this.route = route;
 		this.current = 0;
-		this.energy_per_step = new double[route.size()];
 		this.travelled_distance = 0;
-		this.gps = gps;
+		finished = false;
+		if (gps != null)
+			gps.addObserver(this);
 	}
 
 	@Override
 	public void update(Observable observable, Object data) {
-		if (observable instanceof CarData) {// then take current consumption and
-											// add to current sum.
-			consumed_energy += ((CarData) observable).getConsumption(true);
-			samples++;
-			if(gps.hasLocation()){
+		if (finished) {// Stop doing stuff
+			Log.d(TAG, "finished");
+			observable.deleteObserver(this);
+			return;
+		}
+
+		if (observable instanceof GPSHolder) {
+			Log.d(TAG, "got a gps position");
+			GPSHolder gps = (GPSHolder) observable;
+			if (gps.hasLocation() && route != null) {
 				updateDistance(gps.getCurrentLocation());
 			}
 		}
@@ -92,17 +79,34 @@ public class RouteProgress extends Observable implements Observer {
 			b.setLongitude(currentStep.end.lng);
 
 			// checks if we should move along the route
-			if (gps_location.distanceTo(a) > gps_location.distanceTo((b))) {// then
-																			// we
-																			// have
-																			// moved
-																			// along
-																			// the
-																			// route
+			Location c = new Location("");
+			Step loop_step;
+			double d = Double.MAX_VALUE, nd;
+			int nc = current;
+			for (int i = current; i < route.size(); i++) {//Compares current location to gps locations from the google api data.
+				loop_step = route.get(i);
+				c.setLatitude(loop_step.start.lat);
+				c.setLongitude(loop_step.start.lng);
+				nd = c.distanceTo(gps_location);
+				if (d > nd) {//We have are closer to this point, thus moved past the previous step index.
+					d = nd;
+					nc = i;
+				}
+			}
+			if (nc > current) {
 				synchronized (this) {
-					current++;
-					Log.v(TAG, "TIME TO MOVE");
-					travelled_distance += currentStep.distance.value;
+					if (current >= route.size()) {// No more route points to
+						// base anything on.
+						finished = true;
+						return;
+					}
+
+					Log.v(TAG, "TIME TO MOVE, "+(nc-current)+" steps!");
+					
+					for (int i = current; i < nc; i++) {
+						travelled_distance += route.get(i).distance.value;
+					};
+					current = nc;
 					currentStep = route.get(current);
 					a.setLatitude(currentStep.start.lat);
 					a.setLongitude(currentStep.start.lng);
@@ -110,32 +114,11 @@ public class RouteProgress extends Observable implements Observer {
 					b.setLongitude(currentStep.end.lng);
 				}
 			}
-
-			// Determine current distance using step GPS positions
-			// Special cases
-			if (current == route.size() - 1) {// We are at the last step, so
-												// assume we are behind
-				intermediate_distance = -gps_location.distanceTo(b);
-			} else if (current == 0) {// We are at the first step, so assume
-										// we are ahead
-				intermediate_distance = gps_location.distanceTo(b);
-			} else {// We are in the middle of the route
-				Step prev_step = route.get(current - 1);
-				Location pa = new Location("");
-				pa.setLatitude(prev_step.start.lat);
-				pa.setLongitude(prev_step.start.lat);
-
-				double cb = gps_location.distanceTo(b);
-				double cpa = gps_location.distanceTo(pa);
-				if (cpa < cb) {// Before the current step start
-					intermediate_distance = -gps_location.distanceTo(a);
-				} else {// After the current step start
-					intermediate_distance = gps_location.distanceTo(a);
-				}
-			}
+			intermediate_distance = gps_location.distanceTo(a);
 			last_location = gps_location;
 
-			// We didn't move forward, thus use the previous intermediate
+			// We didn't move closer to the next point, thus use the previous
+			// intermediate
 			// distance
 			// and don't call setChanged.
 			if (od > currentDistance()) {
@@ -144,11 +127,6 @@ public class RouteProgress extends Observable implements Observer {
 			}
 
 			// Log.d(TAG, "Current consumption: "+consumed_energy);
-			if (consumed_energy > 0 && samples > 1)
-				avg_current_consumption = consumed_energy / samples;
-
-			samples = 0;
-			consumed_energy = 0;
 			setChanged();
 			notifyObservers();
 		}

@@ -8,14 +8,13 @@ import org.puredata.core.PdBase;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.os.Handler;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
 
-import com.kth.ev.differentiatedrange.CarData;
-import com.kth.ev.graphviz.APIDataTypes.Step;
+import com.kth.ev.apidata.RouteDataFetcher;
+import com.kth.ev.apidata.APIDataTypes.Step;
+import com.kth.ev.electriccar.CarData;
 import com.kth.ev.graphviz.DataGraph;
-import com.kth.ev.graphviz.RouteDataFetcher;
 
 public class PdDataController implements Observer {
 
@@ -126,28 +125,28 @@ public class PdDataController implements Observer {
 		return consumptionGraph;
 	}
 
-	private String getTimeString(long time) {
-		long real_time = time;
-		String str = "";
-		// hours
-		long tmp = time / 360;
-		if (tmp >= 1) {
-			str += tmp + " hours ";
-			time -= tmp * 360;
-		}
-		// hours
-		tmp = time / 60;
-		if (tmp >= 1) {
-			str += tmp + " minutes ";
-			time -= tmp * 60;
-		}
-		if (real_time != time) {
-			str += "and ";
-		}
-		// seconds
-		str += time + " seconds";
-		return str;
-	}
+//	private String getTimeString(long time) {
+//		long real_time = time;
+//		String str = "";
+//		// hours
+//		long tmp = time / 360;
+//		if (tmp >= 1) {
+//			str += tmp + " hours ";
+//			time -= tmp * 360;
+//		}
+//		// hours
+//		tmp = time / 60;
+//		if (tmp >= 1) {
+//			str += tmp + " minutes ";
+//			time -= tmp * 60;
+//		}
+//		if (real_time != time) {
+//			str += "and ";
+//		}
+//		// seconds
+//		str += time + " seconds";
+//		return str;
+//	}
 
 	public void setRouteData(RouteDataFetcher routeData) {
 		this.routeData = routeData;
@@ -174,7 +173,7 @@ public class PdDataController implements Observer {
 			}
 
 			accData.pushData(acceleration);
-			double accelerationAverage = accData.getAverage();
+//			double accelerationAverage = accData.getAverage();
 			speedData.pushData(speed);
 			double speedAverage = speedData.getAverage();
 			double speedRegression = speedData.getRegression(delta);
