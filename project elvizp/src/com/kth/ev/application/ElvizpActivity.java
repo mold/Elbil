@@ -4,12 +4,12 @@ import java.util.Observable;
 import java.util.Observer;
 
 import se.kth.ev.gmapsviz.R;
-
-import com.kth.ev.apidata.GPSHolder;
-import com.kth.ev.apidata.GoogleAPIQueries;
-import com.kth.ev.apidata.RoutePickFragment;
-import com.kth.ev.electriccar.CarData;
-import com.kth.ev.electriccar.CarDataFetcher;
+import com.kth.ev.cardata.CarData;
+import com.kth.ev.cardata.CarDataFetcher;
+import com.kth.ev.routedata.GPSHolder;
+import com.kth.ev.routedata.GoogleAPIQueries;
+import com.kth.ev.routedata.RoutePickFragment;
+import com.kth.ev.vizsample.RouteVizFragment;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -93,7 +93,8 @@ public class ElvizpActivity extends FragmentActivity{
         public Fragment getItem(int position) {
         	switch(position){
         	case 0:
-        		EVVizFragment e = new EVVizFragment();
+        		RouteVizFragment e = new RouteVizFragment();
+        		cd.addObserver(e);
         		return e;
         	case 1:
         		return new RoutePickFragment();

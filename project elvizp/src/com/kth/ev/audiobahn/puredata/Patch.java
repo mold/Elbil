@@ -2,7 +2,7 @@
  * @author John Brynte Turesson
  */
 
-package com.kth.ev.differentiatedrange.puredata;
+package com.kth.ev.audiobahn.puredata;
 
 import java.io.File;
 import java.io.IOException;

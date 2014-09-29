@@ -1,4 +1,4 @@
-package com.kth.ev.electriccar;
+package com.kth.ev.cardata;
 
 public class EVEnergy {
 

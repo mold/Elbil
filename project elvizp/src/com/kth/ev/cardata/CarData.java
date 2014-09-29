@@ -1,15 +1,10 @@
-package com.kth.ev.electriccar;
+package com.kth.ev.cardata;
 
 import java.util.List;
 import java.util.Observable;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.kth.ev.routedata.APIDataTypes.Step;
 
-import com.kth.ev.apidata.APIDataTypes.Step;
-
-import android.webkit.JavascriptInterface;
 import android.util.Log;
 
 /**
@@ -34,28 +29,28 @@ public class CarData extends Observable {
 	public static final int SPEED = 1, SLOPE = 2, CLIMATE = 4,
 			ACCELERATION = 8, TIME = 16;
 
-	private static final String TAG = "cardata";
+	private static final String TAG = "CarData";
 
-	private double soc, speed, fan, climate, amp, acceleration, volt, consumption;
+	private double soc, speed, fan, climate, amp, acceleration, volt,
+			consumption;
 	@SuppressWarnings("unused")
-	private double socPrev, speedPrev, fanPrev, climatePrev, ampPrev, accelerationPrev, voltPrev, consumptionPrev;
+	private double socPrev, speedPrev, fanPrev, climatePrev, ampPrev,
+			accelerationPrev, voltPrev, consumptionPrev;
 	private double totalConsumption;
-	private double capacity;
-	private double kmpKWh;
 	private EVEnergy evEnergy;
 	private double[] rangeArray = new double[17]; // 0 is current
 	private double[] rangeMaxArray = new double[16]; // 0 is current
 	private double speedOneMinMean, speedFiveMinMean, speed10SecMean;
 
 	private double currentClimateConsumption = 3.0,
-			currentClimateConsumptionPrev; 
+			currentClimateConsumptionPrev;
 
 	private long lastUpdateTime = System.currentTimeMillis();
 
 	private long timeSinceLast;
-	  
+
 	/** how far the car has travelled since the app was started (m) */
-	private double distanceTravelled,distanceTravelledPrev;
+	private double distanceTravelled, distanceTravelledPrev;
 
 	/**
 	 * Create a CarData with the default EVEnergy.
@@ -68,7 +63,6 @@ public class CarData extends Observable {
 	public CarData() {
 		evEnergy = new EVEnergy();
 		evEnergy.efficiency = (float) 0.88;
-		capacity = 16;
 	}
 
 	/**
@@ -124,10 +118,10 @@ public class CarData extends Observable {
 		speedOneMinMean = (speedOneMinMean * (timesPerMin - 1) + speed)
 				/ timesPerMin;
 		speedFiveMinMean = (speedFiveMinMean * (timesPer5Min - 1) + speed)
-				/ timesPer5Min; 
-		// update the acceleration        
+				/ timesPer5Min;
+		// update the acceleration
 		accelerationPrev = acceleration;
-		acceleration = 1000.0f*((speed - speedPrev)/3.6f) / (timeSinceLast);
+		acceleration = 1000.0f * ((speed - speedPrev) / 3.6f) / (timeSinceLast);
 
 		/** Calculate distances **/
 		if (speed >= 0.1) {
@@ -171,15 +165,15 @@ public class CarData extends Observable {
 
 		distanceTravelledPrev = distanceTravelled;
 		distanceTravelled += (speed / 3.6) * timeSinceLast / 1000.0;
-		
+
 		totalConsumption += amp * timeSinceLast / 3600000.0;
-		
+
 		if (speed != 0) {
 			consumption = (-amp * volt / 1000.0) / speed;
 		} else {
 			consumption = 0;
 		}
-		
+
 		calculateClimatePower();
 		setChanged();
 	}
@@ -221,7 +215,7 @@ public class CarData extends Observable {
 		if (speed >= 255)
 			speed = 0;
 		this.speed = speed;
-		
+
 		setChanged();
 	}
 
@@ -263,31 +257,31 @@ public class CarData extends Observable {
 		this.amp = amp;
 		setChanged();
 	}
-	
+
 	public void setVolt(double volt) {
 		this.voltPrev = this.volt;
 		this.volt = volt;
 		setChanged();
 	}
-	
+
 	public double getConsumption(boolean interpolate) {
 		if (interpolate) {
 			return lerp(consumptionPrev, consumption);
 		}
 		return consumption;
 	}
-	
+
 	public double getTotalConsumption() {
 		return totalConsumption;
 	}
-	               
+
 	public double getAcceleration(boolean interpolate) {
 		if (interpolate) {
 			return lerp(accelerationPrev, acceleration);
 		}
 		return acceleration;
 	}
-	
+
 	public double getDistanceTravelled(boolean interpolate) {
 		if (interpolate) {
 			return lerp(distanceTravelledPrev, distanceTravelled);
@@ -391,11 +385,11 @@ public class CarData extends Observable {
 		} catch (Exception e) {
 			e.printStackTrace();
 			Log.e(TAG, e.getMessage());
-			//return;
+			// return;
 		}
 
 		currentClimateConsumption = -10.0;
-		//return;
+		// return;
 
 	}
 
@@ -412,50 +406,6 @@ public class CarData extends Observable {
 	}
 
 	/**
-	 * Shortcut for setting all input parameters, calculate the rest and then
-	 * notify all observers that the data has been updated.
-	 * 
-	 * @param soc
-	 * @param speed
-	 * @param fan
-	 * @param climate
-	 */
-	public void setDataAndNotify(double soc, double speed, double fan,
-			double climate) {
-		synchronized (this) {
-			setSoc(soc);
-			setSpeed(speed);
-			setFan(fan);
-			setClimate(climate);
-
-			calculate();
-		}
-
-		notifyObservers();
-	}
-
-	/**
-	 * Calculates the consumption rate of the battery using the current values
-	 * of speed and climate.
-	 * 
-	 * 
-	 * @param distance
-	 *            Distance in m
-	 * @param slope
-	 *            Relationship between height and distance
-	 * @param dt
-	 *            Time duration in seconds
-	 */
-	public double determineConsumption(double distance, double slope, double dt) {
-		synchronized (this) {
-			kmpKWh = evEnergy.kWhPerKm(distance, speed, 0, slope,
-					0.7 + currentClimateConsumption, dt);
-		}
-		return kmpKWh;
-	}
-
-
-	/**
 	 * Calculates the consumption rate of the given route, consisting of steps
 	 * fetched from the Google API Directions & Elevation API
 	 * 
@@ -469,25 +419,20 @@ public class CarData extends Observable {
 	 */
 	public double[] consumptionOnRoute(List<Step> steps, int factors) {
 		if (steps == null) {
-			return new double[0];
+			return null;
 		}
+		double climate = 0.7 + currentClimateConsumption;
+		Log.d(TAG, "Climate effect: "+climate);
 		double[] ret = new double[steps.size()];
 		int i = 0;
-		synchronized (this) {
-			for (Step s : steps) {
-				ret[i] = evEnergy
-						.kWhPerKm(
-								s.distance.value,
-								(factors & SPEED) > 0 ? s.distance.value
-										/ s.duration.value : 0,
-								0,
-								(factors & SLOPE) > 0 ? s.slope : 0,
-								(factors & CLIMATE) > 0 ? 0.7 + currentClimateConsumption
-										: 0,
-								(factors & TIME) > 0 ? s.duration.value : 1);
+		for (Step s : steps) {
+			ret[i] = evEnergy.kWhPerKm(s.distance.value,
+					(factors & SPEED) > 0 ? s.distance.value / s.duration.value
+							: 0, 0, (factors & SLOPE) > 0 ? s.slope : 0,
+					(factors & CLIMATE) > 0 ? climate : 0,
+					(factors & TIME) > 0 ? s.duration.value : 1);
 
-				i++;
-			}
+			i++;
 		}
 		return ret;
 	}
@@ -501,87 +446,134 @@ public class CarData extends Observable {
 		return a + f * (b - a);
 	}
 	
-	/**
-	 * 
-	 * Returns the current data as a JSON string.
-	 * 
-	 * @param interpolate whether or not the data should be interpolated.
-	 * @return json-fied cardata.
-	 */
-    @JavascriptInterface
-    public String toJson(boolean interpolate) {
-    	JSONObject jo = new JSONObject();
-    	try {         
-		    jo.put("speed", String.valueOf(getSpeed(interpolate)));
-	    	jo.put("acceleration", String.valueOf(getAcceleration(interpolate)));
-	    	jo.put("soc", String.valueOf(getSoc(interpolate)));
-	    	jo.put("amp", String.valueOf(getAmp(interpolate)));
-	    	jo.put("climate", String.valueOf(getCurrentClimateConsumption(interpolate)));
-	    	jo.put("capacity", String.valueOf(capacity));
-	    	jo.put("consumption", String.valueOf(consumption));
-	    } catch (JSONException e) {  
-	    	Log.e(TAG, e.toString());
-		}
-    	return jo.toString(); 
-    }                 
-             
-	/**  
-	 * 
-	 * Same as consumptonOnRoute, only that the return value is a json encoded
-	 * string.
-	 * 
-	 * @param steps
-	 *            A list of Step
-	 * @param factors
-	 *            A list of which parameters to take into account, coded into an
-	 *            int.
-	 * @return A JSON Array of the consumption along the route.
-	 */
-	public String consumptionOnRouteJSON(List<Step> steps, int factors) {
-		JSONArray ja = new JSONArray();
-		if (steps == null) {
-			return ja.toString();
-		}  
-		double totalDistance = 0;
-		synchronized (this) {
-			//Start estimation with 0 energy consumption
-			JSONObject element = new JSONObject();
-			try {
-				element.put("distance", 0);
-				element.put("energy", 0);
-				ja.put(element);
-			} catch (JSONException e) {
-				e.printStackTrace();
-				Log.e(TAG, "oopsie!");
-		    	Log.e(TAG, e.toString());
-			}
-			
-			for (Step s : steps) {    
-				element = new JSONObject();
-				
-				double energy = evEnergy      
-						.kWhPerKm(
-								s.distance.value,
-								(factors & SPEED) > 0 ? s.distance.value
-										/ s.duration.value : 0,
-								0,
-								(factors & SLOPE) > 0 ? s.slope : 0,
-								(factors & CLIMATE) > 0 ? 0.7 + currentClimateConsumption
-										: 0,
-								(factors & TIME) > 0 ? s.duration.value : 1);
- 
-				totalDistance += s.distance.value;
-				try {  
-					element.put("distance", totalDistance);
-					element.put("step", s.distance.value);        
-					element.put("energy", energy);
-					ja.put(element);
-				} catch (JSONException e) {
-					e.printStackTrace();
-				}         
-			} 
-		} 
-		return ja.toString();
-	}
+	
+	//###############
+	//Unused code	#
+	//###############
+	// /**
+	// * Shortcut for setting all input parameters, calculate the rest and then
+	// * notify all observers that the data has been updated.
+	// *
+	// * @param soc
+	// * @param speed
+	// * @param fan
+	// * @param climate
+	// */
+	// public void setDataAndNotify(double soc, double speed, double fan,
+	// double climate) {
+	// synchronized (this) {
+	// setSoc(soc);
+	// setSpeed(speed);
+	// setFan(fan);
+	// setClimate(climate);
+	//
+	// calculate();
+	// }
+	//
+	// notifyObservers();
+	// }
+	// /**
+	// * Calculates the consumption rate of the battery using the current values
+	// * of speed and climate.
+	// *
+	// *
+	// * @param distance
+	// * Distance in m
+	// * @param slope
+	// * Relationship between height and distance
+	// * @param dt
+	// * Time duration in seconds
+	// */
+	// public double determineConsumption(double distance, double slope, double
+	// dt) {
+	// synchronized (this) {
+	// kmpKWh = evEnergy.kWhPerKm(distance, speed, 0, slope,
+	// 0.7 + currentClimateConsumption, dt);
+	// }
+	// return kmpKWh;
+	// }
+	// /**
+	// *
+	// * Returns the current data as a JSON string.
+	// *
+	// * @param interpolate whether or not the data should be interpolated.
+	// * @return json-fied cardata.
+	// */
+	// @JavascriptInterface
+	// public String toJson(boolean interpolate) {
+	// JSONObject jo = new JSONObject();
+	// try {
+	// jo.put("speed", String.valueOf(getSpeed(interpolate)));
+	// jo.put("acceleration", String.valueOf(getAcceleration(interpolate)));
+	// jo.put("soc", String.valueOf(getSoc(interpolate)));
+	// jo.put("amp", String.valueOf(getAmp(interpolate)));
+	// jo.put("climate",
+	// String.valueOf(getCurrentClimateConsumption(interpolate)));
+	// jo.put("capacity", String.valueOf(capacity));
+	// jo.put("consumption", String.valueOf(consumption));
+	// } catch (JSONException e) {
+	// Log.e(TAG, e.toString());
+	// }
+	// return jo.toString();
+	// }
+
+	// /**
+	// *
+	// * Same as consumptonOnRoute, only that the return value is a json encoded
+	// * string.
+	// *
+	// * @param steps
+	// * A list of Step
+	// * @param factors
+	// * A list of which parameters to take into account, coded into an
+	// * int.
+	// * @return A JSON Array of the consumption along the route.
+	// */
+	// public String consumptionOnRouteJSON(List<Step> steps, int factors) {
+	// JSONArray ja = new JSONArray();
+	// if (steps == null) {
+	// return ja.toString();
+	// }
+	// double totalDistance = 0;
+	// synchronized (this) {
+	// //Start estimation with 0 energy consumption
+	// JSONObject element = new JSONObject();
+	// try {
+	// element.put("distance", 0);
+	// element.put("energy", 0);
+	// ja.put(element);
+	// } catch (JSONException e) {
+	// e.printStackTrace();
+	// Log.e(TAG, "oopsie!");
+	// Log.e(TAG, e.toString());
+	// }
+	//
+	// for (Step s : steps) {
+	// element = new JSONObject();
+	//
+	// double energy = evEnergy
+	// .kWhPerKm(
+	// s.distance.value,
+	// (factors & SPEED) > 0 ? s.distance.value
+	// / s.duration.value : 0,
+	// 0,
+	// (factors & SLOPE) > 0 ? s.slope : 0,
+	// (factors & CLIMATE) > 0 ? 0.7 + currentClimateConsumption
+	// : 0,
+	// (factors & TIME) > 0 ? s.duration.value : 1);
+	//
+	// totalDistance += s.distance.value;
+	// try {
+	// element.put("distance", totalDistance);
+	// element.put("step", s.distance.value);
+	// element.put("energy", energy);
+	// ja.put(element);
+	// } catch (JSONException e) {
+	// e.printStackTrace();
+	// }
+	// }
+	// }
+	// return ja.toString();
+	// }
 
 }

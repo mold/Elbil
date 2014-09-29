@@ -7,11 +7,11 @@ import org.puredata.core.PdBase;
 
 import se.kth.ev.gmapsviz.R;
 
-import com.kth.ev.apidata.RouteDataFetcher;
-import com.kth.ev.differentiatedrange.gamification.PdDataController;
-import com.kth.ev.differentiatedrange.puredata.Patch;
-import com.kth.ev.differentiatedrange.puredata.PureDataHandler;
-import com.kth.ev.electriccar.CarData;
+import com.kth.ev.audiobahn.gamification.PdDataController;
+import com.kth.ev.audiobahn.puredata.Patch;
+import com.kth.ev.audiobahn.puredata.PureDataHandler;
+import com.kth.ev.cardata.CarData;
+import com.kth.ev.routedata.RouteDataFetcher;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;

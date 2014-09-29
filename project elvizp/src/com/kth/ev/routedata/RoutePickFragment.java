@@ -1,4 +1,4 @@
-package com.kth.ev.apidata;
+package com.kth.ev.routedata;
 
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
@@ -97,7 +97,7 @@ public class RoutePickFragment extends Fragment {
 				// Log.d(TAG,
 				// "Clicked for query "+from.getText().toString()+" to "+to.getText().toString());
 				RouteDataFetcher rdf = new RouteDataFetcher(from.getText()
-						.toString(), to.getText().toString());
+						.toString(), to.getText().toString(), 250.0f);
 				ElvizpActivity a = (ElvizpActivity) getActivity();
 				if (a.isNetworkAvailable()) {
 					a.relayObservable(rdf);

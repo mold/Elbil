@@ -14,11 +14,11 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.Surface.OutOfResourcesException;
 
-public class EVVizSurface extends SurfaceView implements
+public class CanvasSurface extends SurfaceView implements
 		SurfaceHolder.Callback {
 	List<CanvasRenderer> crl;
 	
-	public EVVizSurface(Context context) {
+	public CanvasSurface(Context context) {
 		super(context);
 		getHolder().addCallback(this);
 		setZOrderOnTop(true);
@@ -26,7 +26,7 @@ public class EVVizSurface extends SurfaceView implements
 
 	}
 
-	public EVVizSurface(Context context, AttributeSet set) {
+	public CanvasSurface(Context context, AttributeSet set) {
 		super(context, set);
 		getHolder().addCallback(this);
 		setZOrderOnTop(true);
@@ -51,21 +51,22 @@ public class EVVizSurface extends SurfaceView implements
 		
 	}
 	
-	public void addRenderer(CanvasRenderer c){
+	public synchronized void addRenderer(CanvasRenderer c){
 		if(crl == null){
 			crl = new ArrayList<CanvasRenderer>();
 		}
-		crl.add(c);
+		if(!crl.contains(c))
+			crl.add(c);
 	}
 	
-	public void addRendererList(List<CanvasRenderer> l){
+	public synchronized void addRendererList(List<CanvasRenderer> l){
 		if(crl == null)
 			crl = l;
 		else
 			crl.addAll(l);
 	}
 	
-	public void redraw(){
+	public synchronized void redraw(){
 		// Perform update to UI
 		Canvas c = null;
 		//Log.d("ElvizSurface", "Is holder null? "+(getHolder()==null)+". Is the surface valid? "+getHolder().getSurface().isValid());
@@ -89,10 +90,10 @@ public class EVVizSurface extends SurfaceView implements
 	}
 
 	/**
-	 * Internal method to update the dimensions for each canvasrenderer.
+	 * Internal method to update the dimensions for each CanvasRenderer.
 	 * @param holder
 	 */
-	private void updateDimensions(SurfaceHolder holder) {
+	private synchronized void updateDimensions(SurfaceHolder holder) {
 		Canvas c = null;
 		if(!holder.getSurface().isValid())
 			return;

@@ -1,4 +1,4 @@
-package com.kth.ev.apidata;
+package com.kth.ev.routedata;
          
 import java.util.List;
 

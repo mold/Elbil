@@ -1,4 +1,4 @@
-package com.kth.ev.apidata;
+package com.kth.ev.routedata;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -11,13 +11,13 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.api.client.json.JsonParser;
 import com.google.gson.Gson;
 import com.google.maps.android.PolyUtil;
-import com.kth.ev.apidata.APIDataTypes.DirectionsResult;
-import com.kth.ev.apidata.APIDataTypes.ElevationData;
-import com.kth.ev.apidata.APIDataTypes.ElevationResult;
-import com.kth.ev.apidata.APIDataTypes.Leg;
-import com.kth.ev.apidata.APIDataTypes.Location;
-import com.kth.ev.apidata.APIDataTypes.Step;
-import com.kth.ev.apidata.APIDataTypes.Value;
+import com.kth.ev.routedata.APIDataTypes.DirectionsResult;
+import com.kth.ev.routedata.APIDataTypes.ElevationData;
+import com.kth.ev.routedata.APIDataTypes.ElevationResult;
+import com.kth.ev.routedata.APIDataTypes.Leg;
+import com.kth.ev.routedata.APIDataTypes.Location;
+import com.kth.ev.routedata.APIDataTypes.Step;
+import com.kth.ev.routedata.APIDataTypes.Value;
 /**
  * A Runnable implementation that performs some calls to the
  * google API to fetch information about a given route.
@@ -33,8 +33,8 @@ public class RouteDataFetcher extends Observable implements Runnable {
 	public String data_combined_json;
 	public List<LatLng> route, elevation;
 	                 
-	private static int sample_size = 100;   
-	private static double step_size = 100;
+	private int sample_size = -1;   
+	private double step_size = -1;
 
 	/**
 	 * Constructor
@@ -45,7 +45,35 @@ public class RouteDataFetcher extends Observable implements Runnable {
 		pointA = "Tåsjöberget, Sweden";
 		pointB = "Tåsjön, Strömsund, Sweden";
 		data_combined = new ArrayList<Step>();
-	}    
+		sample_size = 100;
+	}  
+	
+	/**
+	 * Constructor
+	 * 
+	 * @param a Start position of the route.
+	 * @param b End position of the route.
+	 * @param sz Number of route steps.
+	 */
+	public RouteDataFetcher(String a, String b, int sz) {
+		pointA = a;
+		pointB = b;
+		data_combined = new ArrayList<Step>();
+		sample_size = sz;
+	}
+	/**
+	 * Constructor
+	 * 
+	 * @param a Start position of the route.
+	 * @param b End position of the route.
+	 * @param sz Length of each route step.
+	 */
+	public RouteDataFetcher(String a, String b, double sz) {
+		pointA = a;
+		pointB = b;
+		data_combined = new ArrayList<Step>();
+		step_size = sz;
+	}
 
 	/**
 	 * Constructor
@@ -57,9 +85,10 @@ public class RouteDataFetcher extends Observable implements Runnable {
 		pointA = a;
 		pointB = b;
 		data_combined = new ArrayList<Step>();
+		sample_size = 100;
 	}
 	
-	public List<Step> getDirectionsRoute(){
+	public synchronized List<Step> getDirectionsRoute(){
 		if(data_directions == null){
 			Log.e(TAG, "No directions data available.");
 			return null;
@@ -67,7 +96,7 @@ public class RouteDataFetcher extends Observable implements Runnable {
 		return data_directions;
 	}
 	
-	public List<Step> getCombinedRoute(){
+	public synchronized List<Step> getCombinedRoute(){
 		if(data_combined == null){
 			Log.e(TAG, "No combined data available.");
 			return null;
@@ -105,7 +134,15 @@ public class RouteDataFetcher extends Observable implements Runnable {
 				//with slope estimations from the elevation
 				//data.
 				//Base sample size on a set step distance
-				sample_size = (int) Math.floor((dist / step_size));
+				if(sample_size == -1 && step_size != -1){
+					sample_size = (int) Math.floor((dist / step_size));
+				}else if(step_size == -1 && sample_size == -1){
+					//If we somehow arrive at this point, notify that 
+					//something went wrong but use the default value.
+					Log.w(TAG, "Unspecified step size and step numer, using 100 steps.");
+					step_size = 100;
+				}
+				
 				List<Step> ret = new ArrayList<Step>(sample_size);
 				double[] speeds = new double[sample_size];
 				double avg = dist / sample_size;
@@ -192,7 +229,8 @@ public class RouteDataFetcher extends Observable implements Runnable {
 			}
 		} catch (Exception e) {
 			data_combined = null;
-			Log.d(TAG, e.toString());
+			Log.e(TAG, "Something went wrong with "+this+" run:");
+			Log.e(TAG, e.toString());
 		}
 		setChanged();
 		notifyObservers();

@@ -4,7 +4,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Random;
 
-import com.kth.ev.electriccar.CarData;
+import com.kth.ev.cardata.CarData;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

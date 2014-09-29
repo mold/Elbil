@@ -2,7 +2,7 @@
  * @author John Brynte Turesson
  */
 
-package com.kth.ev.differentiatedrange.puredata;
+package com.kth.ev.audiobahn.puredata;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -18,7 +18,7 @@ import org.puredata.android.service.PdService;
 import org.puredata.core.PdBase;
 import org.puredata.core.PdReceiver;
 
-import com.kth.ev.electriccar.CarData;
+import com.kth.ev.cardata.CarData;
 
 import android.content.ComponentName;
 import android.content.Context;

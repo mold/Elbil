@@ -1,4 +1,4 @@
-package com.kth.ev.differentiatedrange.gamification;
+package com.kth.ev.audiobahn.gamification;
 
 import java.util.EmptyStackException;
 

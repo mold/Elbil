@@ -1,4 +1,4 @@
-package com.kth.ev.differentiatedrange.gamification;
+package com.kth.ev.audiobahn.gamification;
 
 import java.util.Locale;
 import java.util.Observable;
@@ -11,10 +11,10 @@ import android.graphics.Color;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
 
-import com.kth.ev.apidata.RouteDataFetcher;
-import com.kth.ev.apidata.APIDataTypes.Step;
-import com.kth.ev.electriccar.CarData;
+import com.kth.ev.cardata.CarData;
 import com.kth.ev.graphviz.DataGraph;
+import com.kth.ev.routedata.RouteDataFetcher;
+import com.kth.ev.routedata.APIDataTypes.Step;
 
 public class PdDataController implements Observer {
 

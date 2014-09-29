@@ -1,10 +1,10 @@
-package com.kth.ev.apidata;
+package com.kth.ev.routedata;
 
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
-import com.kth.ev.apidata.APIDataTypes.Step;
+import com.kth.ev.routedata.APIDataTypes.Step;
 
 import android.location.Location;
 import android.util.Log;
@@ -28,13 +28,19 @@ public class RouteProgress extends Observable implements Observer {
 	private double avg_current_consumption;
 	private boolean finished;
 
-	public RouteProgress(GPSHolder gps, List<Step> route) {
+	public RouteProgress(List<Step> route) {
 		this.route = route;
 		this.current = 0;
 		this.travelled_distance = 0;
 		finished = false;
-		if (gps != null)
-			gps.addObserver(this);
+	}
+	
+	public RouteProgress(List<Step> route, GPSHolder gps) {
+		this.route = route;
+		this.current = 0;
+		this.travelled_distance = 0;
+		finished = false;
+		gps.addObserver(this);
 	}
 
 	@Override

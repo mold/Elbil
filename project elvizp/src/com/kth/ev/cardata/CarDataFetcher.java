@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.kth.ev.electriccar;
+package com.kth.ev.cardata;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
