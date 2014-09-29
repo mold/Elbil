@@ -6,7 +6,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
-import android.util.Log;
 
 import com.kth.ev.graphviz.CanvasRenderer;
 import com.kth.ev.routedata.APIDataTypes.Step;
@@ -19,6 +18,7 @@ import com.kth.ev.routedata.APIDataTypes.Step;
  * 
  */
 class RouteBoxes implements CanvasRenderer {
+	@SuppressWarnings("unused")
 	private static final String TAG = "RouteBoxes";
 	private List<Step> route;
 	private double[] est_c;
@@ -35,11 +35,14 @@ class RouteBoxes implements CanvasRenderer {
 	private boolean hasDimensions;
 
 	public RouteBoxes(List<Step> route, double[] est) {
-		Log.d(TAG, "CREATED");
 		this.route = route;
 		this.est_c = est;
 		p = new Paint();
 		updateData(route, est);
+	}
+
+	public RouteBoxes() {
+		p = new Paint();
 	}
 
 	/**
@@ -52,20 +55,23 @@ class RouteBoxes implements CanvasRenderer {
 		if (!hasDimensions) {
 			updateDimensions(c);
 		}
-		//Draw estimation
-		float x_coord = x(dist[0]), x_coord_p = x_coord;
-		float y_coord = y(est_c[0]);// , y_coord_p = y_coord;
-		float y_mid = c_height / 2;
-		p.setColor(Color.rgb(95, 95, 95));
-		p.setStyle(Style.FILL);
-		c.drawRect(0, y_mid, x_coord, y_coord, p);
-		for (int i = 1; i < est_c.length; i++) {// For each step, draw a box.
-			x_coord = x(dist[i]);
-			y_coord = y(est_c[i]);
+		// Draw estimation
+		if (hasData()) {
+			float x_coord = x(dist[0]), x_coord_p = x_coord;
+			float y_coord = y(est_c[0]);// , y_coord_p = y_coord;
+			float y_mid = c_height / 2;
+			p.setColor(Color.rgb(95, 95, 95));
+			p.setStyle(Style.FILL);
+			c.drawRect(0, y_mid, x_coord, y_coord, p);
+			for (int i = 1; i < est_c.length; i++) {// For each step, draw a
+													// box.
+				x_coord = x(dist[i]);
+				y_coord = y(est_c[i]);
 
-			c.drawRect(x_coord_p, y_mid, x_coord, y_coord, p);
-			x_coord_p = x_coord;
-			// y_coord_p = y_coord;
+				c.drawRect(x_coord_p, y_mid, x_coord, y_coord, p);
+				x_coord_p = x_coord;
+				// y_coord_p = y_coord;
+			}
 		}
 	}
 
@@ -125,7 +131,8 @@ class RouteBoxes implements CanvasRenderer {
 	/**
 	 * Updates the current estimation values.
 	 * 
-	 * @param est The new estimation values.
+	 * @param est
+	 *            The new estimation values.
 	 */
 	public synchronized void updateEstimation(double[] est) {
 		est_c = est;
@@ -142,8 +149,10 @@ class RouteBoxes implements CanvasRenderer {
 	/**
 	 * Updates the data set.
 	 * 
-	 * @param route New route data.
-	 * @param est New estimation.
+	 * @param route
+	 *            New route data.
+	 * @param est
+	 *            New estimation.
 	 */
 	public synchronized void updateData(List<Step> route, double[] est) {
 		this.route = route;
@@ -160,6 +169,13 @@ class RouteBoxes implements CanvasRenderer {
 		}
 		x_max = dist[dist.length - 1];
 		hasDimensions = false;
+	}
+
+	/**
+	 * @return True if we have both a route and an estimation.
+	 */
+	public boolean hasData() {
+		return route != null && est_c != null;
 	}
 
 }

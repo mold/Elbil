@@ -7,18 +7,19 @@ import java.util.Observer;
 import se.kth.ev.gmapsviz.R;
 
 import com.kth.ev.cardata.CarData;
+import com.kth.ev.cardata.EVEnergy;
 import com.kth.ev.graphviz.CanvasSurface;
 import com.kth.ev.routedata.APIDataTypes.Step;
 import com.kth.ev.routedata.RouteDataFetcher;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 public class RouteVizFragment extends Fragment implements Observer {
+	@SuppressWarnings("unused")
 	private static final String TAG = "RouteVizFragment";
 	private List<Step> route;
 	private double[] est_c;// estimated consumption
@@ -39,6 +40,8 @@ public class RouteVizFragment extends Fragment implements Observer {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		cs = new Drawer(500);
+		rb = new RouteBoxes();
 	}
 
 	@Override
@@ -50,7 +53,7 @@ public class RouteVizFragment extends Fragment implements Observer {
 	@Override
 	public void onResume() {
 		super.onResume();
-		if (rb != null)
+		if (rb.hasData())
 			cs.addViz(rb);
 		cs.startDrawing();
 	}
@@ -59,12 +62,7 @@ public class RouteVizFragment extends Fragment implements Observer {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle bundle) {
 		View v = inflater.inflate(R.layout.fragment_elviz, container, false);
-		
-		if (cs == null)
-			cs = new Drawer(500,
-					(CanvasSurface) v.findViewById(R.id.elviz_surf));
-		else
-			cs.changeSurface((CanvasSurface) v.findViewById(R.id.elviz_surf));
+		cs.changeSurface((CanvasSurface) v.findViewById(R.id.elviz_surf));
 		
 		return v;
 	}
@@ -101,36 +99,25 @@ public class RouteVizFragment extends Fragment implements Observer {
 			if (climat - cd.getClimate(false) > 0.5f) {// Re-estimate energy
 														// consumption, if we
 														// have a route.
-				est_c = cd.consumptionOnRoute(route, CarData.CLIMATE
-						| CarData.SLOPE | CarData.TIME | CarData.SPEED);
+				est_c = cd.getEvEnergy().consumptionOnRoute(route,
+						EVEnergy.SLOPE | EVEnergy.TIME | EVEnergy.SPEED, cd.getCurrentClimateConsumption(true));
 				rb.updateEstimation(est_c);
+				climat = cd.getClimate(false);
 			}
 
 		}
 
 		// When we have received a new route to compute an estimation from.
 		if (observable instanceof RouteDataFetcher) {
-			Log.d(TAG, "NEW DATA");
 			new_data = true;
 			route = ((RouteDataFetcher) observable).getCombinedRoute();
 		}
 
 		// When we have our data, we can create our visualization.
-		if (new_data && route != null && cd != null) {
-			Log.d(TAG, "VIZ TIME");
-
-			est_c = cd.consumptionOnRoute(route, CarData.SLOPE | CarData.TIME
-					| CarData.SPEED);
-			if (rb == null)
-				rb = new RouteBoxes(route, est_c);
-			else
-				rb.updateData(route, est_c);
-			// If the view has not been initialized yet, we have to wait
-			// until it is so. We wait by yielding to other threads.
-			while (cs == null) {
-				Log.d(TAG, "YIELD");
-				Thread.yield();
-			}
+		if (new_data && cd != null) {
+			est_c = cd.getEvEnergy().consumptionOnRoute(route, EVEnergy.SLOPE | EVEnergy.TIME
+					| EVEnergy.SPEED, cd.getCurrentClimateConsumption(true));
+			rb.updateData(route, est_c);
 			cs.addViz(rb);
 			new_data = false;
 		}

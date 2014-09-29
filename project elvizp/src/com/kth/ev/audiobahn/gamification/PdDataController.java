@@ -12,6 +12,7 @@ import android.speech.tts.TextToSpeech;
 import android.util.Log;
 
 import com.kth.ev.cardata.CarData;
+import com.kth.ev.cardata.EVEnergy;
 import com.kth.ev.graphviz.DataGraph;
 import com.kth.ev.routedata.RouteDataFetcher;
 import com.kth.ev.routedata.APIDataTypes.Step;
@@ -219,9 +220,8 @@ public class PdDataController implements Observer {
 				if (routeData != null) {
 					if (distanceTraveledStart == -1) {
 						distanceTraveledStart = distance;
-						routeConsumptions = carData.consumptionOnRoute(
-								routeData.getCombinedRoute(), CarData.SPEED | CarData.TIME
-										| CarData.SLOPE | CarData.CLIMATE);
+						routeConsumptions = carData.getEvEnergy().consumptionOnRoute(routeData.getCombinedRoute(), EVEnergy.SPEED | EVEnergy.TIME
+										| EVEnergy.SLOPE, carData.getCurrentClimateConsumption(true));
 						prevConsumption = carData.getTotalConsumption();
 						Log.v("pdgame",
 								"route started: " + routeData.getCombinedRoute().size());

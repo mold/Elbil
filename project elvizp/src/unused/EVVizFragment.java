@@ -1,17 +1,16 @@
-package com.kth.ev.application;
+package unused;
 
 import java.util.Observable;
 import java.util.Observer;
 
 import se.kth.ev.gmapsviz.R;
 
-import com.kth.ev.apidata.RouteDataFetcher;
-import com.kth.ev.apidata.RouteProgress;
-import com.kth.ev.apidata.APIDataTypes.Step;
-import com.kth.ev.electriccar.CarData;
-import com.kth.ev.electriccar.EVEnergy;
-import com.kth.ev.graphviz.EVVizSurface;
-import com.kth.ev.graphviz.XYPlot;
+import com.kth.ev.application.ElvizpActivity;
+import com.kth.ev.cardata.CarData;
+import com.kth.ev.cardata.EVEnergy;
+import com.kth.ev.graphviz.CanvasSurface;
+import com.kth.ev.routedata.RouteDataFetcher;
+import com.kth.ev.routedata.APIDataTypes.Step;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -22,7 +21,7 @@ import android.view.ViewGroup;
   
 public class EVVizFragment extends Fragment implements Observer {
 	//private static final String TAG = "EVVizFragment";
-	private EVVizSurface canvas;
+	private CanvasSurface canvas;
 	private CarData cd;
 	private RouteDataFetcher rdf;
 	private Thread t_rdf;
@@ -106,7 +105,7 @@ public class EVVizFragment extends Fragment implements Observer {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle bundle) {
       View v = inflater.inflate(R.layout.fragment_elviz, container, false);
-      canvas = (EVVizSurface) v.findViewById(R.id.elviz_surf);
+      canvas = (CanvasSurface) v.findViewById(R.id.elviz_surf);
   	  canvas.addRenderer(evg);
       return v;
     }
@@ -125,14 +124,6 @@ public class EVVizFragment extends Fragment implements Observer {
 				}
 				canvas.redraw();
 			}
-			if(observable instanceof RouteProgress){
-				//RouteProgress rp = (RouteProgress) observable;
-				//evg.add_data_point("Route progress", rp.currentDistance(), cd.getConsumption(true));
-				//Gör nåt med RouteProgress
-			}
-			if(observable instanceof CarData){
-				//Gör nåt med CarData
-			}
 		}
 	}
 
@@ -147,8 +138,8 @@ public class EVVizFragment extends Fragment implements Observer {
 			return;
 		
 		int factors = 0;
-		factors |= CarData.SLOPE | CarData.TIME | CarData.SPEED;
-		double[] consumption = cd.consumptionOnRoute(rdf.getCombinedRoute(), factors);
+		factors |= EVEnergy.SLOPE | EVEnergy.TIME | EVEnergy.SPEED;
+		double[] consumption = cd.getEvEnergy().consumptionOnRoute(rdf.getCombinedRoute(), factors, 0.7 + cd.getCurrentClimateConsumption(true));
 
 		distance_for_steps = new float[consumption.length];
 		float[] consumption_per_step = new float[consumption.length];

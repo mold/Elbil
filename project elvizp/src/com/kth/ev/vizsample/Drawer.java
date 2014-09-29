@@ -16,6 +16,11 @@ class Drawer implements Runnable {
 	private CanvasSurface canvas;
 	private Thread t;
 
+	public Drawer(int refresh_rate) {
+		this.refresh_rate = refresh_rate;
+		draw = false;
+	}
+
 	public Drawer(int refresh_rate, CanvasSurface canvas) {
 		this.refresh_rate = refresh_rate;
 		this.canvas = canvas;
@@ -28,7 +33,7 @@ class Drawer implements Runnable {
 
 	@Override
 	public void run() {
-		while (draw) {
+		while (draw && canvas != null) {
 			synchronized (this) {
 				canvas.redraw();
 			}
@@ -41,7 +46,7 @@ class Drawer implements Runnable {
 	}
 
 	public void drawOnce() {
-		if (t == null)
+		if (t == null && canvas != null)
 			canvas.redraw();
 	}
 
@@ -54,6 +59,7 @@ class Drawer implements Runnable {
 		draw = true;
 		t = new Thread(this, "DrawerThread for " + this);
 		t.start();
+
 	}
 
 	public synchronized void changeSurface(CanvasSurface canvasSurface) {

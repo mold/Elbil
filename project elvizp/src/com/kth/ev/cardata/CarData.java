@@ -1,9 +1,7 @@
 package com.kth.ev.cardata;
 
-import java.util.List;
 import java.util.Observable;
 
-import com.kth.ev.routedata.APIDataTypes.Step;
 
 import android.util.Log;
 
@@ -26,10 +24,7 @@ import android.util.Log;
  * 
  */
 public class CarData extends Observable {
-	public static final int SPEED = 1, SLOPE = 2, CLIMATE = 4,
-			ACCELERATION = 8, TIME = 16;
-
-	private static final String TAG = "CarData";
+	static final String TAG = "CarData";
 
 	private double soc, speed, fan, climate, amp, acceleration, volt,
 			consumption;
@@ -37,13 +32,14 @@ public class CarData extends Observable {
 	private double socPrev, speedPrev, fanPrev, climatePrev, ampPrev,
 			accelerationPrev, voltPrev, consumptionPrev;
 	private double totalConsumption;
-	private EVEnergy evEnergy;
+	EVEnergy evEnergy;
 	private double[] rangeArray = new double[17]; // 0 is current
 	private double[] rangeMaxArray = new double[16]; // 0 is current
 	private double speedOneMinMean, speedFiveMinMean, speed10SecMean;
 
-	private double currentClimateConsumption = 3.0,
-			currentClimateConsumptionPrev;
+	double currentClimateConsumption = 3.0;
+
+	private double currentClimateConsumptionPrev;
 
 	private long lastUpdateTime = System.currentTimeMillis();
 
@@ -403,38 +399,6 @@ public class CarData extends Observable {
 
 	public double getSpeed10SecMean() {
 		return speed10SecMean;
-	}
-
-	/**
-	 * Calculates the consumption rate of the given route, consisting of steps
-	 * fetched from the Google API Directions & Elevation API
-	 * 
-	 * @param steps
-	 *            A list of Step
-	 * @param factors
-	 *            A list of which parameters to take into account, coded into an
-	 *            int.
-	 * @return An array of doubles which contains the energy consumption for
-	 *         every step.
-	 */
-	public double[] consumptionOnRoute(List<Step> steps, int factors) {
-		if (steps == null) {
-			return null;
-		}
-		double climate = 0.7 + currentClimateConsumption;
-		Log.d(TAG, "Climate effect: "+climate);
-		double[] ret = new double[steps.size()];
-		int i = 0;
-		for (Step s : steps) {
-			ret[i] = evEnergy.kWhPerKm(s.distance.value,
-					(factors & SPEED) > 0 ? s.distance.value / s.duration.value
-							: 0, 0, (factors & SLOPE) > 0 ? s.slope : 0,
-					(factors & CLIMATE) > 0 ? climate : 0,
-					(factors & TIME) > 0 ? s.duration.value : 1);
-
-			i++;
-		}
-		return ret;
 	}
 
 	private double lerp(double a, double b) {
