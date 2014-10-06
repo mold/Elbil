@@ -5,7 +5,7 @@ import java.util.Observer;
 
 import org.puredata.core.PdBase;
 
-import se.kth.ev.gmapsviz.R;
+import com.kth.ev.application.R;
 
 import com.kth.ev.audiobahn.gamification.PdDataController;
 import com.kth.ev.audiobahn.puredata.Patch;

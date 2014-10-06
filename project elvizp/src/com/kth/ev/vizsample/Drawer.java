@@ -27,7 +27,7 @@ class Drawer implements Runnable {
 		draw = true;
 	}
 
-	public void addViz(CanvasRenderer cr) {
+	public synchronized void addViz(CanvasRenderer cr) {
 		canvas.addRenderer(cr);
 	}
 
@@ -45,14 +45,17 @@ class Drawer implements Runnable {
 		}
 	}
 
-	public void drawOnce() {
+	public synchronized void drawOnce() {
 		if (t == null && canvas != null)
 			canvas.redraw();
 	}
 
 	public void stopDrawing() {
 		draw = false;
-		t.interrupt();
+		if (t != null) {
+			t.interrupt();
+			t = null;
+		}
 	}
 
 	public void startDrawing() {

@@ -4,8 +4,7 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
-import se.kth.ev.gmapsviz.R;
-
+import com.kth.ev.application.R;
 import com.kth.ev.cardata.CarData;
 import com.kth.ev.cardata.EVEnergy;
 import com.kth.ev.graphviz.CanvasSurface;
@@ -18,13 +17,32 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+/**
+ * Sample fragment to handle the visualization classes.
+ * 
+ * The fragment will retain the data so the visualizations
+ * can be reproduced when the fragment comes into view.
+ * 
+ * The fragment implements the Observer pattern to receive
+ * data updates. Depending on what data that this
+ * observer has been attached to it can do different things.
+ * In this sample, the fragment will listen for RouteDataFetcher
+ * and CarData. When CarData is received, the climate consumption
+ * is recorded and the reference to its EVEnergy instance is updated.
+ * EVEnergy is later used for the consumptionOnRoute method. 
+ * 
+ * The classes Drawer and RouteBoxes takes care of the visualization 
+ * part.
+ * 
+ * @author marothon
+ *
+ */
 public class RouteVizFragment extends Fragment implements Observer {
-	@SuppressWarnings("unused")
-	private static final String TAG = "RouteVizFragment";
+//	private static final String TAG = "RouteVizFragment";
 	private List<Step> route;
 	private double[] est_c;// estimated consumption
 	private double climat = 0;// check for difference in climate;
-	private CarData cd;// volatile reference of carData.
+	private EVEnergy ev;
 	private Drawer cs;
 	private RouteBoxes rb;
 	private boolean new_data = false;
@@ -53,8 +71,8 @@ public class RouteVizFragment extends Fragment implements Observer {
 	@Override
 	public void onResume() {
 		super.onResume();
-		if (rb.hasData())
-			cs.addViz(rb);
+		cs.addViz(rb);
+		// cs.drawOnce();
 		cs.startDrawing();
 	}
 
@@ -63,7 +81,7 @@ public class RouteVizFragment extends Fragment implements Observer {
 			Bundle bundle) {
 		View v = inflater.inflate(R.layout.fragment_elviz, container, false);
 		cs.changeSurface((CanvasSurface) v.findViewById(R.id.elviz_surf));
-		
+
 		return v;
 	}
 
@@ -75,7 +93,7 @@ public class RouteVizFragment extends Fragment implements Observer {
 	/**
 	 * ===========================
 	 * 
-	 * Data and visualization methods.
+	 * Data handling methods.
 	 * 
 	 * ===========================
 	 */
@@ -88,44 +106,34 @@ public class RouteVizFragment extends Fragment implements Observer {
 	 */
 	@Override
 	public void update(Observable observable, Object data) {
-		// When we get new car data
+		// For when we get new car data
 		if (observable instanceof CarData) {
+			CarData cd = (CarData) observable;
+			ev = cd.getEvEnergy();
 
-			if (cd == null) {
-				cd = (CarData) observable;
-				climat = cd.getClimate(false);
-			}
-
-			if (climat - cd.getClimate(false) > 0.5f) {// Re-estimate energy
-														// consumption, if we
-														// have a route.
-				est_c = cd.getEvEnergy().consumptionOnRoute(route,
-						EVEnergy.SLOPE | EVEnergy.TIME | EVEnergy.SPEED, cd.getCurrentClimateConsumption(true));
+			// Re-estimate energy consumption, if we have a route.
+			if (climat != cd.getCurrentClimateConsumption(true)
+					&& route != null) {
+				est_c = ev.consumptionOnRoute(route, EVEnergy.SLOPE
+						| EVEnergy.TIME | EVEnergy.SPEED,
+						cd.getCurrentClimateConsumption(true));
 				rb.updateEstimation(est_c);
-				climat = cd.getClimate(false);
 			}
-
+			climat = cd.getCurrentClimateConsumption(true);
 		}
 
-		// When we have received a new route to compute an estimation from.
+		// For when we have received a new route to compute an estimation from.
 		if (observable instanceof RouteDataFetcher) {
 			new_data = true;
 			route = ((RouteDataFetcher) observable).getCombinedRoute();
 		}
 
-		// When we have our data, we can create our visualization.
-		if (new_data && cd != null) {
-			est_c = cd.getEvEnergy().consumptionOnRoute(route, EVEnergy.SLOPE | EVEnergy.TIME
-					| EVEnergy.SPEED, cd.getCurrentClimateConsumption(true));
+		// For when we have our data, where we create our visualization.
+		if (new_data && ev != null) {
+			est_c = ev.consumptionOnRoute(route, EVEnergy.SLOPE | EVEnergy.TIME
+					| EVEnergy.SPEED, climat);
 			rb.updateData(route, est_c);
-			cs.addViz(rb);
 			new_data = false;
 		}
-
-		// When we have received a new gps position.
-		// if (observable instanceof GPSHolder) {
-		//
-		// }
-
 	}
 }

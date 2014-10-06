@@ -12,14 +12,15 @@ import com.kth.ev.routedata.APIDataTypes.Step;
 
 /**
  * This class shows how to use the CanvasRenderer interface to draw something on
- * a Canvas.
+ * a Canvas. An instance of RouteBoxes will draw onto a given Canvas by being called
+ * through the draw(Canvas c) method. A RouteBoxes will only draw on the canvas
+ * when it has both route data and an estimation.
  * 
  * @author marothon
  * 
  */
 class RouteBoxes implements CanvasRenderer {
-	@SuppressWarnings("unused")
-	private static final String TAG = "RouteBoxes";
+//	private static final String TAG = "RouteBoxes";
 	private List<Step> route;
 	private double[] est_c;
 	private double[] dist;
@@ -32,8 +33,13 @@ class RouteBoxes implements CanvasRenderer {
 	private float origy;
 	private float origx;
 	private Paint p;
-	private boolean hasDimensions;
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param route
+	 * @param est
+	 */
 	public RouteBoxes(List<Step> route, double[] est) {
 		this.route = route;
 		this.est_c = est;
@@ -41,6 +47,9 @@ class RouteBoxes implements CanvasRenderer {
 		updateData(route, est);
 	}
 
+	/**
+	 * Default constructor. Invalid for drawing.
+	 */
 	public RouteBoxes() {
 		p = new Paint();
 	}
@@ -52,9 +61,6 @@ class RouteBoxes implements CanvasRenderer {
 	 */
 	@Override
 	public synchronized void draw(Canvas c) {
-		if (!hasDimensions) {
-			updateDimensions(c);
-		}
 		// Draw estimation
 		if (hasData()) {
 			float x_coord = x(dist[0]), x_coord_p = x_coord;
@@ -62,7 +68,7 @@ class RouteBoxes implements CanvasRenderer {
 			float y_mid = c_height / 2;
 			p.setColor(Color.rgb(95, 95, 95));
 			p.setStyle(Style.FILL);
-			c.drawRect(0, y_mid, x_coord, y_coord, p);
+			c.drawRect(origx, y_mid, x_coord, y_coord, p);
 			for (int i = 1; i < est_c.length; i++) {// For each step, draw a
 													// box.
 				x_coord = x(dist[i]);
@@ -91,7 +97,7 @@ class RouteBoxes implements CanvasRenderer {
 	private float y(double y) {
 		double y_sum = Math.max(Math.abs(y_min), y_max);
 		float rangedFraction = (float) ((y + y_sum) / (2 * y_sum));
-		float range = (float) c_height - 3.0f * margin;
+		float range = (float) c_height - 2.0f * margin;
 		return origy - rangedFraction * range;
 	}
 
@@ -106,7 +112,7 @@ class RouteBoxes implements CanvasRenderer {
 	 */
 	private float x(double x) {
 		float rangedFraction = (float) (x / x_max);// 0.0 <= y <= 1.0
-		float range = (float) c_width - 3.0f * margin;
+		float range = (float) c_width - 2.0f * margin;
 		return rangedFraction * range + origx;
 	}
 
@@ -118,14 +124,13 @@ class RouteBoxes implements CanvasRenderer {
 	public void updateDimensions(Canvas c) {
 		c_width = c.getWidth();
 		c_height = c.getHeight();
-		// margin = 0.05f * (c.getWidth() < c.getHeight() ? c.getWidth() : c
-		// .getHeight());
-		margin = 0;
+		 margin = 0.05f * (c.getWidth() < c.getHeight() ? c.getWidth() : c
+		 .getHeight());
+		//margin = 0;
 		// origy = c_height - 2.0f * margin;
 		// origx = 2.0f * margin;
-		origy = c_height;
-		origx = 0;
-		hasDimensions = true;
+		origy = c_height - margin;
+		origx = margin;
 	}
 
 	/**
@@ -135,7 +140,7 @@ class RouteBoxes implements CanvasRenderer {
 	 *            The new estimation values.
 	 */
 	public synchronized void updateEstimation(double[] est) {
-		est_c = est;
+		this.est_c = est;
 		Step s = route.get(0);
 		dist[0] = s.distance.value;
 		y_min = y_max = est[0];
@@ -156,6 +161,7 @@ class RouteBoxes implements CanvasRenderer {
 	 */
 	public synchronized void updateData(List<Step> route, double[] est) {
 		this.route = route;
+		this.est_c = est;
 		// Process a distance array for the estimation
 		dist = new double[est.length];
 		Step s = route.get(0);
@@ -168,7 +174,6 @@ class RouteBoxes implements CanvasRenderer {
 			y_max = y_max > est[i] ? y_max : est[i];
 		}
 		x_max = dist[dist.length - 1];
-		hasDimensions = false;
 	}
 
 	/**

@@ -9,7 +9,6 @@ import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.api.client.json.JsonParser;
-import com.google.gson.Gson;
 import com.google.maps.android.PolyUtil;
 import com.kth.ev.routedata.APIDataTypes.DirectionsResult;
 import com.kth.ev.routedata.APIDataTypes.ElevationData;
@@ -18,22 +17,22 @@ import com.kth.ev.routedata.APIDataTypes.Leg;
 import com.kth.ev.routedata.APIDataTypes.Location;
 import com.kth.ev.routedata.APIDataTypes.Step;
 import com.kth.ev.routedata.APIDataTypes.Value;
+
 /**
- * A Runnable implementation that performs some calls to the
- * google API to fetch information about a given route.
- *  
+ * A Runnable implementation that performs some calls to the google API to fetch
+ * information about a given route.
+ * 
  * @author marothon
- *    
+ * 
  */
 public class RouteDataFetcher extends Observable implements Runnable {
 	private static final String TAG = "RouteDataFetcher";
 	private String pointA, pointB;
 	private List<Step> data_directions, data_combined;
 	private String json;
-	public String data_combined_json;
 	public List<LatLng> route, elevation;
-	                 
-	private int sample_size = -1;   
+
+	private int sample_size = -1;
 	private double step_size = -1;
 
 	/**
@@ -46,14 +45,17 @@ public class RouteDataFetcher extends Observable implements Runnable {
 		pointB = "Tåsjön, Strömsund, Sweden";
 		data_combined = new ArrayList<Step>();
 		sample_size = 100;
-	}  
-	
+	}
+
 	/**
 	 * Constructor
 	 * 
-	 * @param a Start position of the route.
-	 * @param b End position of the route.
-	 * @param sz Number of route steps.
+	 * @param a
+	 *            Start position of the route.
+	 * @param b
+	 *            End position of the route.
+	 * @param sz
+	 *            Number of route steps.
 	 */
 	public RouteDataFetcher(String a, String b, int sz) {
 		pointA = a;
@@ -61,12 +63,16 @@ public class RouteDataFetcher extends Observable implements Runnable {
 		data_combined = new ArrayList<Step>();
 		sample_size = sz;
 	}
+
 	/**
 	 * Constructor
 	 * 
-	 * @param a Start position of the route.
-	 * @param b End position of the route.
-	 * @param sz Length of each route step.
+	 * @param a
+	 *            Start position of the route.
+	 * @param b
+	 *            End position of the route.
+	 * @param sz
+	 *            Length of each route step.
 	 */
 	public RouteDataFetcher(String a, String b, double sz) {
 		pointA = a;
@@ -78,8 +84,10 @@ public class RouteDataFetcher extends Observable implements Runnable {
 	/**
 	 * Constructor
 	 * 
-	 * @param a Start position of the route.
-	 * @param b End position of the route.
+	 * @param a
+	 *            Start position of the route.
+	 * @param b
+	 *            End position of the route.
 	 */
 	public RouteDataFetcher(String a, String b) {
 		pointA = a;
@@ -87,17 +95,17 @@ public class RouteDataFetcher extends Observable implements Runnable {
 		data_combined = new ArrayList<Step>();
 		sample_size = 100;
 	}
-	
-	public synchronized List<Step> getDirectionsRoute(){
-		if(data_directions == null){
+
+	public synchronized List<Step> getDirectionsRoute() {
+		if (data_directions == null) {
 			Log.e(TAG, "No directions data available.");
 			return null;
 		}
 		return data_directions;
 	}
-	
-	public synchronized List<Step> getCombinedRoute(){
-		if(data_combined == null){
+
+	public synchronized List<Step> getCombinedRoute() {
+		if (data_combined == null) {
 			Log.e(TAG, "No combined data available.");
 			return null;
 		}
@@ -108,15 +116,14 @@ public class RouteDataFetcher extends Observable implements Runnable {
 	public void run() {
 		try {
 			synchronized (this) {
-				json = GoogleAPIQueries.requestDirections(pointA,
-						pointB).get();
+				json = GoogleAPIQueries.requestDirections(pointA, pointB).get();
 				if (json == null) {
 					throw new Exception("Google Direction API call failed!");
 				}
 				JsonParser parser = APIRequestTask.JSON_FACTORY
 						.createJsonParser(json);
 				DirectionsResult dRes = parser.parse(DirectionsResult.class);
-				
+
 				List<LatLng> step_locas = new ArrayList<LatLng>(20);
 				// Push all LatLng from the parsed data.
 				List<Leg> legs = dRes.routes.get(0).legs;
@@ -129,107 +136,99 @@ public class RouteDataFetcher extends Observable implements Runnable {
 						step_locas.add(new LatLng(s.start.lat, s.start.lng));
 					}
 				}
-				
-				//Create new step list which will be filled
-				//with slope estimations from the elevation
-				//data.
-				//Base sample size on a set step distance
-				if(sample_size == -1 && step_size != -1){
+
+				// Create new step list which will be filled
+				// with slope estimations from the elevation
+				// data.
+				// Base sample size on a set step distance
+				if (sample_size == -1 && step_size != -1) {
 					sample_size = (int) Math.floor((dist / step_size));
-				}else if(step_size == -1 && sample_size == -1){
-					//If we somehow arrive at this point, notify that 
-					//something went wrong but use the default value.
-					Log.w(TAG, "Unspecified step size and step numer, using 100 steps.");
+				} else if (step_size == -1 && sample_size == -1) {
+					// If we somehow arrive at this point, notify that
+					// something went wrong but use the default value.
+					Log.w(TAG,
+							"Unspecified step size and step numer, using 100 steps.");
 					step_size = 100;
 				}
-				
+
 				List<Step> ret = new ArrayList<Step>(sample_size);
 				double[] speeds = new double[sample_size];
 				double avg = dist / sample_size;
 				int dist2 = 1;
-				speeds[0] = legs.get(0).steps.get(0).distance.value / legs.get(0).steps.get(0).duration.value;
+				speeds[0] = legs.get(0).steps.get(0).distance.value
+						/ legs.get(0).steps.get(0).duration.value;
 				for (Leg l : legs) {
-					for (Step s : l.steps) { 
+					for (Step s : l.steps) {
 						speeds[dist2] = s.distance.value / s.duration.value;
-						dist2 += (s.distance.value/dist) * sample_size;
+						dist2 += (s.distance.value / dist) * sample_size;
 					}
-				} 
-				
-				//Fill speed array with approximative speed.
-				double approx = speeds[0];
-				for(int i=1; i<speeds.length; i++){
-					if(speeds[i] == 0){
-						speeds[i] = approx;
-					}else{
-						approx = speeds[i];
-					}
-					Log.v(TAG, "speed"+i+":"+speeds[i]);
 				}
-				
-				//Fetch sample_size elevation samples
+
+				// Fill speed array with approximative speed.
+				double approx = speeds[0];
+				for (int i = 1; i < speeds.length; i++) {
+					if (speeds[i] == 0)
+						speeds[i] = approx;
+					else
+						approx = speeds[i];
+
+				}
+
+				// Fetch sample_size elevation samples
 				int groan = legs.get(legs.size() - 1).steps.size() - 1;
 				Step last = legs.get(legs.size() - 1).steps.get(groan);
 				step_locas.add(new LatLng(last.end.lat, last.end.lng));
 				String enc = PolyUtil.encode(step_locas);
-				String elevation_data = GoogleAPIQueries.requestSampledElevation(enc, sample_size)
-						.get();
-				
+				String elevation_data = GoogleAPIQueries
+						.requestSampledElevation(enc, sample_size).get();
+
 				route = step_locas;
-				
+
 				if (elevation_data == null) {
 					throw new Exception("Google Elevation API call failed!");
-				} 
-				
-				//Parse elevation data
+				}
+
+				// Parse elevation data
 				parser = APIRequestTask.JSON_FACTORY
 						.createJsonParser(elevation_data);
 				ElevationResult eres = parser.parse(ElevationResult.class);
 				List<ElevationData> ed = eres.elevationpoints;
-				
-				//Log.d(TAG, ed.size()+" elevation");
-				
-				//Rebuild steps using flimsy speed
-				//estimations.
+
+				// Rebuild steps using flimsy speed
+				// estimations.
 				Iterator<ElevationData> it = ed.iterator();
 				int c_dist = 0;
 				elevation = new ArrayList<LatLng>();
 				ElevationData ed_p = it.next();
-				while(it.hasNext()){
+				while (it.hasNext()) {
 					ElevationData ed_c = it.next();
-					
+
 					Step s = new Step();
-					s.start = new Location(); s.end = new Location();
-					s.start = ed_p.location; s.end = ed_c.location;
+					s.start = new Location();
+					s.end = new Location();
+					s.start = ed_p.location;
+					s.end = ed_c.location;
 					s.start.elevation = ed_p.elevation;
 					s.end.elevation = ed_c.elevation;
-					 
+
 					elevation.add(new LatLng(s.start.lat, s.start.lng));
-					
-					s.distance = new Value(); s.duration = new Value();
+
+					s.distance = new Value();
+					s.duration = new Value();
 					s.distance.value = avg;
 					s.duration.value = avg / speeds[c_dist];
-					
+
 					s.updateSlope(ed_p.elevation, ed_c.elevation);
 					ret.add(s);
 					c_dist++;
 					ed_p = ed_c;
 				}
-//				int i = 0;
-//				for (Step s : steps) {
-//					ElevationData a = ed.get(i), b = ed.get(i + 1);
-//					s.updateSlope(a.elevation, b.elevation);
-//				}
+
 				data_combined = ret;
-				Gson gson = new Gson();
-				data_combined_json = gson.toJson(ret);
-				//json_processed = gson.toJson(steps);
-				//Log.v(TAG, ret.size()+"");
-				Log.v(TAG, data_combined_json);
-				//Log.v(TAG, rawextra);
 			}
 		} catch (Exception e) {
 			data_combined = null;
-			Log.e(TAG, "Something went wrong with "+this+" run:");
+			Log.e(TAG, "Something went wrong with " + this + ":");
 			Log.e(TAG, e.toString());
 		}
 		setChanged();

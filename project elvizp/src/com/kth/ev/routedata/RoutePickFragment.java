@@ -8,8 +8,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.kth.ev.application.ElvizpActivity;
+import com.kth.ev.application.R;
 
-import se.kth.ev.gmapsviz.R;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -101,7 +101,7 @@ public class RoutePickFragment extends Fragment {
 				ElvizpActivity a = (ElvizpActivity) getActivity();
 				if (a.isNetworkAvailable()) {
 					a.relayObservable(rdf);
-					Thread t_rdf = new Thread(rdf);
+					Thread t_rdf = new Thread(rdf, "Thread for "+rdf);
 					t_rdf.start();
 				} else {
 					CharSequence text = "Cannot fetch route data without internet connection.";

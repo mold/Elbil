@@ -3,7 +3,7 @@ package com.kth.ev.application;
 import java.util.Observable;
 import java.util.Observer;
 
-import se.kth.ev.gmapsviz.R;
+import com.kth.ev.application.R;
 import com.kth.ev.cardata.CarData;
 import com.kth.ev.cardata.CarDataFetcher;
 import com.kth.ev.routedata.GPSHolder;

@@ -2,7 +2,7 @@ package com.kth.ev.audiobahn.gamification;
 
 import org.puredata.core.PdBase;
 
-import se.kth.ev.gmapsviz.R;
+import com.kth.ev.application.R;
 
 import android.content.res.Resources;
 import android.os.Handler;

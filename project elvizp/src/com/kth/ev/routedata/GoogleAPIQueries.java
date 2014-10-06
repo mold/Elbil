@@ -16,7 +16,7 @@ import com.google.maps.android.PolyUtil;
 public class GoogleAPIQueries {
 	//private static final String TAG = "GoogleAPIQueries";
 	private static final String base_url = "https://maps.googleapis.com/maps/api/";
-	public static final String elevation_url = base_url+ "elevation/json";
+	public static final String elevation_url = base_url+"elevation/json";
 	public static final String directions_url = base_url+"directions/json";
 	public static final String places_url = base_url+"place";
 	public static final String geocode_url = base_url+"geocode/json";
